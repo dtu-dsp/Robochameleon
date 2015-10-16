@@ -1,0 +1,86 @@
+************************************************************
+Version 3.0.1
+************************************************************
+
+Corrected a few bugs in the m-file sspropv.m (vector split-step
+routine):  Renamed the variable "pol" to "psp" to match function
+declaration, removed extraneous isscalar() line from code.
+Updated the m-files to correctly refer to the two methods as
+either 'circular' or 'elliptical'.
+
+There were no changes made to the compiled code.
+
+************************************************************
+Version 3.0
+************************************************************
+
+This version now includes a vector version of the code, which
+allows one to simulate effects like PDL, PMD, birefringence,
+nonlinear polarization rotation, and cross-polarization
+modulation.  The scalar routines are largely unmodified.
+
+Code has been updated to use the latest FFTW 3.1.2 routines.
+
+************************************************************
+Version 2.0.2
+************************************************************
+
+This version introduces no changes to the core calculation
+routine, only in the associated utilities and examples.
+
+Fixed bug in solitonpulse utility.  This utility program was
+incorrectly implementing the chirp factor for chirped pulses.
+
+The examples directory now includes 28 files that reproduce many
+of the simulation results presented in chapters 3..5 of
+G. P. Agrawal's text, Nonlinear Fiber Optics (3rd ed.) 
+
+************************************************************
+Version 2.0.1
+************************************************************
+
+Added utility file wspace.m that produces a vector of angular
+frequencies for use with the FFT routines
+
+sspropc now recognizes empty ([]) arguments for toptical and
+traman.  This allows the user to specify maxiter and tol while
+leaving toptical and traman unspecified.
+
+Added support for frequency-dependent loss alpha(w).  If the
+input parameter alpha is a vector with the same length as u0,
+then it is treated as a frequency-dependent loss coefficient.
+Otherwise if alpha is a scalar, then all frequency components
+have the same loss.
+
+Added support for arbitrary specification of dispersion function
+beta(w).  If beta is a vector with the same length as u0, then it
+is regarded as a direct specification of the propagation
+constant.  Otherwise, beta is interpreted as the Taylor-series
+coefficients of the dispersion polynomial.
+
+************************************************************
+Version 2.0
+************************************************************
+
+sspropc now uses FFTW 3.1 routines
+
+single- and double- precision versions can be compiled from the
+same source file.  Use -DSINGLEPREC when compiling to build
+single-precision (float) version.
+
+wisdom file is renamed to "fftw-wisdom.dat" and
+"fftwf-wisdom.dat" for double and single-precision routines
+respectively.  
+
+wisdom file is not automatically saved when you exit from the
+program.  User must save the file manually.
+
+Added special command-line arguments for specifying the FFTW
+planner method.  (-estimate, -exhaustive, -measure, -patient),
+default method is patient.
+
+Added special command-line arguments for controlling wisdom:
+(-savewisdom, -loadwisdom, -forgetwisdom)
+
+Memory allocation hooks are no longer needed with this version of
+FFTW 3.1

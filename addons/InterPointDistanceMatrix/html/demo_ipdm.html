@@ -1,0 +1,473 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>demo_ipdm</title>
+      <meta name="generator" content="MATLAB 7.4">
+      <meta name="date" content="2008-04-20">
+      <meta name="m-file" content="demo_ipdm"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#2">A complete (internal) inter-point distance matrix.</a></li>
+               <li><a href="#3">Distances may be in any number of dimensions, even 1-d.</a></li>
+               <li><a href="#4">Or in very many dimensions.</a></li>
+               <li><a href="#5">The default metric used to compute the distance is the 2-norm, or Euclidean norm.</a></li>
+               <li><a href="#6">The 1-norm is also available as an option.</a></li>
+               <li><a href="#7">The infinity norm is an option too.</a></li>
+               <li><a href="#8">The 0-norm is not really a valid norm, but I've included it anyway.</a></li>
+               <li><a href="#9">Inter-point distances may between two sets of points.</a></li>
+               <li><a href="#10">You may only want some subset of the distances. The nearest neighbor is a common choice.</a></li>
+               <li><a href="#11">You can return the result as a structure, or a 2-d array</a></li>
+               <li><a href="#12">You can find the single largest distance.</a></li>
+               <li><a href="#13">or the k largest distances (here, k = 3)</a></li>
+               <li><a href="#14">Or the k smallest distances (here, k == 5)</a></li>
+               <li><a href="#15">You can find only those distances above a specific limit.</a></li>
+               <li><a href="#16">You can also limit the maximum distance found.</a></li>
+               <li><a href="#17">Compute only the 1000 smallest distances between a large pair of arrays</a></li>
+               <li><a href="#18">Nearest neighbour is quite efficient in one dimension</a></li>
+               <li><a href="#19">ipdm uses bsxfun where that is possible.</a></li>
+            </ul>
+         </div><pre class="codeinput"><span class="comment">%{
+</span><span class="comment">
+</span><span class="comment">Demo for ipdm.m (Inter-Point Distance Matrix)
+</span><span class="comment">
+</span><span class="comment">John D'Errico
+</span><span class="comment">e-mail: woodchips@rochester.rr.com
+</span><span class="comment">
+</span><span class="comment">%}</span>
+</pre><h2>A complete (internal) inter-point distance matrix.<a name="2"></a></h2><pre class="codeinput"><span class="comment">% Each point is taken as one row of the input, so each column is a</span>
+<span class="comment">% dimension. There will be a 5x5 array of interpoint distances between</span>
+<span class="comment">% the points in a 5x2 set of data. Note that the diagonal elements in</span>
+<span class="comment">% this matrix will be zero, since they describe the distance from a</span>
+<span class="comment">% point to itself.</span>
+A = randn(5,2);
+d = ipdm(A)
+</pre><pre class="codeoutput">d =
+            0        1.233       1.3493       1.1245        1.242
+        1.233            0       2.1708        2.135       1.1396
+       1.3493       2.1708            0      0.39941       1.2894
+       1.1245        2.135      0.39941            0       1.4422
+        1.242       1.1396       1.2894       1.4422            0
+</pre><h2>Distances may be in any number of dimensions, even 1-d.<a name="3"></a></h2><pre class="codeinput">A = rand(6,1);
+d = ipdm(A)
+</pre><pre class="codeoutput">d =
+            0      0.85266      0.22332      0.37803      0.92072      0.03229
+      0.85266            0      0.62934      0.47463     0.068052      0.82038
+      0.22332      0.62934            0      0.15471       0.6974      0.19103
+      0.37803      0.47463      0.15471            0      0.54269      0.34574
+      0.92072     0.068052       0.6974      0.54269            0      0.88843
+      0.03229      0.82038      0.19103      0.34574      0.88843            0
+</pre><h2>Or in very many dimensions.<a name="4"></a></h2><pre class="codeinput">A = rand(5,1000);
+d = ipdm(A)
+</pre><pre class="codeoutput">d =
+            0       12.479       12.882       12.559       12.855
+       12.479            0        12.49       12.723       12.513
+       12.882        12.49            0       12.666       12.515
+       12.559       12.723       12.666            0       12.759
+       12.855       12.513       12.515       12.759            0
+</pre><h2>The default metric used to compute the distance is the 2-norm, or Euclidean norm.<a name="5"></a></h2><pre class="codeinput">A = rand(3,2);
+d = ipdm(A)
+</pre><pre class="codeoutput">d =
+            0      0.42608      0.53366
+      0.42608            0      0.10928
+      0.53366      0.10928            0
+</pre><h2>The 1-norm is also available as an option.<a name="6"></a></h2><pre class="codeinput"><span class="comment">% The 1-norm is sometimes known as the city block norm. Of course,</span>
+<span class="comment">% the 1-norm is just the sum of absolute values, so it is the total</span>
+<span class="comment">% distance one would travel if constrained to move only along</span>
+<span class="comment">% "streets" parallel to the x and y axes.</span>
+
+<span class="comment">% Options are passed into ipdm using property/value pairs</span>
+d = ipdm(A,<span class="string">'metric'</span>,1)
+</pre><pre class="codeoutput">d =
+            0      0.50902      0.62075
+      0.50902            0      0.11173
+      0.62075      0.11173            0
+</pre><h2>The infinity norm is an option too.<a name="7"></a></h2><pre class="codeinput"><span class="comment">% It is the maximum difference in any dimension. We can think</span>
+<span class="comment">% of the infinity norm as the limit of a p-norm as p --&gt; inf</span>
+d = ipdm(A,<span class="string">'metric'</span>,inf)
+</pre><pre class="codeoutput">d =
+            0      0.41575        0.525
+      0.41575            0      0.10925
+        0.525      0.10925            0
+</pre><h2>The 0-norm is not really a valid norm, but I've included it anyway.<a name="8"></a></h2><pre class="codeinput"><span class="comment">% Its the smallest difference in any dimension. Why is it not a valid</span>
+<span class="comment">% norm? You can have two widely distinct points with a "0-norm" of 0,</span>
+<span class="comment">% as long as they exactly match in any one dimension. You can also</span>
+<span class="comment">% look at the 0-norm as the limit of a p-norm, as p --&gt; 0 from above.</span>
+
+<span class="comment">% Properties can be shortened, and capitalization is ignored.</span>
+d = ipdm(A,<span class="string">'Met'</span>,0)
+</pre><pre class="codeoutput">d =
+            0     0.093271     0.095754
+     0.093271            0    0.0024827
+     0.095754    0.0024827            0
+</pre><h2>Inter-point distances may between two sets of points.<a name="9"></a></h2><pre class="codeinput"><span class="comment">% Of course, the diagonal elements will no longer be expected to be zero.</span>
+A = randn(10,2);
+B = randn(3,2);
+d = ipdm(A,B)
+</pre><pre class="codeoutput">d =
+      0.46877       1.3268       1.0699
+       2.3371       2.6267       2.0068
+      0.18845       1.4021       1.4047
+       2.7392       1.5299        1.668
+       1.4282       2.1474       1.6604
+      0.53418       0.7202       0.7268
+       1.5636      0.37851        0.637
+       2.3509       2.9521       2.3854
+       2.1743        2.842        2.298
+       0.4548       1.6836       1.6509
+</pre><h2>You may only want some subset of the distances. The nearest neighbor is a common choice.<a name="10"></a></h2><pre class="codeinput"><span class="comment">% Note that the result is a sparse matrix, to allow you to compute</span>
+<span class="comment">% interpoint distance matrices between very large sets of points.</span>
+<span class="comment">% When an array is returned, if that array is likely to be a sparse</span>
+<span class="comment">% one, I've chosen to generate the array in a sparse format.</span>
+A = rand(7,3);
+B = rand(5,3);
+d = ipdm(A,B,<span class="string">'Subset'</span>,<span class="string">'nearest'</span>)
+</pre><pre class="codeoutput">d =
+   (6,1)         0.51868
+   (2,3)         0.64675
+   (4,3)         0.21866
+   (7,4)         0.19648
+   (1,5)         0.81444
+   (3,5)         0.47079
+   (5,5)         0.63785
+</pre><h2>You can return the result as a structure, or a 2-d array<a name="11"></a></h2><pre class="codeinput">d = ipdm(A,B,<span class="string">'Subset'</span>,<span class="string">'nearest'</span>,<span class="string">'result'</span>,<span class="string">'struct'</span>)
+
+<span class="comment">% A structure as the output can sometimes be useful, if that is how you</span>
+<span class="comment">% will be using the results anyway.</span>
+[d.rowindex,d.columnindex,d.distance]
+</pre><pre class="codeoutput">d = 
+       rowindex: [7x1 double]
+    columnindex: [7x1 double]
+       distance: [7x1 double]
+ans =
+            1            5      0.81444
+            2            3      0.64675
+            3            5      0.47079
+            4            3      0.21866
+            5            5      0.63785
+            6            1      0.51868
+            7            4      0.19648
+</pre><h2>You can find the single largest distance.<a name="12"></a></h2><pre class="codeinput">A = randn(2000,2);
+B = randn(1000,2);
+
+<span class="comment">% Logically, the result should be a sparse matrix.</span>
+d = ipdm(A,B,<span class="string">'Subset'</span>,<span class="string">'largestfew'</span>,<span class="string">'limit'</span>,1)
+</pre><pre class="codeoutput">d =
+ (302,172)        7.2695
+</pre><h2>or the k largest distances (here, k = 3)<a name="13"></a></h2><pre class="codeinput"><span class="comment">% find the k = 3 largest distances</span>
+d = ipdm(A,B,<span class="string">'Subset'</span>,<span class="string">'largestfew'</span>,<span class="string">'limit'</span>,3)
+</pre><pre class="codeoutput">d =
+ (302,172)        7.2695
+ (484,495)        7.2272
+ (484,775)        7.2259
+</pre><h2>Or the k smallest distances (here, k == 5)<a name="14"></a></h2><pre class="codeinput">d = ipdm(A,B,<span class="string">'Subset'</span>,<span class="string">'smallestfew'</span>,<span class="string">'limit'</span>,5)
+</pre><pre class="codeoutput">d =
+(1137,28)      0.0023937
+(1862,164)     0.0022118
+ (405,485)     0.0025734
+(1915,567)     0.0034096
+(1479,809)     0.0036645
+</pre><h2>You can find only those distances above a specific limit.<a name="15"></a></h2><pre class="codeinput">A = sort(rand(7,1));
+<span class="comment">% If an array is returned, then I fill those below the limit with -inf</span>
+d = ipdm(A,<span class="string">'Subset'</span>,<span class="string">'Minimum'</span>,<span class="string">'limit'</span>,0.5)
+
+<span class="comment">% If a structure is returned, then only the pairs beyond the specified</span>
+<span class="comment">% limit are included.</span>
+d = ipdm(A,<span class="string">'Subset'</span>,<span class="string">'Minimum'</span>,<span class="string">'limit'</span>,0.5,<span class="string">'result'</span>,<span class="string">'struct'</span>)
+</pre><pre class="codeoutput">d =
+  Columns 1 through 6
+         -Inf         -Inf         -Inf         -Inf         -Inf      0.71402
+         -Inf         -Inf         -Inf         -Inf         -Inf      0.60806
+         -Inf         -Inf         -Inf         -Inf         -Inf       0.5177
+         -Inf         -Inf         -Inf         -Inf         -Inf         -Inf
+         -Inf         -Inf         -Inf         -Inf         -Inf         -Inf
+      0.71402      0.60806       0.5177         -Inf         -Inf         -Inf
+      0.76805      0.66209      0.57173         -Inf         -Inf         -Inf
+  Column 7
+      0.76805
+      0.66209
+      0.57173
+         -Inf
+         -Inf
+         -Inf
+         -Inf
+d = 
+       rowindex: [12x1 double]
+    columnindex: [12x1 double]
+       distance: [12x1 double]
+</pre><h2>You can also limit the maximum distance found.<a name="16"></a></h2><pre class="codeinput">A = randn(10,2);
+B = randn(4,2);
+<span class="comment">% Here the other elements are filled with +inf</span>
+d = ipdm(A,B,<span class="string">'Subset'</span>,<span class="string">'Max'</span>,<span class="string">'limit'</span>,1.5,<span class="string">'metric'</span>,inf)
+</pre><pre class="codeoutput">d =
+          Inf      0.68246      0.38584          Inf
+          Inf      0.57474      0.27811          Inf
+          Inf      0.91444      0.61782       1.3555
+       1.2161       1.2027          Inf      0.17722
+          Inf          Inf          Inf      0.87028
+          Inf      0.65096      0.35434          Inf
+          Inf      0.54434      0.24771       1.4889
+          Inf      0.53258      0.12555          Inf
+          Inf      0.93034       1.0672          Inf
+          Inf       1.3882          Inf       1.0678
+</pre><h2>Compute only the 1000 smallest distances between a large pair of arrays<a name="17"></a></h2>
+         <p>When the arrays are too large, computing the entire array may not fit entirely into memory. ipdm is smart enough to break
+            the problem up to accomplish the task anyway. In this example, the complete interpoint distance matrix would have required
+            roughly 800 megabytes of RAM to store. This would have exceeded the RAM that I have available on this computer, yet I only
+            wanted the 1000 smallest elements in the end.
+         </p><pre class="codeinput">A = rand(10000,2);
+B = rand(10000,2);
+d = ipdm(A,B,<span class="string">'sub'</span>,<span class="string">'smallestfew'</span>,<span class="string">'lim'</span>,1000,<span class="string">'res'</span>,<span class="string">'a'</span>);
+spy(d)
+</pre><img vspace="5" hspace="5" src="demo_ipdm_01.png"> <h2>Nearest neighbour is quite efficient in one dimension<a name="18"></a></h2>
+         <p>You don't want to compute the entire interpoint distance matrix, if you only need the nearest neighbors.</p><pre class="codeinput">A = rand(100000,1);
+tic,d = ipdm(A,<span class="string">'subset'</span>,<span class="string">'nearest'</span>,<span class="string">'result'</span>,<span class="string">'struct'</span>);toc
+d
+</pre><pre class="codeoutput">Elapsed time is 0.476907 seconds.
+d = 
+       rowindex: [100000x1 double]
+    columnindex: [100000x1 double]
+       distance: [100000x1 double]
+</pre><h2>ipdm uses bsxfun where that is possible.<a name="19"></a></h2><pre class="codeinput"><span class="comment">% Older releases of Matlab did not have bsxfun, so I check first to see</span>
+<span class="comment">% if this function exists. If it does exist in your release, ipdm can</span>
+<span class="comment">% run faster and be more efficient in its use of memory.</span>
+
+<span class="comment">% The ipdm code also attempts to use memory in an efficient way, so that</span>
+<span class="comment">% very large distance matrices are processed in chunks. I try to minimize</span>
+<span class="comment">% the creation of huge intermediate arrays when only a smaller subset of</span>
+<span class="comment">% the full distance matrix is desired. The user can control the size of</span>
+<span class="comment">% the chunks with the ChunkSize property.</span>
+A = rand(5000,1);
+
+<span class="comment">% The default ChunkSize is 2^25</span>
+tic,d = ipdm(A,<span class="string">'Subset'</span>,<span class="string">'min'</span>,<span class="string">'limit'</span>,0.99,<span class="string">'result'</span>,<span class="string">'struct'</span>);toc
+
+<span class="comment">% Here, only 1 megabyte chunks will be processed at any time.</span>
+tic,d = ipdm(A,<span class="string">'Subset'</span>,<span class="string">'min'</span>,<span class="string">'limit'</span>,0.99,<span class="string">'result'</span>,<span class="string">'struct'</span>,<span class="string">'chunksize'</span>,2^20);toc
+</pre><pre class="codeoutput">Elapsed time is 3.230474 seconds.
+Elapsed time is 3.332791 seconds.
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.4<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%{
+
+Demo for ipdm.m (Inter-Point Distance Matrix)
+
+John D'Errico
+e-mail: woodchips@rochester.rr.com
+
+%}
+
+%% A complete (internal) inter-point distance matrix.
+
+% Each point is taken as one row of the input, so each column is a
+% dimension. There will be a 5x5 array of interpoint distances between
+% the points in a 5x2 set of data. Note that the diagonal elements in
+% this matrix will be zero, since they describe the distance from a
+% point to itself.
+A = randn(5,2);
+d = ipdm(A)
+
+%% Distances may be in any number of dimensions, even 1-d.
+A = rand(6,1);
+d = ipdm(A)
+
+%% Or in very many dimensions.
+A = rand(5,1000);
+d = ipdm(A)
+
+%% The default metric used to compute the distance is the 2-norm, or Euclidean norm.
+A = rand(3,2);
+d = ipdm(A)
+
+%% The 1-norm is also available as an option.
+
+% The 1-norm is sometimes known as the city block norm. Of course,
+% the 1-norm is just the sum of absolute values, so it is the total
+% distance one would travel if constrained to move only along
+% "streets" parallel to the x and y axes.
+
+% Options are passed into ipdm using property/value pairs
+d = ipdm(A,'metric',1)
+
+%% The infinity norm is an option too.
+
+% It is the maximum difference in any dimension. We can think
+% of the infinity norm as the limit of a p-norm as p REPLACE_WITH_DASH_DASH> inf
+d = ipdm(A,'metric',inf)
+
+%% The 0-norm is not really a valid norm, but I've included it anyway.
+
+% Its the smallest difference in any dimension. Why is it not a valid
+% norm? You can have two widely distinct points with a "0-norm" of 0,
+% as long as they exactly match in any one dimension. You can also
+% look at the 0-norm as the limit of a p-norm, as p REPLACE_WITH_DASH_DASH> 0 from above.
+
+% Properties can be shortened, and capitalization is ignored.
+d = ipdm(A,'Met',0)
+
+%% Inter-point distances may between two sets of points.
+
+% Of course, the diagonal elements will no longer be expected to be zero.
+A = randn(10,2);
+B = randn(3,2);
+d = ipdm(A,B)
+
+%% You may only want some subset of the distances. The nearest neighbor is a common choice.
+
+% Note that the result is a sparse matrix, to allow you to compute
+% interpoint distance matrices between very large sets of points.
+% When an array is returned, if that array is likely to be a sparse
+% one, I've chosen to generate the array in a sparse format.
+A = rand(7,3);
+B = rand(5,3);
+d = ipdm(A,B,'Subset','nearest')
+
+%% You can return the result as a structure, or a 2-d array
+d = ipdm(A,B,'Subset','nearest','result','struct')
+
+% A structure as the output can sometimes be useful, if that is how you
+% will be using the results anyway.
+[d.rowindex,d.columnindex,d.distance]
+
+%% You can find the single largest distance.
+A = randn(2000,2);
+B = randn(1000,2);
+
+% Logically, the result should be a sparse matrix.
+d = ipdm(A,B,'Subset','largestfew','limit',1)
+
+%% or the k largest distances (here, k = 3)
+
+% find the k = 3 largest distances
+d = ipdm(A,B,'Subset','largestfew','limit',3)
+
+%% Or the k smallest distances (here, k == 5)
+d = ipdm(A,B,'Subset','smallestfew','limit',5)
+
+%% You can find only those distances above a specific limit.
+A = sort(rand(7,1));
+% If an array is returned, then I fill those below the limit with -inf
+d = ipdm(A,'Subset','Minimum','limit',0.5)
+
+% If a structure is returned, then only the pairs beyond the specified
+% limit are included.
+d = ipdm(A,'Subset','Minimum','limit',0.5,'result','struct')
+
+%% You can also limit the maximum distance found.
+A = randn(10,2);
+B = randn(4,2);
+% Here the other elements are filled with +inf
+d = ipdm(A,B,'Subset','Max','limit',1.5,'metric',inf)
+
+%% Compute only the 1000 smallest distances between a large pair of arrays
+% When the arrays are too large, computing the entire array may not fit
+% entirely into memory. ipdm is smart enough to break the problem up to
+% accomplish the task anyway. In this example, the complete interpoint
+% distance matrix would have required roughly 800 megabytes of RAM to
+% store. This would have exceeded the RAM that I have available on this
+% computer, yet I only wanted the 1000 smallest elements in the end.
+A = rand(10000,2);
+B = rand(10000,2);
+d = ipdm(A,B,'sub','smallestfew','lim',1000,'res','a');
+spy(d)
+
+%% Nearest neighbour is quite efficient in one dimension
+% You don't want to compute the entire interpoint distance matrix,
+% if you only need the nearest neighbors.
+A = rand(100000,1);
+tic,d = ipdm(A,'subset','nearest','result','struct');toc
+d
+
+%% ipdm uses bsxfun where that is possible.
+
+% Older releases of Matlab did not have bsxfun, so I check first to see
+% if this function exists. If it does exist in your release, ipdm can
+% run faster and be more efficient in its use of memory.
+
+% The ipdm code also attempts to use memory in an efficient way, so that
+% very large distance matrices are processed in chunks. I try to minimize
+% the creation of huge intermediate arrays when only a smaller subset of
+% the full distance matrix is desired. The user can control the size of
+% the chunks with the ChunkSize property.
+A = rand(5000,1);
+
+% The default ChunkSize is 2^25
+tic,d = ipdm(A,'Subset','min','limit',0.99,'result','struct');toc
+
+% Here, only 1 megabyte chunks will be processed at any time.
+tic,d = ipdm(A,'Subset','min','limit',0.99,'result','struct','chunksize',2^20);toc
+
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
