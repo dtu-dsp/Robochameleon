@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Robochameleon by dtu-dsp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+<body>
+
+    <section class="page-header">
+      <h1 class="project-name">Quick Start Guide </h1>
+    </section>
+    
+<section class="main-content">
+<div class="contents">
+<div class="toc"><h3>Table of Contents</h3>
+<ul><li class="level1"><a href="#Setup">Setting up</a></li>
+<li class="level1"><a href="#Classes">Classes</a></li>
+<li class="level1"><a href="#Roboclasses">Robochameleon classes</a></li>
+<li class="level1"><a href="#SigRep">Signal representation</a><ul><li class="level2"><a href="#PowerRep">Power representation (pwr)</a></li>
+<li class="level2"><a href="#Waveforms">Other signal properties (signal_interface)</a></li>
+<li class="level2"><a href="#PwrVsE">Relationship between power and waveform</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#Blocks">Block-based program structure (units &amp; modules)</a><ul><li class="level2"><a href="#Units">Units (unit)</a></li>
+<li class="level2"><a href="#Modules">Modules (module)</a></li>
+</ul>
+</li>
+<li class="level1"><a href="#Consts">Accessing constants</a></li>
+<li class="level1"><a href="#Utils">Utility functions</a></li>
+<li class="level1"><a href="#Examples">Examples</a></li>
+<li class="level1"><a href="#Refs">Useful references</a></li>
+</ul>
+</div>
+
+<h1><a class="anchor" id="Overview"></a>
+Overview</h1>
+<p>Robochameleon is a coding framework and component library for simulation and experimental analysis of optical communication systems. This is a quick start guide to using the framework; descriptions of components can be found in the corresponding class definitions.</p>
+<p>We use classes to ensure standardization for both signal representation and functions. This guide has a brief introduction to classes, but if you are familiar with object oriented programming, you should skip it.</p>
+<h1><a class="anchor" id="Setup"></a>
+Setting up</h1>
+<p>The Robochameleon project is stored in multiple folders, which all must be in Matlab's search path for the code to run. The script <em>robochameleon.m</em> will automatically add these to the path.</p>
+<p>There are also some toolbox dependencies, as well as some function calls to relatively new features in Matlab. When possible, we have added alternatives in the <em>compatibility</em> folder. The initialization script does some automatic detection of what features the user has, but is not perfect, and in some cases it might be necessary to add these folders manually. In particular, [module] uses the bioinformatics toolbox, so the folder \compatibility\bioinfolite should be in the path if the user does not have a license.</p>
+<h1><a class="anchor" id="Classes"></a>
+Classes</h1>
+<p>Classes ensure standardization for a large function library. They facilitate block data processing and internal state saving. For a complete introduction to classes using Matlab, there are some useful tutorials on <a href="http://www.mathworks.com/matlabcentral/">Matlab Central</a>.</p>
+<p>Here is a very simple (and totally useless) example of a class that adds two numbers together: </p>
+
+<pre>
+classdef Adder
+
+    properties
+        a;
+        b;
+        sum;
+     end
+     
+    methods
+    
+        function obj = Adder(param)
+            obj.a = param.a;
+            obj.b = param.b;            
+        end
+       
+        function obj = plus(obj)
+             obj.sum = obj.a+obj.b;
+        end
+    end
+end
+</pre>
+
+<p>A class basically consists of two things:</p><ol type="1">
+<li>Properties. These are analogous to parameters passed to a function.</li>
+<li>Methods. These are analogous to functions.</li>
+</ol>
+<p>All classes must have a method (called the constructor) that creates an object of that class. In the above example, that was: </p>
+<pre>
+        function obj = Adder(param)
+            obj.a = param.a;
+            obj.b = param.b;            
+        end
+</pre>
+<p>In the above example, there is an additional method called <code>plus</code> that contains the main function. To use this class, one would first make an adder using the constructor: </p>
+<pre>
+&gt;&gt;test = Adder(struct('a', 1, 'b', 3));
+&gt;&gt;disp(test)
+  Properties:
+    a: 1
+    b: 3
+    sum: []
+  Methods
+</pre>
+<p>Note the addition has not been performed yet. Then to perform the pre-defined operation: </p>
+<pre>
+&gt;&gt; test.plus
+ans = 
+  Adder
+  Properties:
+    a: 1
+    b: 3
+    sum: 4
+  Methods
+</pre>
+<p>Note all other operations are prohibited: </p>
+<pre>
+&gt;&gt; test.minus
+No appropriate method, property, or field minus for class adder
+</pre>
+
+<h1><a class="anchor" id="Roboclasses"></a>
+Robochameleon classes</h1>
+<p>In Robochameleon, there are four basic classes:</p><ol type="1">
+<li><code>pwr</code>  for representing signal power</li>
+<li><code>signal_interface</code> for representing a waveform</li>
+<li><code>unit</code> for representing an element in a communication system</li>
+<li><code>module</code> a collection of units, including connections between them</li>
+</ol>
+<p>The full documentation set has reference pages for each class with documentation of all properties and methods. Below, we have a more general introduction to the most important properties and methods, as well as descriptions of how these are meant to interact.</p>
+<h1><a class="anchor" id="SigRep"></a>
+Signal representation</h1>
+<p>Signals are described using two classes, <code>pwr</code> and <code>signal_interface</code>. Each <code>signal_interface</code> object has a property (<code>signal_interface.PCol</code>) that is an array of pwr objects. An array is used so that one pwr object describes the power contained in each each component (polarization) of the waveform.</p>
+<h2><a class="anchor" id="PowerRep"></a>
+Power representation (<code>pwr</code>)</h2>
+<p>Typically signal power is represented as an object of type <code>pwr</code>. The two main properties are</p><ol type="1">
+<li>the signal-to-noise ratio, and</li>
+<li>the signal power.</li>
+</ol>
+<p>Note that the SNR is not always well-defined (e.g. this value doesn't mean much after propagation through a nonlinear channel). The primary purpose of tracking SNR is to help understand what limits performance of a simulated system, but sometimes some discretion in interpreting this value is required.</p>
+<p>The signal power and noise powers are defined as the total powers in the bandwidth of the signal waveform (i.e. the sampling rate Fs). Thus if a large oversampling ratio (e.g. 16 samples per symbol) is used, then the SNR of the signal will be much worse than the SNR of an equivalent signal in a real system.</p>
+<p>There are a number of useful methods in the <code>pwr</code> class, including addition, scalar multiplication, and several display and unit conversion functions. These are documented in the class itself. For an example of how to use <code>pwr</code> objects, consult  <em>run_Testpwr.m</em> in <em>\Setups\Demo</em>.</p>
+<h2><a class="anchor" id="Waveforms"></a>
+Other signal properties (<code>signal_interface</code>)</h2>
+<p>All signals must be represented as objects of type <code>signal_interface</code>. They have the following user-specified properties:</p><ol type="1">
+<li><code>E</code>, the waveform (in arbitrary units)</li>
+<li><code>Fs</code>, the sampling rate (Hz)</li>
+<li><code>Fc</code>, the carrier frequency (Hz)</li>
+<li><code>Rs</code>, the symbol rate (Hz)</li>
+<li><code>PCol</code>, the signal power (array of pwr objects)</li>
+</ol>
+<p>These quantites are also not always well-defined (e.g. the output of a laser has no symbol rate), but are nonetheless required. Not-a-number (nan) should be used in this case.  <code>signal_interface</code> objects also have some derived properties:</p><ol type="1">
+<li><code>N</code> number of signal elements (polarizations)</li>
+<li><code>Nss</code> number of samples per symbol</li>
+<li>...</li>
+</ol>
+<p>which can be read and used but not modified.</p>
+<p>Here is a very simple example of how to construct a signal interface object and what the display function looks like:</p>
+<pre>
+&gt;&gt; sig_param =struct(&#39;Rs&#39;,10e9,&#39;Fs&#39;,40e9,&#39;Fc&#39;,const.c/1550e-9,&#39;PCol&#39;,[pwr(inf, 27), pwr(inf, 27)]);
+&gt;&gt; sig_mat = randn(100,2); % 2-component random signal
+&gt;&gt; sig_obj = signal_interface(sig_mat,sig_param)
+Real signal
+	Length: 100 Sa
+	Number of components: 2
+	Symbol rate: 10.0 GBd (100.0 ps)
+	Sampling rate: 40.00 GHz (25.00 ps)
+	Oversampling ratio: 4.00 Sa/symbol
+	Carrier frequency: 193.414 THz (1.55000 um)
+	Total power: 30.03 dBm (1006.49 mW)
+	SNR: Inf dB (Inf)
+	Signal power: 30.03 dBm (1006.49 mW)
+	Noise power: -Inf dBm (0.00 mW)
+&gt;&gt;
+</pre>
+<p>There are a number of useful methods in <code>signal_interface</code> that are documented there. Most notably, there are methods to apply functions to signals and add signals to each other such that power and SNR are tracked automatically.</p>
+<h2><a class="anchor" id="PwrVsE"></a>
+Relationship between power and waveform</h2>
+<p>Note that the waveform amplitude (<code>signal_interface.PCol</code>) is specified separately from the waveform shape (<code>signal_interface.E</code>). This can lead to un-intended results when the two are in conflict. It is important to always use the appropriate get and set-like (<code>signal_interface.fun1</code>, <code>signal_interface.plus</code>, <code>signal_interface.mtimes</code>) methods when manipulating waveforms.</p>
+<p>For an extended example, see <em>run_TestSignalInterface.m</em> and <em>run_TestSignalInterfaceAdvanced.m</em> in <em>\setups\_Demo</em></p>
+
+<h1><a class="anchor" id="Blocks"></a>
+Block-based program structure (<code>unit</code> &amp; <code>module</code>)</h1>
+<p>Every function that can be applied to a <code>signal_interface</code> object is encapsulated in a <code>unit</code>. Multiple units can be collected into a super-unit, which is called a <code>module</code>.</p>
+<h2><a class="anchor" id="Units"></a>
+Units</h2>
+<p>Everything that operates on a <code>signal_interface</code> object should be defined as a class that inherits certain properties from [unit]. For example: </p>
+
+<pre>
+classdef MyClass_v1 &lt; unit
+  ...
+end</div>
+</pre>
+<p>All units must have the following properties:</p><ul>
+<li><code>nInputs</code><ul>
+<li>Number of inputs</li>
+</ul>
+</li>
+<li><code>nOutputs</code><ul>
+<li>Number of ouputs</li>
+</ul>
+</li>
+</ul>
+<p>Units must also have the following method (in addition to the constructor):</p>
+<ul>
+<li><code>traverse</code></li>
+</ul>
+<p><code>traverse</code> acts like main in c programs. It defines what function the unit performs on the signal. The only allowable inputs and outputs of traverse are of type <code>signal_interface</code>. This is necessary to ensure cross- compatibility between units written by different people, as well as module construction. Everything else should be an object property.</p>
+<p>There are a number of properties automatically included in all units. The ones relevant to the user are:</p>
+<ul>
+<li><code>draw</code><ul>
+<li>This should be used to enable/disable plotting (true=plot)</li>
+</ul>
+</li>
+<li><code>results</code><ul>
+<li>This is a structure that should be used to store information calculated/gathered by the unit during traverse. Using a general structure for this task is sometimes more convenient than using object properties.</li>
+</ul>
+</li>
+</ul>
+<h2><a class="anchor" id="Modules"></a>
+Modules</h2>
+<p>A module is a collection of connected units. Modules can contain other modules.</p>
+<p>A module definition will only have a constructor. The constructor has three parts:</p>
+<ol type="1">
+<li>A series of constructors for constituent units</li>
+<li>A series of connections between units</li>
+<li>The command exportModule</li>
+</ol>
+<p>For example:</p>
+<pre>
+classdef MyModule_v1 &lt; module
+    
+    properties
+        nInputs = 2;
+        nOutputs = 4;
+    end
+    
+    methods
+        function obj = MyModule_v1(param)
+            % Units
+            a = A(param.paramA);
+            b = B(param.paramB);
+            c = C(param.paramC);
+            d = D(param.paramD);
+            
+            % Connections
+            obj.connectInputs({a b},[1 1])
+            a.connectOutputs(c,1);
+            b.connectOutputs(c,2);
+            c.connectOutputs({d obj.outputBuffer obj.outputBuffer},[1 3 4])
+            d.connectOutputs({obj.outputBuffer obj.outputBuffer},[1 2]);
+            
+            obj.exportModule();
+        end
+    end
+    
+end
+</pre>
+<p>creates a module with the following connection diagram:</p>
+<div class="image">
+<img src="images/RoboBlocks.png" alt="Connection diagram"/>
+</div>
+<p> A module is itself a unit. Enabling <code>unit.draw</code> for a module will plot a system diagram (biograph) when the constructor is called. These do not close with <code> close all </code>, but can be removed with <code> close_biographs </code>.</p>
+<h1><a class="anchor" id="Consts"></a>
+Accessing constants</h1>
+<p>There is an additional class in base called <code>const</code> where physical constants in standard SI units are stored.</p>
+<p>For example, to use the speed of light, enter <code> const.c </code>.</p>
+<h1><a class="anchor" id="Utils"></a>
+Utility functions</h1>
+<p>Here is a partial list of generally useful functions:</p>
+<p><b>For creating &amp; programming new units and modules:</b> </p><table class="doxtable">
+<tr>
+<th>Name </th><th>Description  </th></tr>
+<tr>
+<td><em>createRoboUnit.m</em> </td><td>Create a unit using template </td></tr>
+<tr>
+<td><em>increaseClassVersion.m</em> </td><td>Create new version of a unit </td></tr>
+<tr>
+<td><em>paramdefault.m</em> </td><td>Set default parameters in class constructor (<code>unit.setparams</code> is preferred) </td></tr>
+<tr>
+<td><em>robolog.m</em> </td><td>Robochameleon log utility (for errors, warnings, etc.) </td></tr>
+</table>
+<p><b>For running scripts and browsing results</b> </p><table class="doxtable">
+<tr>
+<th>Name </th><th>Description  </th></tr>
+<tr>
+<td><em>robochameleon.m</em> </td><td>Add all robochameleon directories to path </td></tr>
+<tr>
+<td><em>clearall.m</em> </td><td>Clear workspace variables preserving breakpoints </td></tr>
+<tr>
+<td><em>close_biographs.m</em> </td><td>Close biographs (module diagrams) </td></tr>
+<tr>
+<td><em>findUnit.m</em> </td><td>Find a unit within a module (requires full unit name, recursive search) </td></tr>
+<tr>
+<td><em>compileMex.m</em> </td><td>Compile all MEX files in project </td></tr>
+</table>
+
+<h1><a class="anchor" id="Examples"></a>
+Examples</h1>
+<p>There are a number of examples in the  folder. In order of increasing complexity, they are:</p>
+<ol type="1">
+<li>run_Testpwr.m<ul>
+<li>Using <code>pwr</code> objects</li>
+</ul>
+</li>
+<li>run_TestSignalInterface<ul>
+<li>Using <code>signal_interface</code> objects</li>
+</ul>
+</li>
+<li>run_TestSignalInterfaceAdvanced<ul>
+<li>Advanced use of <code>signal_interface</code> objects</li>
+</ul>
+</li>
+<li>run_sweep_DemoSetup/setup_DemoSetup<ul>
+<li>IMDD link with BER/SNR sweep and no physical channel model.</li>
+</ul>
+</li>
+<li>run_16QAM/setup_16QAM<ul>
+<li>Module with 16QAM generation and detection at 1 sample per symbol and no physical channel model.</li>
+</ul>
+</li>
+<li>run_16QAM_LinChannel/setup_16QAM_LinChannel<ul>
+<li>Full coherent optical system with linear channel</li>
+</ul>
+</li>
+<li>run_16QAM_NonlinChannel/setup_16QAM_NonlinChannel<ul>
+<li>Full coherent optical system with nonlinear channel</li>
+</ul>
+</li>
+</ol>
+<h1><a class="anchor" id="Refs"></a>
+Useful references</h1>
+<p>For a general overview of the physical layer, the following references may be useful:</p>
+<ol type="1">
+<li>G.P. Agrawal, "Fiber-Optic Communication Systems", Wiley Series in Microwave and Optical Engineering, John Wiley &amp; Sons, Inc., New York, 2010.</li>
+</ol>
+<p>For a general overview of the DSP, we recommend the following papers:</p>
+<ol type="1">
+<li>S. Savory, "Digital Coherent Optical Receivers: Algorithms and
+Subsystems," IEEE Journal of Selected Topics in Quantum Electronics, vol. 15, no. 5 (2010).</li>
+<li>P. Winzer et al., "Spectrally Efficient Long-Haul Optical Networking
+Using 112/Gb/s Polarization-Multiplexed 16-QAM," Journal of Lightwave Technology vol, 28, no. 4 (2010).</li>
+<li>K. Kikuchi, "Coherent Optical Communications: Historical Perspectives
+and Future Directions," in <em>High Spectral Density Optical Communicataion Technologies</em> ed. Nakazawa et al. (Springer 2010). </li>
+</ol>
+</div></div><!-- contents -->
+
+  </section>
+</body>
+</html>
