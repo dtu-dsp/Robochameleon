@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['d',['D',['../class_lin_ch_bulk__v1.html#a5b43b30b5cdca1703f6eeb10bc0779f9',1,'LinChBulk_v1::D()'],['../class_nonlinear_channel__v1.html#ae0bdfead955b2b4e655098578afc2caa',1,'NonlinearChannel_v1::D()'],['../class_c_d_compensation__v1.html#a6cd90b9fd43ac1829053101e6657b429',1,'CDCompensation_v1::D()']]],
+  ['d_5flookup',['D_lookup',['../class_lin_ch_bulk__v1.html#a37884a40aaa9b833d8e92fbc091678dc',1,'LinChBulk_v1']]],
+  ['dcblock_5fv1',['DCblock_v1',['../class_d_cblock__v1.html',1,'DCblock_v1'],['../class_d_cblock__v1.html#a3dfb07054d01be54b556c5af273a919c',1,'DCblock_v1::DCblock_v1()']]],
+  ['dcblock_5fv1_2em',['DCblock_v1.m',['../_d_cblock__v1_8m.html',1,'']]],
+  ['ddpll_5fv1',['DDPLL_v1',['../class_d_d_p_l_l__v1.html',1,'DDPLL_v1'],['../class_d_d_p_l_l__v1.html#a5dece2b844de76825f1f89c0d531c168',1,'DDPLL_v1::DDPLL_v1()']]],
+  ['decimate',['decimate',['../class_decimate__v1.html#aea4c3c8c3d43b8c2652ce938a460a5bd',1,'Decimate_v1']]],
+  ['decimate_5fv1',['Decimate_v1',['../class_decimate__v1.html',1,'Decimate_v1'],['../class_decimate__v1.html#aa29bdd1675c8407a159f1957095dc392',1,'Decimate_v1::Decimate_v1()']]],
+  ['decimate_5fv1_2em',['Decimate_v1.m',['../_decimate__v1_8m.html',1,'']]],
+  ['decisiontype',['DecisionType',['../class_b_e_r_t__v1.html#a2651b0c20f1280396b2da0349319579a',1,'BERT_v1']]],
+  ['delay',['delay',['../class_delay__v1.html#abe0015aebf61431a161e809ad6d56798',1,'Delay_v1']]],
+  ['delay_5fv1',['Delay_v1',['../class_delay__v1.html',1,'Delay_v1'],['../class_delay__v1.html#a1a13a7ca46ea31ae24e0801f05d80ebc',1,'Delay_v1::Delay_v1()']]],
+  ['delay_5fv1_2em',['Delay_v1.m',['../_delay__v1_8m.html',1,'']]],
+  ['destinputs',['destInputs',['../classunit.html#a806fbb367b2d4909ba749f2bce3877a8',1,'unit']]],
+  ['dgd',['DGD',['../class_lin_ch_bulk__v1.html#acaa5a27175e0c3652e1a38727439444c',1,'LinChBulk_v1']]],
+  ['dgd_5fmode',['DGD_mode',['../class_lin_ch_bulk__v1.html#a92d12c7045c3d5130040cc668c569bb5',1,'LinChBulk_v1']]],
+  ['disp',['disp',['../classsignal__interface.html#a101af9157bf2f2fc1b85d11aff5f92eb',1,'signal_interface::disp()'],['../classpwr.html#aba9de666754fa982cc5b8a11e5e0aeb0',1,'pwr::disp()']]],
+  ['dispersioncompensationenabled',['dispersionCompensationEnabled',['../class_nonlinear_channel__v1.html#ad83e0445b59b8496ad570ca843597ba3',1,'NonlinearChannel_v1']]],
+  ['documentation_20generation',['Documentation generation',['../docgen.html',1,'']]],
+  ['documentationgeneration_2em',['DocumentationGeneration.m',['../_documentation_generation_8m.html',1,'']]],
+  ['doubleprecisionenabled',['doublePrecisionEnabled',['../class_nonlinear_channel__v1.html#a0b8ce6ae6841e0eef632d67433b003ce',1,'NonlinearChannel_v1']]],
+  ['draw',['draw',['../classunit.html#a8c1a8a262f0b82a921a8c60295fd6f7a',1,'unit']]],
+  ['dso_5fv1',['DSO_v1',['../class_d_s_o__v1.html',1,'DSO_v1'],['../class_d_s_o__v1.html#a348d788ce0b2a298833d22b5d76022c5',1,'DSO_v1::DSO_v1()']]],
+  ['dso_5fv1_2em',['DSO_v1.m',['../_d_s_o__v1_8m.html',1,'']]],
+  ['dualmode',['dualMode',['../class_decimate__v1.html#abb74ad6d157160b6e37ac4dbb7c579dd',1,'Decimate_v1']]]
+];
