@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Robochameleon by dtu-dsp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Robochameleon</h1>
+      <h2 class="project-tagline">A matlab coding framework and component library for simulation and experimental analysis of optical communication systems</h2>
+      <a href="https://github.com/dtu-dsp/Robochameleon" class="btn">View on GitHub</a>
+      <a href="https://github.com/dtu-dsp/Robochameleon/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/dtu-dsp/Robochameleon/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="robochameleon" class="anchor" href="#robochameleon" aria-hidden="true"><span class="octicon octicon-link"></span></a>Robochameleon</h1>
+
+<p>Robochameleon is a coding framework and component library for simulation and experimental analysis of optical communication systems.  The framework was designed to facilitate sharing code between researchers by articulating some standard methods and syntax for signal representation and function calls. It has been used successfully for this purpose within the DSP group at DTU for the past year, and we welcome contributions from other groups. The library includes physical models of most components found in coherent and incoherent optical communication systems, as well as standard DSP blocks.<br>
+The DSP blocks have been developed over a longer period of time and validated on real data.  </p>
+
+<p>That said, this software is provided "as-is" without warranty of any kind, as stated in the license.</p>
+
+<h1>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Documentation</h1>
+
+<p>To consult the API documentation open:</p>
+
+<p>index.html located in the folder <em>doc/user manual/html/</em> </p>
+
+<p>There is a quick start guide there, which is where we recommend you start.</p>
+
+<h1>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h1>
+
+<p>Several examples can be found in the <em>setups/_Demo</em> folder</p>
+
+<h1>
+<a id="authors" class="anchor" href="#authors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors</h1>
+
+<ul>
+<li>Robert Borkowski &lt;<a href="mailto:robert.borkow+robochameleon@gmail.com">robert.borkow+robochameleon@gmail.com</a>&gt;</li>
+<li>Edson Porto Da Silva &lt;<a href="mailto:edpod@fotonik.dtu.dk">edpod@fotonik.dtu.dk</a>&gt;</li>
+<li>Simone Gaiarin &lt;<a href="mailto:simga@fotonik.dtu.dk">simga@fotonik.dtu.dk</a>&gt;</li>
+<li>Miguel Iglesias &lt;<a href="mailto:miguelio@kth.se">miguelio@kth.se</a>&gt;</li>
+<li>Molly Piels &lt;<a href="mailto:mopi@fotonik.dtu.dk">mopi@fotonik.dtu.dk</a>&gt;</li>
+<li>Darko Zibar &lt;<a href="mailto:dazi@fotonik.dtu.dk">dazi@fotonik.dtu.dk</a>&gt;</li>
+</ul>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>Gnu public license version 3</p>
+
+<h2>
+<a id="add-ins" class="anchor" href="#add-ins" aria-hidden="true"><span class="octicon octicon-link"></span></a>Add-ins</h2>
+
+<p>There are several open-source projects that have been incorporated into Robochameleon:</p>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>License</th>
+<th>Usage</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ssprop-3.0.1</td>
+<td>GPL v2</td>
+<td>Nonlinear channel model</td>
+<td>Photonics Research Lab, Univ. of Maryland <a href="http://www.photonics.umd.edu/software/ssprop/">[link]</a>
+</td>
+</tr>
+<tr>
+<td>scatplot</td>
+<td>"copy-left"</td>
+<td>Constellation plotting</td>
+<td>Alejandro Sanchez-Barba <a href="http://www.mathworks.com/matlabcentral/fileexchange/8577-scatplot">[link]</a>
+</td>
+</tr>
+<tr>
+<td>PrintTable</td>
+<td>BSD</td>
+<td>Table formatting in BERT readout</td>
+<td>Daniel Wirtz <a href="http://www.mathworks.com/matlabcentral/fileexchange/33815-printing-a-formatted-table">link</a>
+</td>
+</tr>
+<tr>
+<td>InterPointDistanceMatrix</td>
+<td>BSD</td>
+<td>Calculate set of Euclidean distances</td>
+<td>John D'Errico <a href="http://www.mathworks.com/matlabcentral/fileexchange/18937-ipdm--inter-point-distance-matrix">[link]</a>
+</td>
+</tr>
+<tr>
+<td>ENC8B10B</td>
+<td>?</td>
+<td>8b/10b encoder</td>
+<td>Alex Forencich <a href="http://www.alexforencich.com/wiki/en/scripts/matlab/enc8b10b">[link]</a>
+</td>
+</tr>
+<tr>
+<td>cprintf</td>
+<td>BSD</td>
+<td>text formatting for robolog</td>
+<td>Yair Altman <a href="http://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window">[link]</a>
+</td>
+</tr>
+<tr>
+<td>scripts</td>
+<td>Using Doxygen with Matlab</td>
+<td>Documentation generation</td>
+<td>Fabrice <a href="http://www.mathworks.com/matlabcentral/fileexchange/25925-using-doxygen-with-matlab">[link]</a>
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>All but the documentation add-in can be found in the <em>addons/Name</em> folders (as appropriate).  The documentation generation code is in <em>doc/scripts</em>.</p>
+
+<h1>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span class="octicon octicon-link"></span></a>References</h1>
+
+<ul>
+<li><a href="https://github.com/dtu-dsp/Robochameleon">Github page</a></li>
+<li><a href="http://www.fotonik.dtu.dk/english/Research/Communication-technologies/HighSpeed">Group website</a></li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/dtu-dsp/Robochameleon">Robochameleon</a> is maintained by <a href="https://github.com/dtu-dsp">dtu-dsp</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-68940176-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
