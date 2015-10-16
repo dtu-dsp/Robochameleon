@@ -1,0 +1,6 @@
+In this folder there must be the compiled binaries of the mex functions of robochameleon.
+There can be multiple version of the same file, compiled for different platforms.
+
+Do not put:
+- External libraries (use addon folder instead)
+- Mex source files (.c/.cpp) (Use the appropriate library subfolder)
