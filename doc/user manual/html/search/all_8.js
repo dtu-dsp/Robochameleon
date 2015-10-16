@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['idark',['Idark',['../class_p_d__v1.html#a4a74b5cc7ffc3b6d041b52c9db4f64cf',1,'PD_v1']]],
+  ['increaseclassversion',['increaseClassVersion',['../increase_class_version_8m.html#a4fe4a8f1fe423cd829332d48c5678e76',1,'increaseClassVersion.m']]],
+  ['increaseclassversion_2em',['increaseClassVersion.m',['../increase_class_version_8m.html',1,'']]],
+  ['initialize',['initialize',['../class_adaptive_equalizer___m_m_a___r_d_e__v1.html#ac9d750cc5718c6c95db73667d99b2add',1,'AdaptiveEqualizer_MMA_RDE_v1::initialize()'],['../class_d_d_p_l_l__v1.html#a594d13f633630453f9dda7ac967cdf82',1,'DDPLL_v1::initialize()']]],
+  ['initplot',['initPlot',['../class_b_e_r_t__v1.html#a907ce7493b8a19b841c66e072975a9a6',1,'BERT_v1']]],
+  ['inputbuffer',['inputBuffer',['../classunit.html#a1d5c44f5f716298ee12380c729baf2a9',1,'unit']]],
+  ['inputp',['inputP',['../classpwr.html#a103794cf46c3c5941c996b6b9df645ac',1,'pwr']]],
+  ['inputsnr',['inputSNR',['../classpwr.html#a71d18863a414fa98bba49e93ff630f0a',1,'pwr']]],
+  ['intensitymodulator_5fv1',['IntensityModulator_v1',['../class_intensity_modulator__v1.html',1,'IntensityModulator_v1'],['../class_intensity_modulator__v1.html#ae61ef11b3b611c5e8c426ad7de6d7700',1,'IntensityModulator_v1::IntensityModulator_v1()']]],
+  ['intensitymodulator_5fv1_2em',['IntensityModulator_v1.m',['../_intensity_modulator__v1_8m.html',1,'']]],
+  ['internalunits',['internalUnits',['../classmodule.html#ab300ced47da3cc009179135112124b25',1,'module']]],
+  ['inversemargin',['InverseMargin',['../class_crop__v1.html#adc2b55a69ead390595979497a0380fe8',1,'Crop_v1']]],
+  ['invskipmargin',['InvSkipMargin',['../class_crop__v1.html#a5dcf030e0a6115d7ca39a5beb00a9e4b',1,'Crop_v1']]],
+  ['iq_5fv1',['IQ_v1',['../class_i_q__v1.html',1,'']]],
+  ['iq_5fv1_2em',['IQ_v1.m',['../_i_q__v1_8m.html',1,'']]],
+  ['iqideal_5fv1',['IQIdeal_v1',['../class_i_q_ideal__v1.html',1,'']]],
+  ['iqideal_5fv1_2em',['IQIdeal_v1.m',['../_i_q_ideal__v1_8m.html',1,'']]],
+  ['iter',['iter',['../class_adaptive_equalizer___m_m_a___r_d_e__v1.html#a055b966dc0d6e66c1cf39c423fe74707',1,'AdaptiveEqualizer_MMA_RDE_v1']]],
+  ['itermax',['iterMax',['../class_nonlinear_channel__v1.html#aab2cf507cf499a544a8efc58a3b8700e',1,'NonlinearChannel_v1']]]
+];
