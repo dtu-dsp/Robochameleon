@@ -1,0 +1,16 @@
+Compile the mex function:
+
+    mex -lfftw3 sspropvc.c
+
+
+Compile the mex function with debugging symbols:
+
+    mex -g -lfftw3 sspropvc.c
+
+
+The first time the function is called is slower because the fftw planner is called for optimizing the fft computation.
+It's possible to same the "wisdom" for reusing it the following times. See sspropvc.m.README.
+
+Debug mex:
+http://se.mathworks.com/help/matlab/matlab_external/debugging-on-linux-platforms.html
+http://beej.us/guide/bggdb/
