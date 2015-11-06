@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Robochameleon by dtu-dsp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+<body>
+
+    <section class="page-header">
+      <h1 class="project-name">Function List</h1>
+    </section>
+    
+<section class="main-content">
+
+<div>
+This is a brief description of the most important functions in Robochameleon, grouped thematically.
+</div>
+
+<h2>DSP</h2>
+<table style="width:100%">
+<tr>  
+	<th> Description </th>  
+	<th> File name </th>  
+</tr>
+<tr>
+    <td>Dispersion compensation (FFT-based)</td>
+    <td>CDCompensation_v1</td> 
+  </tr>
+<tr>
+    <td>Timing recovery</td>
+    <td>Resample_v1, Decimate_v1</td> 
+  </tr>
+<tr>
+    <td>I-Q imbalance compensation</td>
+    <td>QuadratureImbalanceCompensation_v1</td> 
+  </tr>
+<tr>
+    <td>MMA or CMA-based adaptive equalization</td>
+    <td>AdaptiveEqualizer_MMA_RDE_v1</td> 
+</tr>
+<tr>
+    <td>Carrier recovery (decision-directed PLL)</td>
+    <td>DDPLL_v1</td> 
+</tr>
+<tr>
+    <td>Error counting and display</td>
+    <td>BERT_v1</td> 
+</tr>
+</table>
+
+<h2>Physical models</h2>
+<table style="width:100%">
+<tr>  
+	<th> Description </th>  
+	<th> File name </th>  
+</tr>
+<tr>
+    <td>Linear fiber model (dispersion, mode mixing, loss)</td>
+    <td>LinChBulk_v1</td> 
+  </tr>
+<tr>
+    <td>Nonlinear fiber model (split-step Fourier solver, <a href="http://www.photonics.umd.edu/software/ssprop/">ssprop3</a>)</td>
+    <td>NonlinearChannel_v1</td> 
+  </tr>
+<tr>
+    <td>Noise loading</td>
+    <td>EDFA_v1, SNR_v1, OSNR_v1</td> 
+  </tr>
+<tr>
+    <td>Symbol sequence generation</td>
+    <td>TxSymbolsGen_v1, PPG_v1, OrthogonalCodeGenerator_v1, SHF_DAC_v1</td> 
+</tr>
+<tr>
+    <td>Pulse shaping</td>
+    <td>TxPulseShaping_v1, PulseShaper_v1</td> 
+</tr>
+<tr>
+    <td>Transmitter models (coherent and intensity)</td>
+    <td>IQ_v1, IQideal_v1, IntensityModulator_v1</td> 
+</tr>
+<tr>
+    <td>Receiver models (photodiodes, balanced pairs, analog-digital conversion)</td>
+    <td>PD_v1, BalancedPair_v1, ADC_v1</td> 
+</tr>
+<tr>
+    <td>Other optical components (laser, optical hybrid, polarization beam splitter, ...)</td>
+    <td>Laser_v1, OpticalHybrid_v1, PBS_1xN_v1, PBC_Nx1_v1, Polarizer_v1</td> 
+</tr>
+</table>
+
+<h2>Signal analysis and display</h2>
+<table style="width:100%">
+<tr>  
+	<th> Description </th>  
+	<th> File name </th>  
+</tr>
+<tr>
+    <td>Signal display with DCA-like triggering</td>
+    <td>DSO_v1</td> 
+  </tr>
+<tr>
+    <td>EVM analysis</td>
+    <td>EVM_Analysis</td> 
+</tr>
+</table>
+
+
+  </section>
+</body>
+</html>
