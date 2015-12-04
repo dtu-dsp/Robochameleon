@@ -71,9 +71,9 @@ classdef LinChBulk_v1 < unit
     
     methods (Static)
         
-        %> @brief Generates a random symmetric unitary matrix
+        %> @brief Generates a random unitary matrix
         %>  
-        %> Generates a random symmetric unitary matrix.  If called many
+        %> Generates a random unitary matrix.  If called many
         %> times, the set of returned matrices will have appropriately 
         %> statistically distributed eigenvalues. This is important for 
         %> channel capacity calculations.  The algorithm is from
@@ -85,15 +85,11 @@ classdef LinChBulk_v1 < unit
         %>
         %> @retval U NxN unitary matrix
         function U=random_unitary(N)
-            %actually, random symmetric unitary...
-            X=(randn(N)+1i*randn(N))/sqrt(2);
-            Y=(randn(N)+1i*randn(N))/sqrt(2);
-            A=((X*X')/(X*X'+Y*Y'));
-            %A=(randn(N)+1i*randn(N))/sqrt(2);
+            A=(randn(N)+1i*randn(N))/sqrt(2);
             [Q,R]=qr(A);
             D=diag(R);
             ph=D./abs(D);
-            U=(Q*diag(ph)*Q);
+            U=Q*diag(ph);
         end
         
         %> @brief Generates a random hermitian matrix
