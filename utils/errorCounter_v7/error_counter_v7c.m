@@ -213,7 +213,13 @@ for i=1:N_loop % For each block
         delay = delay(:,perm(i));
         switch mode
             case 0
-                %we have already calculated this
+                %use correct reference bit sequence, not the most recent
+                %one we calculated
+                if i==1
+                    for k=1:log2M_
+                        D_tx_b_ref(:,k) = logical(which - 1 - D_tx_b_rep(delay(k)+(0:totalsymb(i)-1)))';
+                    end
+                end
                 D_tx_b_ref = D_tx_b_ref';
             case 1
                 D_tx_b_ref = D_tx_b_rep(:,delay+(0:totalsymb(i)-1));
