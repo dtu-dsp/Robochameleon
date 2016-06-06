@@ -20,6 +20,12 @@
 %> 2. For the traverse method, only the two first columns of the signal
 %> vector will be considered (i.e., two polarization modes)
 %>
+%> 3. Polarization mixing is implemented as a unitary transformation
+%> between spans.  Polarization mode dispersion is not currently included.
+%> The core fiber model comes from ssprop from the Photonics Research 
+%> Laboratory at the University of Maryland (Baltimore).  ssprop has PMD
+%> included, but this unit does not have an interface to support it.
+%>
 %>
 %> __Conventions:__
 %> * Dispersion coeff.: D = 2*pi*c/lambda^2, (2.3.5)                                    [1]
@@ -55,6 +61,7 @@
 %>
 %> * [1] Agrawal, Gowind P.: Fiber-Optic Communication Systems. 3rd : John
 %> Wiley & Sons, 2002.
+%> * [2] http://www.photonics.umd.edu/software/ssprop/
 %>
 %> @author Edson Porto da Silva
 %> @author Simone Gaiarin
@@ -88,6 +95,8 @@ classdef NonlinearChannel_v1 < unit
         EDFANF = 3;
         %> Dispersion compensation 0/1
         dispersionCompensationEnabled = 0;
+        %> Fraction of chromatic dispersion to compensate
+        dispersionCompensationFraction = 1;
         %> Polarization Mixing: 0/1
         polarizationMixingEnabled = 0;
         %> SSF precision flag
@@ -146,6 +155,7 @@ classdef NonlinearChannel_v1 < unit
     %> @param param.EDFANF                             EDFA's noise figure [dB]. Vector [1 x nSpans] or scalar. [Default: 16]
     %> @param param.EDFAGain                           EDFA's gain [dB]. Vector [1 x nSpans] or scalar. [Default: 3]
     %> @param param.dispersionCompensationEnabledion   Dispersion compensation flag. [Default: 0]
+    %> @param param.dispersionCompensationFraction     Fraction of span dispersion to compensate. [Default: 1]
     %> @param param.polarizationMixingEnabled          Polarization mixing flag. [Default: 0]
     %> @param param.doublePrecisionEnabled             Precision flag. Set to 0 for speed. [Default: 1]
     function obj = NonlinearChannel_v1(param)
@@ -234,36 +244,33 @@ classdef NonlinearChannel_v1 < unit
                 robolog('Span #%d EDFA output - Total power: %1.2f dBm. OSNR: %1.1f', k, in.P.Ptot, in.P.getOSNR(in));
             end
             
-            % Extract the field to possibly apply dispersion copmpensation or polarization mixing
-            x = in(:,1);
-            y = in(:,2);
-            
             % Compensated links (ideal DCF: no loss, no nonlinearity)
             % Obs: signs of beta and gamma are inverted to keep compatibility with sspropv.
             if obj.dispersionCompensationEnabled
-                [x,y] = sspropv(x,y,in.Ts,obj.L(k),1,0,0,...
+                x = in(:,1);
+                y = in(:,2);
+                [x,y] = sspropv(x,y,in.Ts,obj.dispersionCompensationFraction*obj.L(k),1,0,0,...
                     betaa(:,k),betab(:,k),0,[0,0],'circular',...
                     obj.iterMax);
                 % Power shouldn't change. But let's log it to be sure.
                 Power = sum(abs(x).^2 +abs(y).^2)/length(x);
                 robolog('Span #%d CD output   - Total power: %1.2f dBm.', k, 10*log10((Power/1e-3)));
+                in=in.set([x, y]);
             end
             
             if obj.polarizationMixingEnabled
-                robolog('Polarization mixing not tested. Errors in the function found. Be careful!.', 'WRN');
                 % Polarization Mixing:
-                PolMixIn = [x.'; y.'];
-                PolMixOut = obj.randPolRotation(PolMixIn,lambda*1e3); % Convert back to m
-                
-                x = PolMixOut(1,:).';
-                y = PolMixOut(2,:).';
+                U = LinChBulk_v1.random_unitary(2);
+                in = in*U;
             end
+            
         end
 
         % Set output signal_interface. The power is already correct because we extracted it
         % from a signal_interface with the correct power and possibly we passed it through two
         % block which don't alter power and SNR
-        out=in.set([x, y]);
+        %out=in.set([x, y]);
+        out=in;
     end
    end
 end
