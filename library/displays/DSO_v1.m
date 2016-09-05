@@ -87,10 +87,10 @@ classdef DSO_v1 < unit
         function plot(varargin)
             sig = varargin{1};
             if ~iswhole(sig.Nss)
-                warning(['Number of samples per symbol is not'...
+                robolog(['Number of samples per symbol is not'...
                     'integer. Resample to a new Fs of '...
                     num2str(sig.Rs*ceil(sig.Nss)*1e-9)...
-                    ' GHz if you want to see something' ]);
+                    ' GHz if you want to see something' ],'WRN');
             end
             x = sig.get;
             if nargin  == 2 && varargin{2} > 10
@@ -110,7 +110,7 @@ classdef DSO_v1 < unit
                     h = figure('Name',['DSO channel ' num2str(i)]);
                     DSO_v1.plotSignalFig(x(:,i) ,sig.Nss,sig.Fs, h)
                 else
-                    disp([' -> Signal in colulmn ' num2str(i) ' is empty'])
+                    robolog(['Signal in colulmn ' num2str(i) ' is empty'],'WRN')
                 end
             end
         end
@@ -314,10 +314,11 @@ classdef DSO_v1 < unit
             xlim(1.1*[min(real(srx)) max(real(srx))])
             ylim(1.1*[min(imag(srx)) max(imag(srx))])
         end
+        
         function plotTimeSignal(y, Nss)
             colors;
             if Nss == 1
-                stem(y,'color', blue)
+                plot(y,'-o','color', blue,'MarkerFaceColor',blue,'MarkerSize',2)
                 xlabel('Symbols')
             else
                 plot(y,'color', blue)
