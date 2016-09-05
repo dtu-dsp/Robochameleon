@@ -1,7 +1,7 @@
 function s = sumbitxor(a,b)
 
     if ~isvector(a) || ~isvector(b)
-        roboerror('wrongInput','Both inputs must be vectors');
+        robolog('Both inputs must be vectors', 'ERR');
     end
 
     a = parseinput(a);
@@ -40,10 +40,10 @@ end
 
 function x = parseinput(x)
     if ~isvector(x)
-        roboerror('wrongInput','Both inputs must be vectors');
+        robolog('Both inputs must be vectors', 'ERR');
     elseif ~islogical(x)
         if ~isnumeric(x) || ~all(x==0 | x==1)
-            roboerror('wrongInput','Input must be a numeric vector with zeros or ones only.');
+            robolog('Input must be a numeric vector with zeros or ones only.', 'ERR');
         elseif verLessThan('matlab', '8.4.0') % Trick to save memory
             % Before MATLAB R2014b, input to xcorr must be double
             x = double(x);

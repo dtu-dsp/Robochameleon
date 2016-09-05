@@ -3,24 +3,43 @@
 %> 
 %> @ingroup roboUtils
 %>
+%> * It can be used to log information to different log levels. See below.
+%> * Logging in colors may slow down the code execution. For long and slow operations it's possible to log
+%>   everything in black (faster) or totally disable the logging (even faster).
+%>
+%> __Log levels__
+%> 
+%> * ERR Errors. Will also break the code execution.
+%> * WRN Warnings. Use it when the behaviour may create problems if gone unoticed.
+%> * DBG Use it only in custom setups to display information for debugging. Don't use it in units or modules in the library.
+%> * NFO Basic logging level used to display the status of normal operations that may be of interest to the user.
+%> * NFO0 Should mostly used to display pedantic information which may be useful for debugging or to new users.
+%>
 %> __Logging preferences__
 %>
-%>   __WARNING:__ Preferences are persistent. Reset them at the beginning of any script,
-%>   and set the relevant ones manually to avoid mistakes.
+%>   __WARNING__ Preferences are persistent. Reset them at the beginning of any script,
+%>   and set the relevant ones manually to avoid mistakes. After changing the preferences run clear all to
+%>   make them effective.
 %>
-%>   * setpref('roboLog', 'logToFile', VALUE)
+%>   * setpref('roboLog', 'logToFile', VALUE) [Default: 0]
 %>     - 0: Log to standard output
 %>     - 1: Log to file
 %>     - 2: Log both to standard output and file
 %>     
 %>   * setpref('roboLog', 'logFile', FILENAME)
 %>   
-%>   * setpref('roboLog', 'logLevel', LEVEL)
-%>     - 1: Log errors
-%>     - 2: Log errors and warnings 
-%>     - 3: Log errors, warnings and info
+%>   * setpref('roboLog', 'logLevel', LEVEL) [Default: Maximum]
+%>     - 1: Log errors (ERR)
+%>     - 2: Log errors and warnings (ERR, WRN)
+%>     - 3: Log errors, warnings and custom debug info (ERR, WRN, DBG)
+%>     - 4: Log errors, warnings, custom debug info, general info (ERR, WRN, DBG, NFO)
+%>     - 5: Log errors, warnings, custom debug info, general info, and trivial info (ERR, WRN, DBG, NFO, NFO0)
 %>
-%> __Example:__
+%>   * setpref('roboLog', 'logInBlack', LEVEL) [Default: 1]
+%>     - 0: Don't use colors in log output (faster)
+%>     - 1: Use colors in log output
+%>
+%> __Example__
 %> @code
 %>   % Delete any previous log related settings
 %>   if ispref('roboLog')
@@ -41,27 +60,32 @@
 %>   
 %>   robolog('ciao', 'ERR');
 %> @endcode
+%> 
+%> @author Simone Gaiarin
+%>
+%> @version 1
 
 %> @brief This function allows the user to print log messages in a standard way.
-%>
-%> It can be used to log info messages (NFO), warnings (WRN), and errors(ERR).
-%> Logging an error will break the code execution.
 %>
 %> @param msg The message to be logged. Can be a printf-like format string.
 %> @param varargin{1} Log type. Possible values: {'ERR', 'WRN', 'NFO'}. Default: 'NFO'.
 %> @param varargin{2:end} Printf arguments.
-%> 
-%> @author Simone Gaiarin
-%> @version 1
 function robolog(msg, varargin)
 %Constants
-validLogTypeValues = {'ERR', 'WRN', 'NFO', 'DBG'};
-textColors = {[1 0 0], [1, 0.5, 0], [0 0 0], [0 0.7 1]}; % Black, orange, red, cyan
+validLogTypeValues = {'ERR', 'WRN', 'DBG', 'NFO', 'NFO0'};
+textColors = {[1 0 0], [1, 0.5, 0], [0 0.7 1],[0 0 0], [0 0 0]}; % Black, orange, red, cyan
 
 % Get global preferences
-logToFile=getpref('roboLog', 'logToFile', false);
-logFile=getpref('roboLog', 'logFile', 'robolog.txt');
-logLevel=getpref('roboLog','logLevel', 3);
+persistent logToFile
+persistent logFile
+persistent logLevel
+persistent logInBlack
+if isempty(logToFile)
+    logToFile=getpref('roboLog', 'logToFile', false);
+    logFile=getpref('roboLog', 'logFile', 'robolog.txt');
+    logLevel=getpref('roboLog','logLevel', length(validLogTypeValues));
+    logInBlack=getpref('roboLog','logInBlack', 0);
+end
 
 if logLevel < 1
     error('Robochameleon log level must be >= 1');
@@ -79,7 +103,7 @@ end
 
 if nargin == 1 || ~isValid    
     logType = 'NFO';
-    logTypeIdx = 3;
+    logTypeIdx = find(strcmp(validLogTypeValues,logType));
     argIdx = 1;
 end
 
@@ -99,6 +123,11 @@ else
     callerName='main script';
 end
 
+% if caller is unit, rather use the actual unit
+if strcmpi(callerName,'unit')
+   callerName = evalin('caller','class(obj)');
+end
+
 %Double escape % and \ because we call sprintf twice
 msg = strrep(msg, '%%', '%%%%');
 msg = strrep(msg, '\\', '\\\\');
@@ -112,9 +141,9 @@ if nargin > 1
     idx = cellfun(@isstr, varargin);
     varargin(idx) = strrep(varargin(idx), '%', '%%');
     varargin(idx) = strrep(varargin(idx), '\', '\\');
-    msg=sprintf(['(Robo %s) In %s: ', msg], logType, callerName, varargin{argIdx:end});
+    msg=sprintf(['(Robo %s)\tIn %s: ', msg], logType, callerName, varargin{argIdx:end});
 else
-    msg=sprintf(['(Robo %s) In %s: ', msg], logType, callerName);
+    msg=sprintf(['(Robo %s)\tIn %s: ', msg], logType, callerName);
 end
 
 %Detect newlines and align subsequent lines vertically to the first one by adding spaces
@@ -141,7 +170,7 @@ else
     
 % Log to console if logToFile is 0 or 2 (log both on file and terminal)
 if logToFile == 2 || logToFile == 0
-    if strcmp(logType, 'NFO')
+    if strcmp(logType, 'NFO') || logInBlack
         fprintf(1, logMsg);
     else
         cprintf(textColors{logTypeIdx}, logMsg);
