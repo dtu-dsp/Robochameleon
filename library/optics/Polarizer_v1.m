@@ -1,10 +1,10 @@
 %> @file Polarizer_v1.m
-%> @brief polarizer model
+%> @brief Polarizer model
 %>
 %> @class Polarizer_v1
-%> @brief polarizer model
+%> @brief Polarizer model
 %> 
-%>  @ingroup physModels
+%> @ingroup physModels
 %> 
 %> Polarizer (TE/TM only, not multimode compatible) with finite extinction 
 %> ratio.  If the input is a single-polarization signal, it assigns a
@@ -13,15 +13,33 @@
 %> The state of polarization can be specified in either Jones or Stokes
 %> space
 %> 
-%> For Stokes operation, we use the same sign convention as: J. P. Gordon 
-%> and H. Kogelnik, "PMD fundamentals: Polarization mode dispersion in 
-%> optical fibers," Proc. Natl. Acad. Sci., vol. 97, no. 9, pp. 4541�4550, 
-%> 2000.
+%> For Stokes operation, we use the same sign convention as: \ref Gordon [1]
 %> i.e. right-circular has sy = isx and in that case S3 = 1
 %> Normalization is chosen so that right-circular is (0, 0, 1),
 %> horizontal (x) is (1, 0, 0), ...
-%
+%>
+%> __Example__
+%> @code
+%>   param.polarizer.basis = [1 1i];
+%>   param.polarizer.Type = 'Jones';
+%>   param.polarizer.ER = 20;
+%>   polarizer = Polarizer_v1(param.polarizer);
+%>
+%>   sigIn = createDummySignal_v1();
+%> 
+%>   sigOut = polarizer.traverse(sigIn);
+%>
+%>   pabs(sigIn);
+%>   pabs(sigOut);
+%> @endcode
+%>
+%> __References__
+%> \anchor Gordon [1] J. P. Gordon 
+%> and H. Kogelnik, "PMD fundamentals: Polarization mode dispersion in 
+%> optical fibers," Proc. Natl. Acad. Sci., vol. 97, no. 9, pp. 4541�4550, 2000
+%>
 %> @author Molly Piels
+%>
 %> @version 1
 classdef Polarizer_v1 < unit
     
@@ -29,10 +47,9 @@ classdef Polarizer_v1 < unit
         %> state of polarization vector (Jones)
         basis;  
         %> extinction ratio (dB)
-        ER;        
-        %> Jones or Stokes? {'Jones' | 'Stokes'}
-        Type;
-        
+        ER = inf;        
+        %> Jones or Stokes? {'Jones' | 'Stokes' | 'nDJones'}
+        Type;        
         %> Number of input arguments
         nInputs = 1; 
         %> Number of output arguments
@@ -78,48 +95,38 @@ classdef Polarizer_v1 < unit
         
         %> @brief Class constructor
         %>
-        %> Class constructor
-        %> Example:
-        %> @code
-        %> polarizer = Polarizer_v1(struct('basis',[1 1i], 'Type', 'Jones', 'ER', 20));
-        %> @endcode
         %> Jones usage:
         %> basis is a 1x2 or 2x1 complex vector.
         %> Stokes usage:
         %> basis is a 1x4, 4x1, 1x3, or 3x1 real vector
         %> 
-        %> @param param.basis state of polarization of output
-        %> @param param.Type specify whether Jones or Stokes
-        %> @param param.ER extinction ratio
+        %> @param param.basis State of polarization of output
+        %> @param param.Type Specify whether Jones or Stokes
+        %> @param param.ER Extinction ratio. [Default: inf]
         %> 
         %> @retval obj Polarizer_v1 object
         function obj = Polarizer_v1(param)
-            %Intialize parameters
-            obj.basis=param.basis;
-            obj.Type=param.Type;
-            if isfield(param, 'ER')
-                obj.ER = param.ER;            
-            else
-                obj.ER=inf;
-            end
+            obj.setparams(param);
             
             %error checking
             switch obj.Type
                 case 'Jones'
                     if numel(obj.basis)~=2
-                        error('Polarization state specification for Jones type polarizers must be a 2x1 or 1x2 vector')
+                        robolog('Polarization state specification for Jones type polarizers must be a 2x1 or 1x2 vector', 'ERR')
                     end
                 case 'Stokes'
                     if numel(obj.basis)==4
                         obj.basis=obj.basis(2:end)/obj.basis(1);
                     elseif numel(obj.basis)~=3
-                        error('Polarization state specification for Stokes type polarizers must be a 4x1 or 3x1 vector')
+                        robolog('Polarization state specification for Stokes type polarizers must be a 4x1 or 3x1 vector', 'ERR')
                     end
                     if any(imag(obj.basis(:)))
-                        error('Polarization state specification for Stokes type polarizer must be real')
+                        robolog('Polarization state specification for Stokes type polarizer must be real', 'ERR')
                     end
+                case 'nDJones'
+                    %WE DO NOT CARE
                 otherwise
-                    error('Unsupported polarizer type')
+                    robolog('Unsupported polarizer type', 'ERR')
             end
         end
         
@@ -139,9 +146,9 @@ classdef Polarizer_v1 < unit
             ER_lin=10^(-obj.ER/10);
             
             %make sure we're not trying to polarize too many/few modes
-            if in.N > 2
-                error('Polarizer only works with 1 or 2 modes, this input has %d', in{1}.N)
-            end
+%             if in.N > 2
+%                 robolog('Polarizer only works with 1 or 2 modes, this input has %d', 'ERR', in{1}.N)
+%             end
 
             %form orthogonal basis from specified SOP
             switch obj.Type
@@ -151,33 +158,45 @@ classdef Polarizer_v1 < unit
                 case 'Stokes'
                     vpol=obj.stokes2jones(obj.basis);
                     M=[vpol(1) -conj(vpol(2)); vpol(2)  conj(vpol(1))];
+                case 'nDJones'
+                    vpol = obj.basis(:).';
+                    M = zeros(length(vpol), length(vpol));
+                    M(1,:) = vpol;
+                    
                 otherwise
-                    error('Unsupported polarizer type')
+                    robolog('Unsupported polarizer type', 'ERR')
             end
             
             %make Jones matrix representation of polarizer
             [U,~,V]=svd(M);
-            J=(U*V)*[1-ER_lin 0; 0 ER_lin]*(V'*U');
+            diagonal = ER_lin*ones(1, length(vpol));
+            diagonal(1) = 1-ER_lin*length(vpol);
+            J=(U*V)*diag(diagonal)*(V'*U');
 
             %output
-            if in.N==2
+             if in.N==length(vpol)
                 out=in*J;
                 %track power
                 Pout = out.P;       %done correctly in mtimes
-                Pboth = pwr.meanpwr(out.E);
-                P1 = Pboth(1)/sum(Pboth);
-                P2 = Pboth(2)/sum(Pboth);
-                Pcol = [P1*Pout, P2*Pout];
-                out = set(out, 'PCol', Pcol);
-            else
-                F_out=kron(get(in), [vpol(1) vpol(2)]);
-                Ptot1 = in.P.Ptot + 20*log10(vpol(1));
-                Ptot2 = in.P.Ptot + 20*log10(vpol(2));
-                out = signal_interface(F_out, struct('Fs',in.Fs,'Rs',in.Rs, 'PCol', [pwr(in.P.SNR, Ptot1), pwr(in.P.SNR, Ptot2)], 'Fc', in.Fc));
-            end
-            
-        end
-        
+                P_col_frac = pwr.meanpwr(out.get);
+                P_col_frac = P_col_frac / sum(P_col_frac);
+                for jj = 1:length(P_col_frac)
+                    PCol(jj) = P_col_frac(jj)*in.P;
+                end
+                out = set(out, 'PCol', PCol);
+             else
+                 if in.N ~= 1
+                     robolog('Polarizer input must have same number of modes as basis or only 1 mode', 'ERR');
+                 end
+                 F_out=repmat(get(in), 1, length(vpol));
+                 F_out = F_out*M;
+                 P_col_frac = pwr.meanpwr(F_out);
+                 P_col_frac = P_col_frac / sum(P_col_frac);
+                 for jj = 1:length(P_col_frac)
+                     PCol(jj) = P_col_frac(jj)*in.P;
+                 end
+                 out = signal_interface(F_out, struct('Fs',in.Fs,'Rs',in.Rs, 'PCol', PCol, 'Fc', in.Fc));
+             end
+        end 
     end
-    
 end
