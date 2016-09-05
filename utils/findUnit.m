@@ -1,9 +1,7 @@
-%> @file findUnit.m 
+%> @file findUnit.m
 %> @brief Finds a unit within a module
-%> 
-%> @ingroup roboUtils
 %>
-%> Recursively searches and returns the first found unit or module with a given label
+%> @ingroup roboUtils
 %>
 %> __Example:__
 %> Set up a simulation for 16 QAM over a linear channel, find the BERT
@@ -21,6 +19,11 @@
 %> traverse(coherentLink)
 %> BER = BERT.results.ber;
 %> @endcode
+%>
+
+%> @brief Finds a unit within a module
+%>
+%> Recursively searches and returns the first found unit or module with a given label
 %>
 %> @param module   module inside of which to look
 %> @param label    label name (the same as class name, if not changed)
