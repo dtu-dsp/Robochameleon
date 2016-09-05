@@ -1,14 +1,33 @@
-function robochameleon(varargin)
 %> @file robochameleon.m
 %> @brief Robochameleon initialization script
 %>
 %> @ingroup roboUtils
-%> @param resetFlag {false | true}: restores matlab's path and reinitializes robochameleon
-%> @author Robert Borkowski
-%> rbor@fotonik.dtu.dk
-%> Modified by
-%> @author Miguel Iglesias Olmedo miguelio@kth.se
-%> @version v1.1, 10.08.2015
+%>
+%> Add the robochameleon directories to the MATLAB path. It's possible to
+%> specify extra directories to be added to the path by setting the global
+%> preference _extrapathdir_ (cellarray of strings) in the group _robochameleon_.
+%> The setting is persistent.
+%>
+%> __Example__
+%>
+%> To add the directories execute:
+%> @code
+%> setpref('robochameleon', 'extrapathdirs', {'lab', ['bindings' filesep 'vpi']})
+%> @endcode
+%> To remove it execute:
+%> @code
+%> rmpref('robochameleon', 'extrapathdirs')
+%> @endcode
+%>
+%> @author Robert Borkowski <rbor@fotonik.dtu.dk>
+%> @author Miguel Iglesias Olmedo <miguelio@kth.se>
+%> @author Simone Gaiarin <simga@fotonik.dtu.dk>
+%> @version v1.2, 11.11.2015
+
+%> @brief Add robochameleon related directories to the MATLAB path.
+%> 
+%> @param resetFlag Restores matlab's path and reinitializes robochameleon. Possible values: {false | true}. [Optional]
+function robochameleon(varargin)
 
 mlock; % Protect function against clear
 persistent ROBO; if isempty(ROBO), ROBO = false; end % Initialize ROBO on creation
@@ -28,7 +47,15 @@ if ~ROBO || resetFlag % Check if previous initialization was successful
     fprintf(1,'Initializing Robochamelon. Adding directories to path:\n');
     fprintf('-> %s\n',root);
     addpath(root);
-    dirs = {'addons', 'base', 'files', 'library', 'utils', 'devel'};
+
+    dirs = {'addons', 'base', 'files', 'library', 'utils', 'devel', 'lab', 'view'};
+    % Add user defined directories to path
+    if ispref('robochameleon', 'extrapathdirs')
+        extradirs=getpref('robochameleon', 'extrapathdirs');
+        dirs = [dirs extradirs];
+    end
+
+
     for i=1:numel(dirs)
         add = [root filesep dirs{i}];
         fprintf('-> %s\\*\n',add);
@@ -36,16 +63,27 @@ if ~ROBO || resetFlag % Check if previous initialization was successful
     end
     
     if verLessThan('matlab', '8.1.0')
-        fprintf(1,'Adding compatibility layer for earlier MATLAB releases.');
-        addpath(genpath([root 'compatibility']));
-        rmpath(root, 'compatibility\bioinfo_lite');
+        fprintf(1, 'Adding compatibility layer for MATLAB releases before 8.1.0 (R2013a).\n');
+        addpath(genpath(fullfile(root, 'compatibility', '8.1')));
     end
     
+    if verLessThan('matlab', '8.5.0')
+        fprintf(1, 'Adding compatibility layer for MATLAB releases before 8.5.0 (R2015a).\n');
+        addpath(genpath(fullfile(root, 'compatibility', '8.5')));
+    end
     v = ver('bioinfo');
     if isempty(v)
-        addpath(genpath([root 'compatibility\bioinfo_lite']));
+        fprintf(1, 'Adding compatibility layer bioinfo_lite.\n');
+        addpath(genpath(fullfile(root, 'compatibility', 'bioinfo_lite')));
+    end
+    v = ver('stats');
+    if isempty(v)
+        fprintf(1, 'Adding compatibility layer stats_lite.\n');
+        addpath(genpath(fullfile(root, 'compatibility', 'stats_lite')));
     end
     
+    % Disable warnings
+    warning('off','catstruct:DuplicatesFound');
     
     ROBO = true;
 end
