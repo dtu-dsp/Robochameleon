@@ -423,7 +423,12 @@ classdef LinChBulk_v1 < unit
             P_new = pwr.meanpwr(Fout);
             Pn_in = 10.^(([in.PCol.P_dBW]-[in.PCol.SNR_dB])/10);        %input Pn in linear units
             Pn_out = (obj.U.*conj(obj.U))*Pn_in.';                        %power transfer matrix*input noise powers
-            SNR_out = 10*log10(P_new./Pn_out');                         %convert to dB
+            if isvector(Pn_out)
+                SNR_out = 10*log10(P_new./Pn_out');                         %convert to dB
+            else
+                SNR_out = 10*log10(P_new/(det(obj.U.*conj(obj.U))*Pn_in));
+                robolog('SNR tracking incorrect', 'WRN');
+            end
             for jj=1:in.N
                 P_out(jj) = pwr(SNR_out(jj), {P_new(jj), 'W'});
             end
