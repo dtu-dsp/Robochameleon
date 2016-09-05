@@ -6,8 +6,8 @@
 %>
 %> @ingroup coreDSP
 %> 
-%> RESAMPLER resamples the signal. Use normal and fast matlab (arbitrary clock phase) 
-%> or a clock phase based on the Gardner estimate.
+%> RESAMPLER resamples the signal. Use normal and fast matlab (arbitrary clock phase), 
+%> a clock phase based on the Gardner estimate, or spline interpolation
 %> 
 %> @author Miguel Iglesias Olmedo
 %> @version 1
@@ -18,16 +18,16 @@ classdef Resample_v1 < unit
         nInputs = 1;
         %> Number of outputs
         nOutputs = 1;
-        %> method {'matlab' | 'gardner'}
-        method = 'matlab';
+        %> method {'matlab' | 'gardner' | 'spline'}
+        method = 'spline';
         %> Sampling frequency of output signal (Hz)
         newFs;
     end
     methods
         %> @brief Class constructor
         %>
-        %> @param param.method resampling method {'matlab' | 'gardner'}; default matlab
-        %> @param param.newFs new sampling frequency (required)
+        %> @param param.method Resampling method ['matlab' | 'gardner'|'spline']; [default spline]
+        %> @param param.newFs New sampling frequency [Hz]
         function obj = Resample_v1(params)
             setparams(obj,params,{'newFs'}); %#ok<*EMCA>
         end
@@ -39,6 +39,8 @@ classdef Resample_v1 < unit
                     sig = sig.fun1(@(x)Resample_v1.resampler(x,sig.Fs,obj.newFs, sig.Rs)); %#ok<*EMFH>
                 case 'matlab'
                     sig = sig.fun1(@(x)resample(x,obj.newFs,sig.Fs));
+                case 'spline'
+                    sig = sig.fun1(@(x)Resample_v1.splineResampler(x,sig.Fs,obj.newFs)); %#ok<*EMFH>
             end
             out = set(sig,'Fs',obj.newFs);
 %             out = signal_interface(sig.get, struct('Rs', sig.Rs, 'Fs', obj.newFs, 'Fc', sig.Fc, 'P', sig.P));
@@ -68,15 +70,16 @@ classdef Resample_v1 < unit
             dt_rec = Fs/Fs_new;
             nom_v = round(Fs/Fb); %FIXME why round?
             
+            L_max = min(1000, length(in));
             t_new = 1:dt_rec:length(in);
-            t_new = t_new(1:end-1000);
+            t_new = t_new(1:end-L_max);
             
             step = 0.03;
             var = linspace(0,1,1/step);
             var = var(1:end-1);
             % PD_gardner = inf(size(var));
             
-            L = 10e3;
+            L = min(10e3, length(in));
             
             PD_gardner = Resample_v1.FindRes(var,nom_v,in,t_new,L);
             % PD_gardner = FindRes_mex(var,nom_v,in,t_new,L);
@@ -132,6 +135,16 @@ classdef Resample_v1 < unit
                 PD_gardner(a_c) = mean( I(2:2:L-1) .* (I(3:2:L)-I(1:2:L-2)) );
             end
             
+        end
+        
+        function [out] = splineResampler(in, Fs, Fs_new)
+            
+            % dt_rec = param_rx.Fs/(2*param_rx.baudrate);
+            dt_in = 0:1/Fs:((length(in)-1)/Fs);
+            dt_out = 0:1/Fs_new:dt_in(end);
+           
+            out = interp1(dt_in, in(:).', dt_out,'spline',0);
+            out = out(:);
         end
     end
 end
