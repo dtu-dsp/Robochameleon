@@ -1,10 +1,3 @@
-%>@file TestSource_v1.m
-%>@brief Dummy transmitter
-%> 
-%>@class TestSource_v1
-%>@brief  Dummy transmitter
-%>
-%> Generates random signal_interface 
 classdef TestSource_v1 < unit
 
     properties (Hidden=true)
