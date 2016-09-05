@@ -434,11 +434,19 @@ classdef pwr
         
         %> @brief display function
         function obj = disp(obj)
-            print_obj = @(obj)fprintf(1,'Total power: %1.2f dBm (%1.2f mW)\nSNR: %1.2f dB (%1.2f)\nSignal power: %1.2f dBm (%1.2f mW)\nNoise power: %1.2f dBm (%1.2f mW)\n',...
-                obj.Ptot('dBm'),obj.Ptot('mW'),obj.SNR('dB'),obj.SNR('lin'),obj.Ps('dBm'),obj.Ps('mW'),obj.Pn('dBm'),obj.Pn('mW'));
+            % Space pad differently to show single power object
+            % or array (PCol)
+            if numel(obj) == 1
+                spacePad = '       ';
+            else
+                spacePad = '';
+            end
+            print_obj = @(obj)fprintf(1,'%s  Total power: %1.2f dBm (%1.2f mW)\n%s          SNR: %1.2f dB (%1.2f)\n%s Signal power: %1.2f dBm (%1.2f mW)\n%s  Noise power: %1.2f dBm (%1.2f mW)\n',...
+                spacePad,obj.Ptot('dBm'),obj.Ptot('mW'),spacePad,obj.SNR('dB'),obj.SNR('lin'),spacePad,obj.Ps('dBm'),obj.Ps('mW'),spacePad,obj.Pn('dBm'),obj.Pn('mW'));
             if numel(obj)==1
                 print_obj(obj);
             else
+                % Used when we want to print PCol (array of pwr objects)
                 for jj=1:numel(obj)
                     fprintf(1, 'Power in signal %d:\n', jj);
                     print_obj(obj(jj))
