@@ -27,25 +27,23 @@
 %>   sigOut = decimator.traverse(sigIn);
 %> @endcode
 %>
-%> @version 2
+%> @version 3
 classdef Decimate_v1 < unit
     
     properties
-        %> Number of inputs
         nInputs = 1;
-        %> Number of outputs
         nOutputs = 1;
         
-        %> Target number of samples per symbol out
+        %> Target Nss
         Nss = 1; 
-        %> Offset wrt. found sampling point [samples]
-        offset = 0; 
-        %> Criteria {'variance' | 'gardner' | 'SLN' }
+        %> Decimate each signal component separately or choose same point for all? {'separate'|'joint'}
+        mode = 'separate';
+        %> Offset wrt. found sampling point (in samples)
+        offset = 0;
+        %> Decimation method
         method = 'variance';
-        %> Separate decimation for complex and real?
-        dualMode = true;
     end
-    
+
     
     
     methods
@@ -56,36 +54,51 @@ classdef Decimate_v1 < unit
         %>
         %> @param param.Nss          Target number of samples per symbol out. [Default: 1]
         %> @param param.offset       Number of samples to shift by [Default: 0].
-        %> @param param.method       Decimation criterion {'variance' | 'gardner' | 'SLN' }. [Default: variance]
+        %> @param param.method       Decimation criterion {'variance' | 'gardner' | 'SLN' | 'gardner4nyquist'}. [Default: variance]
         %>
         %> @retval obj      An instance of the class Decimate_v1
         function obj = Decimate_v1(param)
             if nargin<1, param = {}; end; obj.setparams(param);
         end
         
-       
         %> @brief Chooses a decimator, decimates, plots
         %>
         %> @param in signal to be decimated
         %>
         %> @retval out downsampled signal
         function out = traverse(obj,in)
-            signal = in.get;
-            N = size(signal,2);
-            if obj.dualMode && ~isreal(signal)
-                signal = [real(signal) imag(signal)];
-                N = N*2;
-            end
-            for i=1:N
-                switch obj.method
-                    case 'variance'
-                        [out(:,i),idx,symb] = obj.decimate(signal(:,i),in.Nss,obj.Nss,obj.offset);
-                    case 'gardner'
-                        [out(:,i),idx,symb] = obj.GardDecimate(signal(:,i),in.Nss,obj.Nss,obj.offset);
-                    case 'SLN'
-                        [out(:,i),idx,symb] = obj.SLNDecimate(signal(:,i),in.Nss,obj.Nss,obj.offset);
-                    otherwise
-                        [out(:,i),idx,symb] = obj.decimate(signal(:,i),in.Nss,obj.Nss,obj.offset);
+            s = cell(1,in.N);
+            for i=1:in.N
+                if strcmpi(obj.mode, 'separate')||i==1
+                    if numel(obj.offset)>1
+                        colwiseOffset = obj.offset(i);
+                    else
+                        colwiseOffset = obj.offset;
+                    end
+                    switch obj.method
+                        case 'variance'
+                            [s{i},idx,symb] = obj.decimate(in.E(:,i),in.Nss,obj.Nss,colwiseOffset);
+                        case 'gardner'
+                            [s{i},idx,symb] = obj.GardDecimate(in.E(:,i),in.Nss,obj.Nss,colwiseOffset);
+                        case 'gardner4nyquist'
+                            [s{i},idx,symb] = obj.NyquistGardDecimate(in.E(:,i),in.Nss,obj.Nss,colwiseOffset);
+                        case 'SLN'
+                            [s{i},idx,symb] = obj.SLNDecimate(in.E(:,i),in.Nss,obj.Nss,colwiseOffset);
+                        otherwise
+                            [s{i},idx,symb] = obj.decimate(in.E(:,i),in.Nss,obj.Nss,colwiseOffset);
+                    end
+                else
+                    s{i} = in.E(idx(1):in.Nss/obj.Nss:end, i);
+                    if length(s{1})<length(s{i})
+                        data = s{i};
+                        s{i} = data(1:length(s{1}));
+                    else
+                        data = s{1};
+                        s{1} = data(1:length(s{i}));
+                    end
+                    Lmax = min(in.L, 1e5*in.Nss);
+                    Lmax = Lmax-mod(Lmax, in.Nss);
+                    symb = reshape(in.E(1:Lmax, i),in.Nss,[]).';
                 end
                 if obj.draw
                     if ~isreal(symb), symb = abs(symb).^2; end
@@ -93,45 +106,32 @@ classdef Decimate_v1 < unit
                     spsz{1} = ceil(sqrt(in.Nss));
                     spsz{2} = ceil(in.Nss/spsz{1});
                     
-                    %                     fig = figure('Color',[1 1 1]);
-                    %                     for sp_idx=1:Nss
-                    %                         sp = subplot(spsz{:},sp_idx,'Parent',fig,'ZTick',zeros(1,0),'YTick',zeros(1,0),...
-                    %                         'XTick',zeros(1,0));%,...
-                    %                         %'OuterPosition',[0.25*(mod(sp_idx-1,4)) 0.25*fix((sp_idx-1)/4) 0.25 0.25]);
-                    %                         hold(sp,'on');
-                    %                         box(sp,'on');
-                    %                         ylim([min(symb(:,sp_idx)) max(symb(:,sp_idx))]);
-                    %                         xlim([1 size(symb,1)]);
-                    %                         if any(idx==sp_idx), color='r'; else color='b'; end
-                    %                         plot(symb(:,sp_idx),'MarkerSize',1,'Marker','.','LineStyle','none','Color',color)
-                    %                         title(num2str(sp_idx));
-                    %                     end
-                    
                     fig_hist = figure('Color',[1 1 1]);
                     for sp_idx = 1:in.Nss
                         sp2 = axes('Parent',fig_hist,'ZTick',zeros(1,0),'YTick',zeros(1,0),...
-                            'XTick',zeros(1,0),'Position',[mod(sp_idx-1,spsz{1})/spsz{1} 1-fix((sp_idx-1)/spsz{2}+1)/spsz{2} 1/spsz{1} 1/spsz{2}]);
+                        'XTick',zeros(1,0),'Position',[mod(sp_idx-1,spsz{1})/spsz{1} 1-fix((sp_idx-1)/spsz{2}+1)/spsz{2} 1/spsz{1} 1/spsz{2}]);
                         hold(sp2,'on');
                         box(sp2,'on');
-                        %                         plot(symb(:,sp_idx),'MarkerSize',1,'Marker','.','LineStyle','none','Color',color)
+%                         plot(symb(:,sp_idx),'MarkerSize',1,'Marker','.','LineStyle','none','Color',color)
                         if any(idx==sp_idx), color='r'; else color='b'; end
                         [n,xout] = hist(symb(:,sp_idx),100);
                         plot(xout,n,'Color',color);
-                        %                         set(,'Color',color);
+%                         set(,'Color',color);
                     end
-                    set(gcf, 'Name', 'Decimation point')
                 end
             end
-            if obj.dualMode
-                out = complex(out(:,1:N/2), out(:,N/2+1:end));
-            end
-            out = in.set(out);
+            out = in.set(cell2mat(s));
             out = out.set('Fs', obj.Nss/in.Nss*in.Fs);
+            
+           %             
+%             out = sig.fun1(@(x)obj.decimate(x, in.Nss, obj.Nss, obj.offset));
+%             out = out.set('Fs', obj.Nss/in.Nss*in.Fs); 
+                
         end
-       
+        
     end
     
-    
+        
     methods (Static)
         
         %> @brief Decimation by the maximum variance method
@@ -155,11 +155,11 @@ classdef Decimate_v1 < unit
             end
             if nargin<4, offset = 0; end
             N = Nss_in*fix(numel(x)/Nss_in);
-            %FIXME Two lines below: quick fix for out of memory errors
+            %FIXME Two lines below: quick fix for out of memory errors          
             x = x(1:N);
             
             SYMBOLS_LIMIT = 1e5;
-            %             LIM = Nss_in*fix(SYMBOLS_LIMIT/Nss_in);
+%             LIM = Nss_in*fix(SYMBOLS_LIMIT/Nss_in);
             LIM = SYMBOLS_LIMIT*Nss_in;
             LIM = min(LIM,N);
             
@@ -168,45 +168,18 @@ classdef Decimate_v1 < unit
             [~,ptr] = max(var(symbols)); % find maximum variance point
             ptr = mod(ptr-1+offset,r)+1;
             idx = ptr:r:N;
-            idx = ptr:r:N;
             out = x(idx);
-        end
-        
-        function [out, idx, symbols] = decimateDualWindow(x, Nss_in, Nss_out, offset)
-            blockSize=100;
-            block = blockSize*Nss_in;
-            idx = reshape(1:length(x), floor(block/length(x)),block);
-        end
-        
-        function [ptrI, ptrQ] = varDual(x, Nss_in, Nss_out, offset)
-            if ~isvector(x)
-                warning('Input signal should be a vector.');
-            end
-            if nargin<3 || isempty(Nss_out), Nss_out = 1; end
-            r = Nss_in/Nss_out;
-            if ~iswhole(r,1e-9)
-                error('Ratio of the number of input to output samples must be an integer.');
-            end
-            if nargin<4, offset = 0; end
-            N = Nss_in*fix(numel(x)/Nss_in);
-            %FIXME Two lines below: quick fix for out of memory errors
-            x = x(1:N);
             
-            SYMBOLS_LIMIT = 1e5;
-            %             LIM = Nss_in*fix(SYMBOLS_LIMIT/Nss_in);
-            LIM = SYMBOLS_LIMIT*Nss_in;
-            LIM = min(LIM,N);
+            % Fine tunning test:
+%             testClk = repmat([1 0],1, length(out/2));
+%             testSig = out/max(abs(out));
+%             plot(xcorr(testClk(1:1000), testSig(1:1000)));
+            %testVariance = var(out)
             
-            symbols = reshape(x(1:LIM),Nss_in,[]).'; % reshape signal into columns (column=symbol)
-            
-            [~,ptrI] = max(var(real(symbols))); % find maximum variance point
-            [~,ptrQ] = max(var(imag(symbols)));
-            ptrI = mod(ptrI-1+offset,r)+1;
-            ptrQ = mod(ptrQ-1+offset,r)+1;
         end
         
         %> @brief Decimation using Gardner criteria
-        %> 
+        %>
         %> Reference: F. Gardner, "A BPSK/QPSK Timing-Error Detector for Sampled Receivers," IEEE Trans. Commun., vol. 34, no. 5, pp. 423–429, May 1986.
         %>
         %> @param x signal to be decimated
@@ -218,7 +191,7 @@ classdef Decimate_v1 < unit
         %> @retval idx sampling point
         %> @retval symbols reshaped input
         function [out, idx, symbols]= GardDecimate(x, Nss_in, Nss_out, offset)
-            if ~isvector(x)
+             if ~isvector(x)
                 warning('Input signal should be a vector.');
             end
             if nargin<3 || isempty(Nss_out), Nss_out = 1; end
@@ -234,18 +207,88 @@ classdef Decimate_v1 < unit
             cstart=Nss_in/2;
             for jj=1:Nss_in
                 err_gard(jj) = mean(real((symbols(cstart+jj-Nss_in/2, :)-symbols(cstart+jj+Nss_in/2, :)).*conj(symbols(cstart+jj, :))));
+               % var_err_gard(jj) = var(real((symbols(cstart+jj-Nss_in/2, :)-symbols(cstart+jj+Nss_in/2, :)).*conj(symbols(cstart+jj, :))));
             end
+                        
             [~,ptr] = min(abs(err_gard)); % find maximum variance point
             ptr = mod(ptr-1+offset,r)+1;
             idx = ptr:r:N;
             out = x(idx);
+            symbols = symbols.';
+        end
+        
+        %> @brief Decimation using Nyquist/Gardner criteria
+        %>
+        %>
+        %> @param x signal to be decimated
+        %> @param Nss_in Number of samples per symbol in
+        %> @param Nss_out Number of samples per symbol out
+        %> @param offset offset to apply
+        %>
+        %> @retval out downsampled signal
+        %> @retval idx sampling point
+        %> @retval symbols reshaped input
+        function [out, idx, symbols]= NyquistGardDecimate(x, Nss_in, Nss_out, offset)
+             if ~isvector(x)
+                warning('Input signal should be a vector.');
+            end
+            if nargin<3 || isempty(Nss_out), Nss_out = 1; end
+            r = Nss_in/Nss_out;
+            if ~iswhole(r,1e-9)
+                error('Ratio of the number of input to output samples must be an integer.');
+            end
+            if nargin<4, offset = 0; end
+            if mod(Nss_in, 2), error('Input Nss must be even'); end
+            N = Nss_in*fix(numel(x)/Nss_in);
+            x = x(1:N);
+            symbols = buffer(x,2*Nss_in+1, 1, 'nodelay'); % reshape signal into columns (column=symbol)
+            cstart=Nss_in/2;
+            for jj=1:Nss_in
+                err_gard(jj) = mean(real((symbols(cstart+jj-Nss_in/2, :).*conj(symbols(cstart+jj-Nss_in/2, :))...
+                                         -symbols(cstart+jj+Nss_in/2, :).*conj(symbols(cstart+jj+Nss_in/2, :)))...
+                                         .*conj(symbols(cstart+jj, :)).*symbols(cstart+jj, :)));
+                                     
+                var_err_gard(jj) = var(real((symbols(cstart+jj-Nss_in/2, :).*conj(symbols(cstart+jj-Nss_in/2, :))...
+                                         -symbols(cstart+jj+Nss_in/2, :).*conj(symbols(cstart+jj+Nss_in/2, :)))...
+                                         .*conj(symbols(cstart+jj, :)).*symbols(cstart+jj, :)));
+            end
+            
+            %figure, plot(err_gard, '-o');
+            %figure, plot(var_err_gard, 'r-o');            
+            %var_gard = sum(var_err_gard)
+            
+            crossPoint = (1:1:N);
+            signum = sign(err_gard);	               % get sign of data
+            signum(x==0) = 1;	                       % set sign of exact data zeros to positive
+            ptr = max(crossPoint(diff(signum)~=0));	   % get zero crossings by diff ~= 0            
+                       
+            % Fine sample adjust in the crossing point
+            if abs(err_gard(ptr)) > abs(err_gard(ptr + 1))
+                ptr = ptr + 1;
+            elseif ptr > 1
+                if abs(err_gard(ptr)) > abs(err_gard(ptr - 1)) 
+                ptr = ptr - 1;
+                end
+            end
+            
+            if isempty(ptr)
+                [~,ptr] = min(abs(err_gard)); % find maximum variance point
+            end
+            x = circshift(x, ptr);            
+            idx = 1:r:N;
+            
+           % [~,ptr] = min(abs(err_gard(1:Nss_in/2))) % find maximum variance point
+           % ptr = mod(ptr-1+offset,r)+1
+           % idx = ptr:r:N;
+           %var_sig = abs(var(abs(x(idx)).^2))
+           out = x(idx);
         end
         
         %> @brief Decimation using SLN criteria
         %>
         %> SLN = "square law nonlinearity"
         %>
-        %> Reference: M. Oerder and H. Meyr, “Digital filter and square timing recovery,” IEEE Trans. Commun. 36(5), 605–61 (1988). 
+        %> Reference: M. Oerder and H. Meyr, “Digital filter and square timing recovery,” IEEE Trans. Commun. 36(5), 605–61 (1988).
         %>
         %> @param x signal to be decimated
         %> @param Nss_in Number of samples per symbol in
