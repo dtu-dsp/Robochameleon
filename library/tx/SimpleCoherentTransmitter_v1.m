@@ -34,7 +34,7 @@ classdef SimpleCoherentTransmitter_v1 < module
         %> @brief Class constructor
         %>
         %> Constructs an object of type SimpleCoherentTransmitter_v1.
-        %> It also constructs a SimpleAWG_v1, Laser_v1 and IQ_v1.
+        %> It also constructs a SimpleAWG_v1, Laser_v1 and IQModulator_v1.
         %>        
         %> @param param.nOutputs            Number of outputs
         %>

@@ -21,7 +21,7 @@ classdef ExtendedCoherentTransmitter_v1 < SimpleCoherentTransmitter_v1
         %> @brief Class constructor
         %>
         %> Constructs an object of type ExtendedCoherentTransmitter_v1.
-        %> It also constructs a ExtendedAWG_v1, Laser_v1 and IQ_v1.
+        %> It also constructs a ExtendedAWG_v1, Laser_v1 and IQModulator_v1.
         %>        
         %> @param param.nOutputs                      Number of outputs
         %>
