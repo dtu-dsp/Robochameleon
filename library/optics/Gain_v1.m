@@ -25,18 +25,13 @@ classdef Gain_v1 < unit
             obj.Gain = paramdefault(param,'Gain',0);
         end
         
-        function Eout = traverse(obj, sig)
+        function Eout = traverse(obj, Ein)
             
             LinGain = 10^(obj.Gain/10); % Convert gain in dB to linear gain.   
-            
-            out = sig.fun1(@(x) sqrt(LinGain)*(x)); % Apply gain
-            
-            Signal = get(out).';            
-            Psig = sum(abs(Signal(1,:)).^2 + abs(Signal(2,:)).^2)/length(Signal(1,:));
-            Psig_dBm = 10*log10(Psig/1e-3);           
-            
+            Signal = sqrt(LinGain)*get(Ein);            
+                
             % Output field:
-            Eout = signal_interface(Signal.',struct('Fs',sig.Fs,'Fc',sig.Fc,'Rs',sig.Rs,'P',pwr(Inf,Psig_dBm)));
+            Eout = signal_interface(Signal, struct('Fs',Ein.Fs,'Fc',Ein.Fc,'Rs',Ein.Rs,'P', pwr(Ein.P.SNR, Ein.P.Ptot + obj.Gain)));
         end
     end
     
