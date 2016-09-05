@@ -88,7 +88,7 @@ function [x0,y0,iout,jout] = intersections(x1,y1,x2,y2,robust)
 
 
 % Input checks.
-error(nargchk(2,5,nargin))
+narginchk(2,5)
 
 % Adjustments when fewer than five arguments are supplied.
 switch nargin
@@ -205,7 +205,7 @@ if robust
 		lastwarn('')
 		for k = 1:n
 			T(:,k) = AA(:,:,k)\B(:,k);
-			[unused,last_warn] = lastwarn;
+			[~,last_warn] = lastwarn;
 			lastwarn('')
 			if strcmp(last_warn,'MATLAB:singularMatrix')
 				% Force in_range(k) to be false.
