@@ -355,11 +355,14 @@ classdef Laser_v1 < unit
                 hold on
                 [FN, freqs] = pwelch(obj.fn, Win, overlap, obj.model.Lpsd, obj.Fs);
                 loglog(freqs,  pi*FN,  'color', blue);
-%                 legend('Desired PSD', 'Obtained PSD' , 'Location','SouthWest')
+                %                 legend('Desired PSD', 'Obtained PSD' , 'Location','SouthWest')
             end
-            xlim([obj.MinFreq, obj.MaxFreq])
-            if ~isnan(obj.fn)
-                ylim(1.1*pi*[min(FN) max(FN)]);
+            try
+                xlim([obj.MinFreq, obj.MaxFreq])
+                if ~isnan(obj.fn)
+                    ylim(1.1*pi*[min(FN) max(FN)]);
+                end
+            catch
             end
             grid on
         end
@@ -376,9 +379,12 @@ classdef Laser_v1 < unit
                 hold on
                 [PN, freqs] = pwelch(obj.pn, Win, overlap, obj.model.Lpsd, obj.Fs);
                 loglog(freqs,  PN, 'color', blue);
-%                 legend('Desired PSD', 'Obtained PSD' , 'Location','SouthWest')
+                %                 legend('Desired PSD', 'Obtained PSD' , 'Location','SouthWest')
             end
-            xlim([obj.MinFreq, obj.MaxFreq])
+            try
+                xlim([obj.MinFreq, obj.MaxFreq])
+            catch
+            end
             grid on
         end
         % Plot frequency noise in time domain
