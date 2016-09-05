@@ -1,8 +1,8 @@
 %> @file  sink.m
-%> @brief Stores the input signal.
+%> @brief stores the input signal.
 %>
 %> @class  sink
-%> @brief Stores the input signal.
+%> @brief stores the input signal.
 %>
 %> Utility unit used in module.  Passes input to output.  Traverse does
 %> nothing.
@@ -14,6 +14,8 @@ classdef sink < unit
     properties
         nInputs;
         nOutputs = 0;
+        
+        keep = 0;
     end
     
     methods
@@ -33,9 +35,18 @@ classdef sink < unit
         function traverse(~,~), end
         
         %> @brief pass input buffer contents to output buffer
-        function varargout = readBuffer(obj)
+        function [varargout] = readBuffer(obj)
             varargout = obj.inputBuffer;
-            obj.inputBuffer = {};
+            if(~ispref('robochameleon','debugMode') && ~getpref('robochameleon','debugMode'))
+                if(~obj.keep)
+                    obj.inputBuffer = {};
+                end
+            end
+        end
+        
+        %> @brief set keepOutput flag
+        function setKeep(obj, keep)
+            obj.keep = keep;
         end
     
     end

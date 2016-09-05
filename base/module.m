@@ -58,14 +58,16 @@
 %> @see unit
 %>
 %> @author Robert Borkowski
-%> @version 1
+%> @author Rasmus Jones
+%>
+%> @version 1.1
 classdef module < unit
     
     properties (Abstract)
         %> Number of input arguments (required)
         nInputs; 
         %> Number of output arguments (required)
-        nOutputs; 
+        nOutputs;
     end
             
     properties (GetAccess=public,SetAccess=private,Hidden=false) % Set Hidden=true afterwards
@@ -73,6 +75,8 @@ classdef module < unit
         internalUnits = {};
         %> Order in which to traverse units
         traversingOrder = [];
+        %> Struct for the biograph view function
+        biograph_struct = struct;
     end
     
     properties (GetAccess=protected,SetAccess=private,Hidden=false) % Set Hidden=true afterwards
@@ -89,8 +93,7 @@ classdef module < unit
         
         %> @brief Determine order in which to traverse units
         %>
-        %> Create a "linked list like" graph, and display if obj.draw is
-        %> true
+        %> Create a "linked list like" graph
         function createGraphOrdering(obj)
             N = numel(obj.internalUnits);
             % Traverse all internal units sequentially to discover graph structure
@@ -109,49 +112,24 @@ classdef module < unit
                     nextNodeID = nextNode{:}.ID;
                     k = find(cellfun(@(UID)isequal(nextNodeID,UID),UIDs));
                     if numel(k)>1
-                        error('Something is wrong. Should return just one or zero match. Is it a DAG?');
+                        robolog('Something is wrong. Should return just one or zero match. Is it a DAG?', 'ERR');
                     end
                     dg(i,k) = true;
                 end
                 labels{i} = obj.internalUnits{i}.label;
-            end
+            end            
+            obj.biograph_struct.dg      = dg;
+            obj.biograph_struct.labels  = labels;
             
-            if obj.draw
-                if isempty(dg) % no edges
-                    warning('Module %s encloses no units. No graph will be drawn.',obj.label);
-                elseif isscalar(dg) % one edge
-                    warning('Module %s encloses only one unit. No graph will be drawn.',obj.label);
-                    obj.traversingOrder = 1;
-                else % more than one edge
-                    bg = biograph(dg);
-                    bg.ShowTextInNodes = 'Label';
-                    for i=1:N, bg.Nodes(i).Label = labels{i}; end
-                    
-                    % Set biograph name
-%                     hg = biograph.bggui(bg);
-%                     set(get(hg.biograph.hgAxes,'parent'),'Name',obj.label);
-                    view(bg);
-                    handles = allchild(0);
-                    hg = handles(1);
-                    hg.Name = obj.label;
-                   
-%                     f = figure('Name',obj.label);
-%                     copyobj(hg.biograph.hgAxes,f);
-%                     close(hg.hgFigure);
-
-%                     graphViz4Matlab('-adjMat',dg,'-nodeLabels',labels,'-layout',Treelayout);
-                    
-                end
-            end
             obj.traversingOrder = graphtopoorder(sparse(dg)); % Doesn't work for one vertex
-        end
-        
+        end    
+
     end
     
     
     
     methods (Access=protected)
-        
+       
         %> @brief Construct module
         %>
         %> Important.  Must be called during (at end of) constructor.
@@ -167,7 +145,7 @@ classdef module < unit
                     isunit(i) = evalin('caller',['inherits_from(' vars{i} ',''unit'')']);
                 end
                 if ~any(isunit) % If no units found, show a warning
-                    warning('Module does not enclose any unit. To manually export module use exportModule(obj,unit1,unit2,...).');
+                    robolog('Module does not enclose any unit. To manually export module use exportModule(obj,unit1,unit2,...).', 'WRN');
                 else % If there are units to export, call exportModule with appropriate arguments
                     evalin('caller',['exportModule(obj,' strjoin(vars(isunit)',',') ');']);
                 end
@@ -191,7 +169,18 @@ classdef module < unit
         %> 
         %> @see unit.connectOutputs
         function connectInputs(obj,destInternalUnits,destInternalInputs)
-            %TODO error checking, etc.
+            %make sure destination array is cell array
+            if ~iscell(destInternalUnits)
+                destInternalUnits = mat2cell(destInternalUnits(:), ones(1, numel(destInternalUnits)), 1);
+            end
+            %make sure destination inputs make sense
+            if ~isnumeric(destInternalInputs)||~isvector(destInternalInputs)
+                robolog('Destination inputs must be specified as a vector of integers.', 'ERR');
+            end
+            %check that numbers add up
+            if numel(destInternalUnits)~=obj.nInputs
+                robolog('Number of external connections must be equal to the number of inputs. %s has %d inputs; %d destination units were specified', 'ERR', obj.label, obj.nInputs, numel(destInternalUnits));
+            end
             obj.destInternalUnits = destInternalUnits;
             obj.destInternalInputs = destInternalInputs;
         end
@@ -213,6 +202,22 @@ classdef module < unit
             % Create sink for internal output buffers
             obj.outputBuffer = sink(obj.nOutputs);
         end
+        
+        %> @brief Show biograph through module_view-class
+        function view(obj)
+            module_view(obj.biograph_struct,obj.internalUnits,obj.label);
+        end        
+                
+        %> @brief Function to access module output for various intentions
+        function output = getOutput(obj)
+            output = obj.outputBuffer.inputBuffer{1};
+        end
+        
+        %> @brief Function tells outputBuffer sink not to delete itself
+        %> after traverse
+        function keepOutput(obj)
+            obj.outputBuffer.setKeep(1);
+        end
 
         %> @brief Traverse function for modules
         %>
@@ -226,12 +231,16 @@ classdef module < unit
                 %object."
                 % Ensure that in a call obj.connectInputs(units,no) units
                 % is always a cell array of units.
-                writeInputBuffer(obj.destInternalUnits{i},varargin{i},obj.destInternalInputs(i));
+                try
+                    writeInputBuffer(obj.destInternalUnits{i},varargin{i},obj.destInternalInputs(i));
+                catch 
+                    robolog('Failed to write input buffer while traversing %s.  Check connections and that traverse has been called enough input signals.', 'ERR', obj.label);
+                end
             end
 
             for i=obj.traversingOrder
                 traverseNode(obj.internalUnits{i});
-            end
+            end            
             [varargout{1:obj.nOutputs}] = readBuffer(obj.outputBuffer);
         end        
     end

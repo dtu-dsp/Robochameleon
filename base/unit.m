@@ -17,10 +17,8 @@
 %> All units must have the following properties:
 %> - nInputs number of inputs
 %> - nOutputs number of output
-%>
 %> And the following method
 %> - traverse
-%>
 %> traverse acts like main in c programs.  It defines what function the
 %> unit performs on the signal.
 %>
@@ -71,21 +69,19 @@ classdef unit < handle
             if isempty(obj.draw), obj.draw = true; end
         end
         
-        
         %> @brief Apply function contained in unit to signal
         %>
         %> Displays name of node and executes function contained in each
         %> unit on input signal(s).
         %>
         function traverseNode(obj)
-            robolog('Traversing %s',class(obj));
-            
-            % 
+            robolog('Traversing ...');
+            %Check # of inputs and outputs
             if obj.nInputs~=numel(obj.inputBuffer);
-                robolog('Number of connected inputs must be equal to the number of module inputs.', 'ERR');
+                robolog('Number of connected inputs must be equal to the number of module inputs. %s has %d inputs; %d in were given', 'ERR', obj.label, obj.nInputs, numel(obj.inputBuffer));
             end
             if obj.nOutputs~=numel(obj.nextNodes);
-                robolog('Number of outputs must be equal to the number of connected units.', 'ERR');
+                robolog('Number of outputs must be equal to the number of connected units. %s has %d outputs; %d destination units were specified', 'ERR', obj.label, obj.nOutputs, numel(obj.nextNodes));
             end
             
             % Helper function with one argument. Checks if all elements of
@@ -97,7 +93,9 @@ classdef unit < handle
                 robolog('The inputs are not ready yet. Incorrect topology ordering.', 'ERR');
             end
             [outputs{1:obj.nOutputs}] = traverse(obj,obj.inputBuffer{:}); % Traverse the unit
-            obj.inputBuffer = {}; % Remove processed inputs to save memory
+            if(~ispref('robochameleon','debugMode') || ~getpref('robochameleon','debugMode'))
+                obj.inputBuffer = {}; % Remove processed inputs to save memory
+            end
             
             % Draw figures
             if obj.draw, drawnow; end
@@ -125,8 +123,8 @@ classdef unit < handle
         
         %> @brief Specify where signal should go next
         %>
-        %> Connects one output of one unit to the inputs of the next.
-        %> For use in modules.
+        %> Connects one output of one unit to the inputs of the next
+        %> For use in modules
         %>
         %> Complicated example:
         %> @code
@@ -160,10 +158,11 @@ classdef unit < handle
         %> @brief Specify where signal should go next
         %>
         %> Connects all the outputs of one unit to the inputs of the next.
-        %> For use in modules.
+        %> For use in modules
         %>
         %> Connects all the outputs of one unit to the inputs of the next
-        %>
+        %> set of units.
+        %> 
         %> Complicated example:
         %> @code
         %> %% Construct some units (a 90 degree hybrid and two balanced pairs)
@@ -177,36 +176,87 @@ classdef unit < handle
         %> \image html "BlockDiagUnitExplanation.jpg" width=100px
         %> Note the implied order of unit outputs is 1,2,3,...
         %>
+        %>  __Notes on syntax:__
+        %> 1. The set of destinations should be passed as a cell array.
+        %>  If they are passed as a regular array, this function will
+        %> attempt to convert to cell array, but this is not ideal.
+        %> 2. The destination inputs can be omitted if: 
+        %> 
+        %>      (a) There is one destination unit and all source outputs 
+        %>      connect sequentially to all destination outputs OR 
+        %> 
+        %>      (b) There is exactly one destination unit for each source
+        %>      output.
+        %>
         %> @param units object, or cell array of objects, to connect to
         %> @param destInputs which input to connect to
         %>
         %> @see module
         function connectOutputs(obj,units,destInputs)
-            if nargin<3 % if destination port not specified, connect to 1st input
-                destInputs = ones(1,obj.nOutputs);
-            elseif ~isvector(destInputs)
-                robolog('Destination inputs must be specified as a vector.', 'ERR');
+            
+            %convert input array of units to cell array
+            %necessary to keep this to deal with 1x1 case - overwriting
+            %horzcat and vertcat doesn't cover this case
+            if ~iscell(units)
+                units = mat2cell(units(:), ones(1, numel(units)), 1);
             end
             
-            if ~iscell(units)
-                units = {units};
+            % If destination port not specified, assign based on context.
+            % Throw an error if this is not possible.
+            if nargin<3 
+                if numel(units)==obj.nOutputs
+                    destInputs = ones(1,obj.nOutputs);
+                elseif (numel(units)==1) && (units{1}.nInputs == obj.nOutputs)
+                    destInputs = 1:obj.nOutputs;
+                    units = repmat(units, obj.nOutputs, 1);
+                else
+                    robolog('Destination inputs must be specified.', 'ERR');
+                end
+            elseif ~isnumeric(destInputs)||~isvector(destInputs)
+                robolog('Destination inputs must be specified as a vector of integers.', 'ERR');
             end
-                
+             
             if numel(units)~=obj.nOutputs || ~isvector(units)
-                robolog('Number of connected units must be equal to the number of output signals.', 'ERR');
+                robolog('Number of connected units must be equal to the number of output signals. %s has %d outputs; %d destination units were specified', 'ERR', obj.label, obj.nOutputs, numel(units));
             end
+            
+            % Check that destination makes basic sense
+            destMax = cellfun(@(x)x.nInputs, units);
+            if any(destInputs(:)>destMax(:))
+                badone = find(destInputs(:)>destMax(:));
+                robolog('Specified input exceeds allowed number of inputs.  \n%s has %d inputs, so you cannot connect to port %d.', 'ERR', units{badone}.label, units{badone}.nInputs, destInputs(badone));
+            end
+            if any(destInputs(:)<1)
+                robolog('Input numbers must be 1 or greater', 'ERR');
+            end
+            
                 
             for i=1:obj.nOutputs
                 obj.connectOutput(units{i},i,destInputs(i));
             end
         end
         
-        %> @brief Write input buffer
+        %> @brief write input buffer
         function writeInputBuffer(obj,sig,inputId)
             obj.inputBuffer{inputId} = sig;
         end
-            
-        %> @brief Set parameters
+        
+        %> @brief horizontal concatenation
+        function newobj = horzcat(varargin)
+            for jj = 1:nargin
+                newobj{jj} = varargin{jj};
+            end
+        end
+        
+        %> @brief vertical concatenation
+        function newobj = vertcat(varargin)
+            for jj = 1:nargin
+                newobj{jj} = varargin{jj};
+            end
+            newobj = newobj.';
+        end
+           
+        %> @brief set parameters
         %> 
         %> Compare user-specified parameters to class properties.  Assign
         %> as many as possible, warn the user when default is being used
@@ -255,10 +305,22 @@ classdef unit < handle
         %> @param REQUIRED_PARAMS cell array of required parameter names (default empty)
         %> @param QUIET_PARAMS cell array of parameter names not to warn user about (default nInputs, nOutputs, results, label, draw)
         function setparams(obj,params,REQUIRED_PARAMS, QUIET_PARAMS)
+            DEFAULT_QUIET_PARAMS = {'nInputs', 'nOutputs', 'results', 'label', 'draw'};
             if nargin<3, REQUIRED_PARAMS = {}; end
-            if nargin<4, QUIET_PARAMS = {'nInputs', 'nOutputs', 'results', 'label', 'draw'}; end
+            if nargin<4
+                QUIET_PARAMS = DEFAULT_QUIET_PARAMS;
+            else
+                QUIET_PARAMS = [QUIET_PARAMS DEFAULT_QUIET_PARAMS];
+            end
             PROTECTED_NAMES = {'inputBuffer', 'nextNodes', 'destInputs'};
-            f = fieldnames(params);
+            %get cell array of params
+            if isstruct(params)
+                f = fieldnames(params);
+            elseif iscell(params)
+                f = params;     %Some units pass empty cell to setparams - this is not ideal, but not a huge problem
+            else
+                f = {};
+            end
             
             %Check if required properties are specified
             reqm = ismember(REQUIRED_PARAMS,f);
@@ -280,11 +342,36 @@ classdef unit < handle
             [~,~,ci] = intersect(QUIET_PARAMS,props);
             ai2 = false(size(f)); ai2(ai)=true; ai2=~ai2;
             bi2 = false(size(props)); bi2(bi)=true; bi2(ci)=true; bi2=~bi2;
-            if any(ai2), robolog('Following properties: %s are not used by the class.', 'WRN', strjoin(strcat('''',f(ai2),''''),', ')); end
-            if any(bi2), robolog('Specified properties %s use default value from %s (%s).', strjoin(strcat('''',props(bi2),''''),', '),obj.label,class(obj)); end
-            for i=1:numel(fassign)
-                obj.(fassign{i}) = params.(fassign{i});
+            if any(ai2), robolog('Following properties: %s are not used by the class.', 'NFO0', strjoin(strcat('''',f(ai2),''''),', ')); end
+            if any(bi2)
+                robolog('The following properties use default value from %s (%s):', 'NFO0', obj.label, class(obj));
+                defProp = props(bi2);
+                mTxtL = max(cellfun(@(x) numel(x), defProp));
+                for pri=1:numel(defProp)
+                    prVal = obj.(defProp{pri});
+                    if isnumeric(prVal) || islogical(prVal)
+                        strVal = num2str(prVal);
+                    elseif ischar(prVal)
+                        strVal = prVal;
+                    else
+                        strVal = sprintf('Default value of type %s', class(prVal));
+                    end
+                    robolog(['%' num2str(mTxtL + 3) 's: %s'], 'NFO0', defProp{pri}, strVal);
+                end
             end
+            for i=1:numel(fassign)
+                mp = findprop(obj,fassign{i});
+                if strcmp(mp.SetAccess, 'public') % Assign only public properties
+                    obj.(fassign{i}) = params.(fassign{i});
+                else
+                    robolog('Private property: ''%s'' not assigned.', 'NFO0', fassign{i});
+                end
+            end
+        end
+        
+        %> @brief Show interactive GUI through unit_view-class
+        function view(obj)
+           unit_view(obj.nextNodes,obj.destInputs,obj.label);
         end
     end
 end
