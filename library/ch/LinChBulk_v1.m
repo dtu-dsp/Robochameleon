@@ -253,7 +253,7 @@ classdef LinChBulk_v1 < unit
             SL = sum(param.S.*param.L)*1e+6; % Convert to base SI units (ps/nm^2 -> 10^6 s/m^2)
             CD = [DL SL+2*DL/lambda]; % Dispersion coefficients
             Nfft = Ein.L;
-            omega = pi*triang(Nfft)*Ein.Fs;
+            omega = 2*pi*[(0:Nfft/2-1),(-Nfft/2:-1)]'/(Nfft/Ein.Fs) ;
             
             H = exp(-1j/2*CD(1)*(lambda^2/(2*pi*c))*omega.^2 ...
                 -1j/6*CD(2)*(lambda^2/(2*pi*c))^2*omega.^3); % Taylor expansion
@@ -379,7 +379,7 @@ classdef LinChBulk_v1 < unit
             
             %frequency domain
             Nfft = in.L;
-            omega = pi*triang(Nfft)*in.Fs;            
+            omega = 2*pi*[(0:Nfft/2-1),(-Nfft/2:-1)]'/(Nfft/in.Fs) ;
             
             %shift/spread input
             %E_sh(1:N) all correspond to the same spatial mode at the input
