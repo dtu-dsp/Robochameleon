@@ -1,55 +1,67 @@
-%>@file PD_v1.m
-%>@brief photodiode class definition file
+%> @file PD_v1.m
+%> @brief photodiode class definition file
 %>
-%>@class PD_v1
-%>@brief photodiode model
+%> @class PD_v1
+%> @brief photodiode model
 %> 
 %>  @ingroup physModels
 %>
-%>This class models a photodiode with responsivity, noise, and bandwidth.
-%>The new output power is the electrical power calculated assuming a 50
-%>ohm environment.  The noise includes both shot and thermal noise.  The
-%>bandwidth is modeled using a 2nd order butterworth filter.
+%> This class models a photodiode with responsivity, noise, and bandwidth.
+%> The new output power is the electrical power calculated assuming a 50
+%> ohm environment.  The noise includes both shot and thermal noise.  The
+%> bandwidth is modeled using a 2nd order butterworth filter.
 %>
-%>Example:
-%>@code
-%>param=struct('Responsivity', 1, 'Bandwidth', 20e9, 'Idark', 1e-9);
-%>detector = PD_v1(param);
-%>@endcode
+%> __Example__
+%> @code
+%> % Detect a garbage signal
+%> param=struct('Responsivity', 1, 'Bandwidth', 20e9, 'Idark', 1e-9);
+%> detector = PD_v1(param);
 %>
-%>@author Miguel Iglesias
-%>Modified 15/8/2014 Molly Piels - added noise
-%>@version 1
+%> sigIn = createDummySignal(); 
+%> sigDetected = detector.traverse(sigIn);
+%> 
+%> @endcode
+%>
+%> @author Miguel Iglesias
+%> Modified 15/8/2014 Molly Piels - added noise
+%> @version 1
 classdef PD_v1 < unit
     
     properties
+        %> Number of inputs
         nInputs=1;
+        %> Number of outputs
         nOutputs=1;
         
         %>Responsivity in A/W
-        Responsivity;      
+        responsivity = 1;      
         %>Bandwidth in Hz
-        Bandwidth;         
+        bandwidth = 50e9;         
         
-        %>Noise equiv. thermal resistance (ohms) - default 50
-        Rtherm;     
-        %>Noise equiv. temperature (K) - default 290
-        T;
-        %>Dark current (A) - default 0
-        Idark;
+        %>Noise equiv. thermal resistance (ohms)
+        rTherm = 50;     
+        %>Noise equiv. temperature (K)
+        T = 290;
+        %>Dark current (A)
+        iDark = 0;
         
         
     end
     
     methods
-        %>@brief Class constructor
+        %> @brief Class constructor
+        %>
+        %> Constructs a photodiode 
+        %>
+        %> @param param.responsivity          Responsivity [A/W] [Default: 1]
+        %> @param param.bandwidth             3dB elect. bandwidth [Hz] [Default: 50GHz]
+        %> @param param.rTherm                Resistance for Johnson noise [Ohm] [Default: 50 ohm]
+        %> @param param.T                     Temperature for Johnson noise [K] [Default 290]
+        %> @param param.iDark                 Dark current [A] [Default: 0]
+        %>
         %>@retval obj instance of the PD_v1 class
         function obj = PD_v1(param)
-            obj.Responsivity = param.Responsivity;
-            obj.Bandwidth = param.Bandwidth;
-            obj.Rtherm=paramdefault(param, 'Rtherm', 50);
-            obj.Idark=paramdefault(param, 'Idark', 0);
-            obj.T=paramdefault(param, 'T', 290);
+            obj.setparams(param);
         end
         
         %>@brief Traverse function
@@ -67,7 +79,7 @@ classdef PD_v1 < unit
             
             %noise
             Pnum=sum(pwr.meanpwr(get(in)));               %numerically calculated power
-            CF=Pnum/(10^(P/10));                      %correction factor (assume field expressed in normalized units)
+            CF=Pnum/(10^(P/10));                      %correction factor
             Pnshot = 2*const.q*(obj.Responsivity*(10^(P/10))+obj.Idark)*in.Fs;
             Pntherm = 4*const.kB*obj.T/obj.Rtherm*in.Fs;
             noise=wgn(in.L, 1, Pnshot*CF, 'linear', 'real')+wgn(in.L, 1, Pntherm*CF, 'linear', 'real');
