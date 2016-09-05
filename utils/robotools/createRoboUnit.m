@@ -5,9 +5,11 @@
 %>
 %> __Example:__
 %> @code
-%>   % From the directory where the class file should be located
+%>   % Initialize robochameleon path
 %>   robochameleon
-%>   createRoboUnit('MyClass', 1)
+%>   % From the directory where the class file should be located
+%>   createRoboUnit MyClass 1
+%>   createRoboUnit('MyClass', 1) % Alternative calling
 %> @endcode
 
 %>@brief Creates a new unit with the given name and version
@@ -26,6 +28,13 @@ function createRoboUnit(className, version, varargin)
             robolog('A folder must be specified or "robochameleon" must be run before', 'ERR');
         end 
     end
+    if ~isnumeric(version)
+        try
+            % If the command is called as 'createRoboUnit MyClassName 1' the version is passed as string
+            version = str2double(version);
+        catch
+        end
+    end
     if ~isnumeric(version) || version<0 || version/round(version) ~= 1
         robolog('The version must be an integer positive number', 'ERR');
     end
@@ -41,6 +50,7 @@ function createRoboUnit(className, version, varargin)
     s = fileread(srcFile);
     s = strrep(s, 'ClassTemplate_v1', fullClassName);
     s = strrep(s, '%', '%%'); %Escape percentage symbol
+    s = strrep(s, '\', '\\'); %Escape escape symbol
     fid = fopen(dstFile, 'w');
     fprintf(fid, s);
     fclose(fid);
