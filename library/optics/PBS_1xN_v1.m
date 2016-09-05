@@ -60,7 +60,7 @@ classdef PBS_1xN_v1 < unit
         %> @param ER extinction ratio (dB)
         %> @retval Eout output (signal_interface object)
         function Eout=orient_sig(Ein, v, ER)
-            polarizer = Polarizer_v1(struct('basis',v, 'Type', 'Jones', 'ER', ER));
+            polarizer = Polarizer_v1(struct('basis',v, 'Type', 'nDJones', 'ER', ER));
             Eout = traverse(polarizer, Ein);
         end
 
