@@ -9,28 +9,43 @@
 %> Linear fiber optic channel model with polarization (mode) mixing, 
 %> chromatic dispersion, PMD, and loss
 %> 
-%> Parameter specification:
-%> Wavelength is specified using the input signal
-%> Number of modes supported by fiber is also set by the input signal
-%> Fiber parameters are taken from a look-up table for SMF28 unless otherwise specified
+%> __Observations__
 %>
-%> Examples:
+%> 1. Number of modes supported by fiber is set by the dimension of the input signal
+%>
+%> 2. Fiber parameters are taken from a look-up table for SMF28 unless
+%> otherwise specified.  
+%> 
+%> 3. Mode mixing is based on random matrix generation unless otherwise
+%> specified.
+%> 
+%> 4. The general assumption is that the fiber supports "principal modes"
+%> and that these have a bandwidth that is larger than the signal bandwidth.
+%> This is fine for SMF, but potentially problematic for multimode fiber.
+%> 
+%>
+%> __Examples__
+%> 
 %> @code
 %> param = struct('D', 1e-6, 'S', .0092, 'L', 40, 'loss', .34);
 %> channel = LinChBulk_v1(channel);
 %> @endcode
+%>
 %> Will construct a 40km channel with .34 dB/km loss and negligible 1st
 %> order dispersion (typical parameters at 1310).  These parameters will 
 %> be fixed regardless of the wavelength of the input signal.  The code
+%>
 %> @code
 %> param = struct('L', 40);
 %> channel = LinChBulk_v1(channel);
 %> signal = signal_interface(field, struct('Fc', const.c/1310e-9, ...));
 %> sigout = channel.traverse(signal);
 %> @endcode
+%>
 %> Will also construct a 40km channel with .34 dB/km loss and negligible 1st
 %> order dispersion.  If the input signal were at 1550 instead, the
 %> dispersion, loss, etc. would be different.
+%>
 %> To remove the effect of polarization mixing, specify the Jones matrix of
 %> the fiber as an identity matrix:
 %> @code
@@ -50,23 +65,23 @@ classdef LinChBulk_v1 < unit
         nInputs = 1;
         
         %> dispersion coeff. (ps/nm km)
-        D;
+        D = nan;
         %> 2nd order dispersion coeff. (ps/nm^2 km)
-        S;
+        S = 0;
         %> length (km)
-        L;
+        L = 0;
         %> Jones matrix 
-        U;
+        U = nan;
         %> modulus of DGD/PMD vector (s)
-        DGD;
+        DGD = 0;
         %> vector of DGDs (s)
-        tau;
+        tau = nan;
         %> Matrix of principal modes
-        P;
+        P = nan;
         %> How to specify DGD {'set' | 'random'}
-        DGD_mode;
+        DGD_mode = 'set';
         %> loss (dB/km)
-        loss;       
+        loss = nan;       
     end
     
     methods (Static)
@@ -142,16 +157,26 @@ classdef LinChBulk_v1 < unit
     
     methods
         %>  @brief Class constructor
+        %>
+        %> Constructs an object of type LinChBulk
+        %> 
+        %> Generally, if fiber parameters are not specified, the model will
+        %> assume SMF-28 and use a lookup table based on the input signal's
+        %> wavelength.
+        %>
+        %> @param param.D          Dispersion coefficient [ps/nm*km].
+        %> @param param.S          Dispersion slope [(ps/nm^2 km)] [Default 0].
+        %> @param param.L          Fiber length [km] [Default: 0].
+        %> @param param.U          Unitary matrix describing mode mixing [au] [Default: randomly generated]
+        %> @param param.DGD        Modulus of DGD/PMD vector [s] [Default: 0]
+        %> @param param.DGD_mode   How to interpret param.DGD: 'set' = the DGD is param.DGD (only makes sense for SMF); 'random' = the DGD is drawn randomly from an appropriate PDF with this mean. [Default: set]
+        %> @param param.loss       Fiber loss [dB/km]
+        %> @param param.tau        Vector of differential group delays to apply [s]
+        %> @param param.P          Matrix describing polarization alignment of DGD vector [au] [Default: randomly generated]
+        %>
+        %> @retval obj      An instance of the class ClassTemplate_v1
         function obj = LinChBulk_v1(param)
-            obj.D = paramdefault(param, 'D', NaN);
-            obj.S = paramdefault(param, 'S', 0);
-            obj.L = param.L;
-            obj.U = paramdefault(param, 'U', NaN);
-            obj.DGD = paramdefault(param, 'DGD', 0);
-            obj.DGD_mode = paramdefault(param, 'DGD_mode', 'set');
-            obj.loss = paramdefault(param, 'loss', NaN);
-            obj.tau = paramdefault(param, 'tau', NaN);
-            obj.P = paramdefault(param, 'P', NaN);
+            obj.setparams(param);
         end
         
         %> @brief Traverse function
