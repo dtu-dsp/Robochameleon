@@ -273,6 +273,24 @@ classdef signal_interface
             end
         end
 
+        %> @brief Overload of indexing end statement
+        %>
+        %> @param k Current dimension index
+        %> @param n Total number of dimensions
+        function ind = end(obj, k, n)
+            if n == 1
+                ind=obj.L*obj.N;
+            elseif n == 2
+                if k==1
+                    ind=obj.L;
+                elseif k==2
+                    ind=obj.N;
+                end
+            else
+                robolog('signal_interface has only two dimensions', 'ERR');
+            end
+        end
+        
         %> @brief Overload indexing access for read the field
         %>
         %> Allows to access the internal field with the the standard MATLAB indexing system.
