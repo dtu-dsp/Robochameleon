@@ -15,10 +15,39 @@
 %> for each state of polarization.  For multimode fiber, the definition
 %> would be analogous, there would just be more columns.
 %>
-%> Example
+%> A number of operations are overwritten for signal_interface objects so
+%> that they can be treated like arrays containing waveforms (e.g. sig1+sig2
+%> produces a result that makes sense).  See methods for details.
+%> 
+%>
+%> __Conventions__
+%> * A signal_interface with Rs = 1 is analog
+%> * A signal_interface with Fs = 1 is logical
+%> * A signal_interface with Fc = 0 is electrical or logical
+%>
+%> __Power scaling__
+%> Note that both the waveform and the object's power property contain
+%> information about the waveform's amplitude.  Generally, when these
+%> conflict, the information in the power property takes precedence.
+%>
+%> Power can be specified either as a per-column/mode quantity or for the whole
+%> signal.  When these conflict, the per-column specification takes
+%> precedence.
+%>
+%> On construction, if power is not specified, it is calculated
+%> automatically from the waveform for each column separately.  If total
+%> power but not per-column power is specified, the splitting fraction is
+%> calculated numerically from the waveform.
+%> @see pwr, getPColFromNumeric_v1
+%>
+%> __Example__
 %> @code
-%> s1= rand(10,2);
-%> signal1 = signal_interface(s1,struct('Fs',10e9,'Fc',0,'Rs',1e9,'P',pwr(20,3)))
+%> s1= rand(10,1);
+%> sigparams.Fs = 10e9;
+%> sigparams.Fc = 0;
+%> sigparams.Rs = 1e9;
+%> sigparams.P = pwr(20, 3);
+%> signal1 = signal_interface(s1,sigparams)
 %> @endcode
 %> will create a signal with random values, sampling rate 10G, no carrier
 %> frequency, symbol rate (nominal) 1G, and 3dBm power and 20 dB SNR
@@ -62,9 +91,9 @@ classdef signal_interface
         %> In case power is not specified, a warning will be displayed, and
         %> the total signal power will be calculated from the waveform.
         function obj = signal_interface(signal,param)
-            if isfield(param,'Fc') && isscalar(param.Fc), obj.Fc = param.Fc; else robolog('Carrier frequency must be specified','ERR'); end
+            if isfield(param,'Fc') && isscalar(param.Fc), obj.Fc = param.Fc; else obj.Fc = 1; end
             if isfield(param,'Fs') && isscalar(param.Fs), obj.Fs = param.Fs; else robolog('Sampling frequency must be specified','ERR'); end
-            if isfield(param,'Rs') && isscalar(param.Rs), obj.Rs = param.Rs; else robolog('Symbol rate must be specified','ERR'); end
+            if isfield(param,'Rs') && isscalar(param.Rs), obj.Rs = param.Rs; else obj.Rs = 1; end
             if isvector(signal)
                 signal = signal(:);
             end
@@ -87,9 +116,15 @@ classdef signal_interface
                     robolog('Power cannot be an array of "pwr" object. Use PCol instead.','ERR');
                 end
                 obj.P = param.P;
-                obj.PCol = repmat(obj.P/obj.N, obj.N, 1);
+                avpow = pwr.meanpwr(signal);
+                pwrfraction = avpow/sum(avpow);
+                obj.PCol = repmat(obj.P, obj.N, 1).*pwrfraction;
             else
-                robolog('Automatic power calculation might be wrong');
+                robolog('Calculating power automatically - may be wrong', 'NFO0');
+                robolog('  Set power using pwr object constructor:', 'NFO0');
+                robolog('    signal = signal_interface(waveform, struct(''P'', pwr(SNR, Ptot), ...);', 'NFO0');
+                robolog('  where SNR is in dB and Ptot is in dBm', 'NFO0');
+                robolog('  See signal_interface and pwr documentation for more options', 'NFO0');
                 avpow = pwr.meanpwr(signal);
                 obj.PCol = pwr(inf, {avpow(1),'W'});
                 for jj=2:obj.N
@@ -108,6 +143,45 @@ classdef signal_interface
         end
 
         %> @brief Apply a function to each signal component separately
+        %>
+        %> This allows the user to avoid for loops and/or repmat if the same 
+        %> operation is being performed on all modes independently.
+        %>
+        %> It should run faster than an implementation based on for
+        %> loops/repmat, occupy fewer lines of code, and take less memory.
+        %> It also automatically tracks changes in power, which can be
+        %> useful for, e.g. filtering operations.
+        %>
+        %> __Examples__
+        %> @code
+        %> % apply a frequency shift
+        %> t = genTimeAxisSig(input);
+        %> frequency = 100e6;
+        %>
+        %> shiftedSignal = fun1(signal, @(x)x.*exp(1i*2*pi*frequency*t));
+        %> @endcode
+        %>
+        %> Or for more complicated functions where top-down programming is required:
+        %> @code
+        %> 
+        %> function out = traverse(obj, in)
+        %> 
+        %> out = fun1(in, @(x)obj.complicatedMethod(x));
+        %>
+        %> end
+        %> 
+        %> function Eout = complicatedMethod(obj, Ein)
+        %> 
+        %> %Here we put some code that acts on column vectors:
+        %> Eout = Ein.*conj(Ein);
+        %> Eout = filter(Eout, obj.B, obj.A);
+        %> %etc
+        %>
+        %> end
+        %>
+        %> @endcode
+        %>
+        %> See also Matlab's bsxfun and arrayfun for examples
         function obj = fun1(obj,fun)
             obj.enforceLhs(nargout);
             s = cellfun(fun,mat2cell(get(obj),obj.L,ones(1,obj.N)),'UniformOutput',false);
@@ -242,7 +316,7 @@ classdef signal_interface
         %> @brief Retrieve the signal with appropriate power scaling
         %>
         %> Retrieve the signal with appropriate power scaling.  Scaling is
-        %> applied based on the total signal power
+        %> applied based on the per-column signal power
         function s = getScaled(obj)
             % Modified by Robert to include power scaling (28.08.2014).
             s = obj.E;
@@ -283,6 +357,7 @@ classdef signal_interface
 
         %> @brief Add two signals (coherently)
         function obj = plus(obj1,obj2)
+            %check inputs
             param = struct('Fs',obj1.Fs);
             N = obj1.N;
             L = obj1.L;
@@ -335,22 +410,38 @@ classdef signal_interface
             else
                 txt_sig = 'Complex';
             end
+            if obj.Fc == 1
+                strFc = 'Undefined ';
+                strWavelength = 'Undefined ';
+            else
+                strFc = formatPrefixSI(obj.Fc,'%1.3f');
+                strWavelength = formatPrefixSI(const.c/obj.Fc,'%1.5f');
+            end
+            if obj.Rs == 1
+                strRs = 'Undefined ';
+                strTs = 'Undefined ';
+                strNss = 'Undefined ';
+            else
+                strRs = formatPrefixSI(obj.Rs,'%1.1f');
+                strTs = formatPrefixSI(1/obj.Rs,'%1.1f');
+                strNss = formatPrefixSI(obj.Nss,'%1.2f');
+            end
             fprintf(1,[
                 '%s signal\n' ...
                 '              Length: %sSa\n'...
                 'Number of components: %d\n'...
-                '         Symbol rate: %sBd (%ss)\n'...
                 '       Sampling rate: %sHz (%ss)\n'...
+                '         Symbol rate: %sBd (%ss)\n'...
                 '  Oversampling ratio: %sSa/symbol\n'...
-                '   Carrier frequency: %sm (%sHz)\n'...
+                '   Carrier frequency: %sHz (%sm)\n'...
                 '\n' ],...
                 txt_sig,...
                 formatPrefixSI(obj.L,'%1.0f'),...
                 obj.N,...
-                formatPrefixSI(obj.Rs,'%1.1f'),formatPrefixSI(1/obj.Rs,'%1.1f'),...
                 formatPrefixSI(obj.Fs,'%1.2f'),formatPrefixSI(obj.Ts,'%1.2f'),...
-                formatPrefixSI(obj.Nss,'%1.2f'),...
-                formatPrefixSI(obj.Fc,'%1.3f'),formatPrefixSI(const.c/obj.Fc,'%1.5f'));
+                strRs, strTs,...
+                strNss,...
+                strFc, strWavelength);
 
             disp(obj.P);
         end
