@@ -44,6 +44,8 @@ classdef PhaseNoiseModel_v1
         K;
         %> SCL phase noise: quantum limit (gaussian noise floor)
         alpha;   	
+        %> SCL phase noise: quantum limit (gaussian noise floor)
+        f_cutoff;
         
     end
     
