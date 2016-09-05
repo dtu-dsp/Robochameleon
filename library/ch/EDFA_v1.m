@@ -44,7 +44,7 @@ classdef EDFA_v1 < unit
         %> EDFA gain [dB]
         gain;
         %> EDFA noise figure [dB]
-        NF;
+        NF = 3;
     end
     
     methods
