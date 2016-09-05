@@ -227,6 +227,9 @@ classdef signal_interface
         
         %> @brief Jones matrix multiplication (overloads * operator)
         function obj = mtimes(obj,M)
+            if isscalar(M)
+                M = M*eye(obj.N);
+            end
             if ~isequal(size(M),([obj.N obj.N]))
                 robolog('Jones matrix must be a NxN square matrix.','ERR');
             end
