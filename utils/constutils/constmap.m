@@ -35,15 +35,15 @@ switch lower(maptype)
                     map(i+(1:log2M)) = map(i+(log2M:-1:1));
                 end
             else
-                robolog('Gray mapping for constellations with M~=2^k is undefined. Please work on 8-QAM.', 'ERR');
+                error('Gray mapping for constellations with M~=2^k is undefined. Please work on 8-QAM.');
             end
         end
     
     case 'custom'
         if nargin<4
-            robolog('For type ''custom'', a  custom map has to be provided.', 'ERR');
+            error('For type ''custom'', a  custom map has to be provided.');
         elseif numel(usermap)~=M
-            robolog('Number of elements in user map must be equal to modulation order', 'ERR');
+            error;
         else
             map = uint16(usermap(:));
         end
@@ -96,5 +96,5 @@ switch lower(consttype)
 %          demap = [demap [flipud(demap(1:4,:)); demap(5:8,:)]];
                  
     otherwise
-        robolog('No demapping permutations generated.', 'WRN');
+        warning('No demapping permutations generated.');
 end
