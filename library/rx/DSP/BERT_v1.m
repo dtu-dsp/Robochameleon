@@ -85,6 +85,10 @@ classdef BERT_v1 < unit
         PostProcessMethod;
         %> Disables Counter and plots only 10000 symbols
         FastMode;
+        %> Only calculate the signal columuns specified in this vector
+        Only;
+        %> (internal) Vector containing what columns to demodulate
+        Cols;
     end
     
     methods
@@ -185,11 +189,13 @@ classdef BERT_v1 < unit
         %> @retval obj Instance of the BERT_v1 class
         function obj = BERT_v1(param)
             %Intialize parameters
-            obj.M = param.M;
             obj.Constellation = paramdefault(param, {'Constellation'}, []);
             obj.ConstType = paramdefault(param, {'ConstType', 'const_type'}, 'QAM');
             if isempty(obj.Constellation)
+                obj.M = param.M;
                 obj.Constellation = constref(obj.ConstType,obj.M);
+            else
+                obj.M = length(obj.Constellation);
             end
             obj.Constellation = obj.Constellation./pwr.meanpwr(obj.Constellation);
             obj.TxData = paramdefault(param,{'prbs', 'data', 'TxData'},NaN);
@@ -198,7 +204,7 @@ classdef BERT_v1 < unit
                 disp('BERT: Mode: 1st input data; 2nd input reference data');
             end
             obj.Coding = paramdefault(param, {'Coding', 'coding'}, 'bin');
-            obj.BlockLength = paramdefault(param, 'blockLength', 2048);
+            obj.BlockLength = paramdefault(param, {'BlockLength', 'blockLength'}, 2048);
             obj.CounterMethod = paramdefault(param,'CounterMethod','generic');
             obj.DecisionType = paramdefault(param, {'DecisionType', 'decision_type'}, 'soft');
             obj.EnableMetrics = paramdefault(param,'EnableMetrics',true);
@@ -214,6 +220,7 @@ classdef BERT_v1 < unit
                 obj.EnableCounter = false;
             end
             obj.draw = paramdefault(param, 'draw', true);
+            obj.Only =  paramdefault(param, {'Only','only'}, []);
         end
         
         %> @brief Main function
@@ -243,21 +250,25 @@ classdef BERT_v1 < unit
                     obj.ConstType='QAM';
                 end
             end
+            if isempty(obj.Only)
+                obj.Only = 1:sig.N;
+            end
             % Count errors
             data = sig.getNormalized();
             ErrorMap = false(sig.L, sig.N);
-            for i=1:sig.N
+            obj.Cols = intersect(1:sig.N, obj.Only);
+            for i=obj.Cols
                 [obj.results.(['Col' num2str(i)]), ErrorMap(:,i)] = obj.bert(data(:,i));
             end
             if obj.EnableCounter
                 obj.ProcessBER();
             end
+            obj.printResults();
             if obj.draw
-                for i=1:sig.N
+                for i=obj.Cols
                     obj.plot(data(:,i), ErrorMap, i)
                 end
             end
-            obj.printResults();
         end
         
         %> @brief Error counter
@@ -357,7 +368,7 @@ classdef BERT_v1 < unit
                 % Calculate metrics
                 switch obj.ConstType
                     case 'ASK'
-                        [res.Q, res.boundaries, res.sig] = obj.getQ(obj.M, srx, srx-1, c);
+                        [res.Q, res.boundaries, res.sig] = obj.getQ(obj.M, srx, RX_SYMBOLS, c);
                         res.Ps = 0.5*erfc(res.Q/sqrt(2));
                         res.est_sym_errors = round(res.Ps*length(srx));
                         
@@ -370,6 +381,13 @@ classdef BERT_v1 < unit
                         
                         res.Ps = res.Pb*obj.M;
                         res.est_sym_errors = round(res.Ps*length(srx));
+                    otherwise
+                        res.evm = nan;
+                        res.Pb = nan;
+                        res.est_bit_errors = nan;
+                        
+                        res.Ps = nan;
+                        res.est_sym_errors = nan;
                 end
             end
             
@@ -422,9 +440,6 @@ classdef BERT_v1 < unit
         %> @retval obj.results.ColN.ser SER for column N
         %> @retval obj.results.ColN.badblocks map of rejected block locations
         function ProcessBER(obj)
-            %get number of columns
-            F=fieldnames(obj.results);
-            N=numel(find(cell2mat(strfind(F, 'Col'))));
             %parse input
             C=textscan(obj.PostProcessMethod, '%s %f');
             %initialize
@@ -437,9 +452,7 @@ classdef BERT_v1 < unit
                 case('probability')
                     threshold = cell2mat(C(2));
                     robolog('Using probability-based BER processing with threshold %f', threshold);
-                    
-                    for jj=1:N
-                        
+                    for jj=obj.Cols
                         %Get average BER for sequence.  This is hard-coded to at minimum return 100
                         %errors for the whole trace.
                         BER_avg = max([100/sum(obj.results.(['Col' num2str(jj)]).totalbits), sum(obj.results.(['Col' num2str(jj)]).err_bits)/sum(obj.results.(['Col' num2str(jj)]).totalbits)]);
@@ -469,7 +482,7 @@ classdef BERT_v1 < unit
                 case('threshold')
                     threshold = cell2mat(C(2));
                     robolog('Using threshold-based BER processing with threshold %f', threshold);
-                    for jj=1:N
+                    for jj=obj.Cols
                         %calculate per column
                         badblocks = obj.results.(['Col' num2str(jj)]).err_bits./obj.results.(['Col' num2str(jj)]).totalbits>=threshold;
                         obj.results.(['Col' num2str(jj)]).badblocks = badblocks;
@@ -491,7 +504,7 @@ classdef BERT_v1 < unit
                     t_biterrors = 0;
                     t_symb = 0;
                     t_symberrors = 0;
-                    for jj=1:N
+                    for jj=obj.Cols
                         %add totals
                         t_bits = t_bits + sum(obj.results.(['Col' num2str(jj)]).totalbits);
                         t_biterrors = t_biterrors + sum(obj.results.(['Col' num2str(jj)]).err_bits);
@@ -692,13 +705,13 @@ classdef BERT_v1 < unit
                 report = [report sprintf(' - BER: %.2e\r', obj.results.ber)];
                 robolog(report);
             end
-            for jj=1:N
+            for jj=obj.Cols
                 report = '';
                 res = obj.results.(['Col' num2str(jj)]);
                 report = [report 'Column ' num2str(jj) ':\r'];
                 % Bad blocks
                 if obj.EnableCounter && sum(res.badblocks) > 0
-                    report = [report '   - Bad blocks  : ' num2str(sum(res.badblocks)) '\r'];
+                    report = [report '   - Bad blocks: ' num2str(sum(res.badblocks)) ' out of ' num2str(length(res.badblocks)) '\r'];
                 end
                 % Metrics
                 if isfield(res, 'Q')
