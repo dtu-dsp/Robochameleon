@@ -1,7 +1,7 @@
 function plotCool(x,y,varargin)
 %close all
 
-error(nargchk(1,Inf,nargin));
+narginchk(1,Inf);
 
 % check the arguments
 if ~isnumeric(x),

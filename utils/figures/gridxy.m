@@ -41,7 +41,7 @@ function hh = gridxy(x,varargin)
 % 2.2 feb 2008 - added set(gca,'layer','top') to put gridlines behind the
 %                axis tick marks
 
-error(nargchk(1,Inf,nargin)) ;
+narginchk(1,Inf);
 
 % check the arguments
 if ~isnumeric(x),

@@ -30,7 +30,7 @@ function fixPSlinestyle(varargin)
 % Copyright 2005-2010 The MathWorks, Inc.
 
 % Error checking
-error(nargchk(1, 2, nargin));
+narginchk(1, 2);
 if ~ischar(varargin{1}) || (nargin == 2 && ~ischar(varargin{2}))
   error('Input arguments must be file names (char).');
 end
