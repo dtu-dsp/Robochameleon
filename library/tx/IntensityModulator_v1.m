@@ -1,5 +1,5 @@
 %> @file IntensityModulator_v1.m
-%> @brief Nonlinear fiber optical channel model class definition
+%> @brief Linear or Mach-Zehnder intensity modulator
 %>
 %> @class IntensityModulator_v1
 %> @brief Linear or Mach-Zehnder intensity modulator

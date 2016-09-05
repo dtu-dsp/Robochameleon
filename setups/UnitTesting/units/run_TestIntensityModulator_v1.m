@@ -34,7 +34,7 @@ driveAmp = 0.5*param.im.Vpi;
 param.im.loss = 3;
 
 %% Do the simulation
-laser = Laser_v1(param.laser);
+laser = Laser_v3(param.laser);
 laserSig = laser.traverse();
 
 t = genTimeAxisSig(laserSig);
