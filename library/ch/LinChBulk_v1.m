@@ -218,7 +218,7 @@ classdef LinChBulk_v1 < unit
                     robolog('Channel input has zero carrier frequency, assuming lossless', 'WRN')
                 end
             end
-            loss_lin=10^(-obj.L*obj.loss/10);
+            loss_lin=10^(-obj.L*obj.loss/20);
             out = EPMD*(loss_lin*eye(in.N));
             
             if in.N==2
