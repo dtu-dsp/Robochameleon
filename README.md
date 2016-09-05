@@ -32,7 +32,8 @@ Authors
 - Miguel Iglesias \<miguelio@kth.se\>
 - Molly Piels \<mopi@fotonik.dtu.dk\>
 - Darko Zibar \<dazi@fotoni.dtu.dk\>
-
+- Rasmus Jones \<rajo@fotoni.dtu.dk\>
+- Julio Cesar Medeiros Diniz \<jcmdi@fotonik.dtu.dk\>
 
 License
 =======
@@ -51,6 +52,13 @@ There are several open-source projects that have been incorporated into Robocham
 | ENC8B10B | ? | 8b/10b encoder | Alex Forencich <a href="http://www.alexforencich.com/wiki/en/scripts/matlab/enc8b10b">link</a>|
 | cprintf | BSD | text formatting for robolog | Yair Altman <a href="http://www.mathworks.com/matlabcentral/fileexchange/24093-cprintf-display-formatted-colored-text-in-the-command-window">link</a>|
 | scripts | Using Doxygen with Matlab| Documentation generation | Fabrice <a href="http://www.mathworks.com/matlabcentral/fileexchange/25925-using-doxygen-with-matlab">link</a>|
+| clearex |  | clear all except | Arnaud Laurent|
+| cloudPlot | The MathWorks| Constellation display | Daniel Armyr <a href="https://se.mathworks.com/matlabcentral/fileexchange/23238-cloudplot">link</a>|
+| convo_bench ver 2.0 | own| Fast convolution using fft | Ilias Konsoulas <a href="https://se.mathworks.com/matlabcentral/fileexchange/44466-beating-matlab-s-convolution-function-conv-m-for-long-real-sequences-">link</a>|
+| distinguishable_colors | own| plotting | Tim Holy <a href="https://se.mathworks.com/matlabcentral/fileexchange/29702-generate-maximally-perceptually-distinct-colors">link</a>|
+| fieldnamesr | BSD | parameter parsing | Adam Tudor Jones <a href="https://se.mathworks.com/matlabcentral/fileexchange/33262-get-structure-field-names-in-recursive-manner/content/fieldnamesr.m">link</a>|
+
+
 
 All but the documentation add-in can be found in the _addons/Name_ folders (as appropriate).  The documentation generation code is in _doc/scripts_.
 
