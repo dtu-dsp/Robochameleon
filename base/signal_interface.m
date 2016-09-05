@@ -389,13 +389,24 @@ classdef signal_interface
             if param.Rs~=obj2.Rs
                 robolog('Assuming symbol rate of the first signal (%sBd).', 'WRN', formatPrefixSI(param.Rs,'%1.1f'));
             end
-            param.PCol = obj1.PCol+obj2.PCol;
+            param.PCol = obj1.PCol+obj2.PCol;   %TEMPORARY - for SNR only; power should be calculated numerically b/c of coherence issues
+            
+            %frequency offset
             Fc1 = obj1.Fc;
             Fc2 = obj2.Fc;
             param.Fc = (Fc1+Fc2)/2;
             s1 = bsxfun(@times,getScaled(obj1),exp(2j*pi*(Fc1-param.Fc)/param.Fs*(0:L-1)'));
             s2 = bsxfun(@times,getScaled(obj2),exp(2j*pi*(Fc2-param.Fc)/param.Fs*(0:L-1)'));
+            
+            % waveform addition
             s = s1+s2;
+            
+            %power tracking
+            avpower = pwr.meanpwr(s);
+            for jj = 1:N
+                param.PCol(jj) = pwr(param.PCol(jj).SNR, {avpower(jj), 'W'});
+            end
+            
             obj = signal_interface(s,param);
             obj.P = setPtot(obj);
         end
