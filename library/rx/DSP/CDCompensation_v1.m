@@ -77,9 +77,12 @@ classdef CDCompensation_v1 < unit
             else
                 % Automatically choose FFT size based on the signal size
                 Nfft = in.L;
+            end            
+            if mod(Nfft/2, 1)==0
+                omega = 2*pi*[(0:Nfft/2-1),(-Nfft/2:-1)]'/(Nfft/in.Fs);
+            else
+                omega = 2*pi*[(0:Nfft/2-.5),(-Nfft/2:-1)]'/(Nfft/in.Fs);
             end
-            
-            omega = pi*in.Fs*triang(Nfft);
             H = cdtransfun(obj,omega);
             out = fun1(in,@(s)ifft(H.*fft(s,Nfft),Nfft));
         end        
