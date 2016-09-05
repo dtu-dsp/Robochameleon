@@ -56,6 +56,7 @@ classdef PhaseNoiseModel_v1
             obj.MinFreq = paramdefault(param, 'MinFreq', 1e3);
             obj.MaxFreq = paramdefault(param, 'MaxFreq', 50e9);
             obj.type = paramdefault(param, 'type', 'log');
+            obj.f_cutoff =  paramdefault(param, 'f_cutoff', 0);
             % If linewidth is specified, lorenztial lineshape is assumed.
             if isfield(param, 'linewidth') && ~isempty(param.linewidth)
                 obj.linewidth = param.linewidth;
@@ -69,7 +70,7 @@ classdef PhaseNoiseModel_v1
                 if obj.LFLW1GHZ > 50
                     obj.zoom = paramdefault(param, 'zoom', 1e5*sqrt(obj.LFLW1GHZ));
                 else
-                obj.zoom = paramdefault(param, 'zoom', 2*obj.HFLW);
+                    obj.zoom = paramdefault(param, 'zoom', 2*obj.HFLW);
                 end
             end
         end
@@ -92,6 +93,13 @@ classdef PhaseNoiseModel_v1
                 FMnoiseCal = obj.linewidth/pi*ones(size(FMfreq));
             else
                 FMnoiseCal=obj.PSDmodel(obj.FMfreq,obj.LFLW1GHZ,obj.HFLW,obj.K,obj.fr,obj.alpha);
+            end
+            if obj.f_cutoff ~= 0 && obj.f_cutoff>=obj.MinFreq
+                for a=1:length(FMfreq)
+                    if(FMfreq(a)<obj.f_cutoff)
+                        FMnoiseCal(a)=0;
+                    end
+                end
             end
             PMnoiseCal = (2*pi)^2*FMnoiseCal./((2*pi)^2*FMfreq.^2);
         end
@@ -116,7 +124,11 @@ classdef PhaseNoiseModel_v1
             lw = max(diff(intersects));
         end
         %% Plotting functions
-        function plotLineShape(obj)
+        function plotLineShape(obj, varargin)
+            plotZoom =true;
+            if nargin > 1
+                plotZoom = varargin{1};
+            end
             colors
             % Get frequency limits for lineshape and inner plot
             fmax1 = 15e9;
@@ -137,42 +149,42 @@ classdef PhaseNoiseModel_v1
             xlabel('GHz')
             title('Optical lineshape')
             hold on
-            
-            % Calculate lineshape of the zoom
-            [SPEC,F] = getLineShape(obj,fmax2);
-            SPEC = SPEC/max(SPEC);
-            point = -3;
-            line = repmat(point, [length(SPEC), 1]);
-            intersects = intersections(F,line,F,pow2db(SPEC));
-            lw = max(diff(intersects));
-            
-            
-            handaxes2 = axes('Position', [0.18 0.66 0.1 0.2]);
-            if isempty(obj.zoom)
-                obj.zoom = 2*lw;
+            if plotZoom
+                % Calculate lineshape of the zoom
+                [SPEC,F] = getLineShape(obj,fmax2);
+                SPEC = SPEC/max(SPEC);
+                point = -3;
+                line = repmat(point, [length(SPEC), 1]);
+                intersects = intersections(F,line,F,pow2db(SPEC));
+                lw = max(diff(intersects));
+                
+                
+                handaxes2 = axes('Position', [0.18 0.66 0.1 0.2]);
+                if isempty(obj.zoom)
+                    obj.zoom = 2*lw;
+                end
+                [~, Zoom, axFactor, axUnit] = formatPrefixSI(obj.zoom,'','Hz');
+                plot(F*axFactor,pow2db(SPEC), 'color', red);
+                hold on
+                plot([intersects(1) intersects(end)]*axFactor,[point point], 'ko', 'MarkerFaceColor', 'k');
+                [~, lw, ~, lwUnit] = formatPrefixSI(lw,'','Hz');
+                title([num2str(lw,3), [' ' lwUnit]])
+                ylim([-5 0])
+                xlim(Zoom*[-1 1])
+                set(handaxes2, 'Box', 'off')
+                ylabel('dB')
+                xlabel(axUnit)
+                box on
             end
-            [~, Zoom, axFactor, axUnit] = formatPrefixSI(obj.zoom,'','Hz');
-            plot(F*axFactor,pow2db(SPEC), 'color', red);
-            hold on
-            plot([intersects(1) intersects(end)]*axFactor,[point point], 'ko', 'MarkerFaceColor', 'k');
-            [~, lw, ~, lwUnit] = formatPrefixSI(lw,'','Hz');
-            title([num2str(lw,3), [' ' lwUnit]])
-            ylim([-5 0])
-            xlim(Zoom*[-1 1])
-            set(handaxes2, 'Box', 'off')
-            ylabel('dB')
-            xlabel(axUnit)
-            box on
-            
             %             hold on
-            %             [SPEC,F]=Laser_v1.CalcSpectrum2(obj.FMnoiseCal,obj.FMfreq,NoLWPts,fmax);
+            %             [SPEC,F]=Laser_v2.CalcSpectrum2(obj.FMnoiseCal,obj.FMfreq,NoLWPts,fmax);
             %             plot(F,pow2db(SPEC/max(SPEC)), 'r');
         end
         
         function plotFMPSD(obj,varargin)
             % Plot FREQUENCY PSDs
-            if nargin >0
-                loglog(obj.FMfreq, pi*obj.genFMPSD())
+            if nargin >1
+                loglog(obj.FMfreq, pi*obj.genFMPSD(),varargin)
             else
                 colors
                 loglog(obj.FMfreq, pi*obj.genFMPSD(),  'color', red, 'LineWidth',2)
@@ -182,9 +194,9 @@ classdef PhaseNoiseModel_v1
             %             xlim([obj.MinFreq, obj.MaxFreq])
             xlim([obj.MinFreq, 100e9])
             ylim([1e4 1e8])
-%             if ~isnan(obj.fn)
-%                 ylim(1.1*pi*[min(FN) max(FN)]);
-%             end
+            %             if ~isnan(obj.fn)
+            %                 ylim(1.1*pi*[min(FN) max(FN)]);
+            %             end
             title('\pi S_{\nu}(f)')
             xlabel('Hz')
             ylabel('Hz^2 / Hz');
@@ -193,13 +205,16 @@ classdef PhaseNoiseModel_v1
         
         function plotPNPSD(obj,varargin)
             % Plot phase PSDs
-            if nargin >0
-                loglog(obj.FMfreq, obj.genPNPSD())
+            if nargin >1
+                loglog(obj.FMfreq, obj.genPNPSD(),varargin)
             else
                 colors
                 loglog(obj.FMfreq, obj.genPNPSD(),  'color', red, 'LineWidth',2)
             end
-            xlim([obj.MinFreq, obj.MaxFreq])
+            try
+                xlim([obj.MinFreq, obj.MaxFreq])
+            catch
+            end
             title('\pi S_{\phi}(f)')
             xlabel('Hz')
             ylabel('Hz^2 / Hz');

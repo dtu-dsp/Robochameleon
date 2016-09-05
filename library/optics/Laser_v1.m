@@ -267,22 +267,11 @@ classdef Laser_v1 < unit
         
         %> @brief save parameters, generate noise
         function [fn,pn] = process(obj,varargin)
-        %> 
-        %> This function copies signal_interface parameters from input
-        %> signal if any, then calls genNoise to generate
-        %> appropriate phase noise and frequency noise sequences.
-        %>
-        %> @param varargin input signal_interface
-        %> @retval fn frequency noise sequence
-        %> @retval fn phase noise sequence
-            if obj.nInputs == 1
-                % Obtain params from signal
-                obj.Fs = varargin{1}.Fs;
-                obj.Rs = varargin{1}.Rs;
-                obj.Lnoise = varargin{1}.L;
-                obj.model.MinFreq = obj.MinFreq();
-                obj.model.MaxFreq = obj.MaxFreq();
-            end
+            %>
+            %> This function calls genNoise to generate
+            %> appropriate phase noise and frequency noise sequences.
+            %>
+            
             % The final time sequence will be mirrored in order to avoid
             % discontinuities in case of repetition
             obj.Lnoise = (obj.Lnoise + 2*obj.model.Lpsd)/2;
@@ -317,11 +306,19 @@ classdef Laser_v1 < unit
             time=linspace(-obj.model.Lpsd,obj.model.Lpsd,2*obj.model.Lpsd+1)/obj.Fs;
             % Frequency domain filters
             H_FN = obj.FMnoiseCal(:);
-            H_FN = [ flipud(H_FN(:)); 0; H_FN(:)]/2;
-            H_FN = sqrt(H_FN);
-            % Time domain filters
-            h_fn = obj.idft(freqs, H_FN, time);
-            h_fn = real(h_fn(:));
+            if length(H_FN)>1
+                H_FN = [ flipud(H_FN(:)); 0; H_FN(:)]/2;
+                H_FN = sqrt(H_FN);
+                % Time domain filters
+                h_fn = obj.idft(freqs, H_FN, time);
+                h_fn = real(h_fn(:));
+            else
+                h_fn = obj.Fs*sqrt(H_FN/2); %Hacked:
+                                %std(diff(pn)) = sqrt(2*pi*linewidth/obj.Fs)
+                                %H_FN = linewidth/pi
+                                %algebra based on lines 308 to 310
+                                %gives this equation
+            end
             % Frequency and phase noise generation
             noise = awgn(zeros(2*obj.Lnoise,1),0)/sqrt(obj.Fs);
             fn =conv(noise,h_fn,'valid');
