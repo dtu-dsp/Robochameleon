@@ -5,9 +5,13 @@
 
 %Initialize Matlab (add relevant folders to path)
 robochameleon;
+addpath('setups')
 
 %Construct system
-system = setup_Supermimo;
+system = Supermimo;
 
 %Run simulation
 traverse(system);
+
+%Display setup
+view(system);

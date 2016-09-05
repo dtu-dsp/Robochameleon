@@ -1,29 +1,25 @@
-% This is a link with the simplest possible configuration.  The script
-% run_sweep_DemoSetup.m runs it
+% This is a link with the simplest possible configuration.
 %
 % The link architecture is: PPG > SNR loading > BERT
-% One PPG output is attached to the BERT, and this binary sequence is used
-% as the reference for error counting
-classdef setup_DemoSetup < module
+classdef SimpleLink < module
     
     properties
         nInputs=0;
         nOutputs=0;
-        
-        
     end
     
     methods
-        function obj = setup_DemoSetup(param)
-            obj.draw=true;
+        function obj = SimpleLink(param)
             
             %Unit constructors
-            ppg = PPG_v1(param.ppg);
+            pg = PatternGenerator_v1(param.pg);
+            ps = PulseShaper_v1(param.ps);
             snr = SNR_v1(param.SNR);
             bert = BERT_v1(param.bert);
             
             %connections
-            ppg.connectOutputs({snr, bert},1:2);
+            pg.connectOutputs(ps, 1);
+            ps.connectOutputs(snr, 1);
             snr.connectOutputs(bert,1);            
             
             %module construction

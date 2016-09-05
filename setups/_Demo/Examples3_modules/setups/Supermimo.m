@@ -8,7 +8,7 @@
 %  The outputs print the data in the command window.
 %
 % The script run_Supermimo.m runs this setup.
-classdef setup_Supermimo < module
+classdef Supermimo < module
     
     properties (Hidden)
         nInputs = 0; % Number of input arguments
@@ -16,7 +16,7 @@ classdef setup_Supermimo < module
     end
     
     methods
-        function obj = setup_Supermimo
+        function obj = Supermimo
             %unit constructors
             si1 = TestSink_v1;
             si2 = TestSink_v1;
