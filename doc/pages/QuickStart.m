@@ -306,7 +306,7 @@
 %> ------------- | -------------
 %> createRoboUnit.m | Create a unit using template
 %> increaseClassVersion.m | Create new version of a unit
-%> paramdefault.m  | Set default parameters in class constructor (see also unit::setparams)
+%> unit::setparams | Set default parameters in class constructor (replaces paramdefault.m) 
 %> robolog.m  | Robochameleon log utility (for errors, warnings, etc.)
 %>
 %> **For running scripts and browsing results**
@@ -315,32 +315,15 @@
 %> robochameleon.m  | Add all robochameleon directories to path
 %> clearall.m  | Clear workspace variables preserving breakpoints
 %> close_biographs.m | Close biographs (module diagrams)
-%> findUnit.m  | Find a unit within a module (requires full unit name, recursive search)
+%> findUnit.m | Find a unit within a module (requires full unit name, recursive search)
 %> compileMex.m | Compile all MEX files in project
 %> 
 %> @see \ref roboUtils
 %> 
 %> 
 %> \section Examples Examples
-%> There are a number of examples in the \setups\_Demo folder.  In order of
-%> increasing complexity, they are:
-%> 
-%> 1. run_Testpwr.m
-%>      * Using [pwr] objects
-%> 2. run_TestSignalInterface
-%>      * Using [signal_interface] objects
-%> 3. run_TestSignalInterfaceAdvanced
-%>      * Advanced use of [signal_interface] objects
-%> 4. run_sweep_DemoSetup/setup_DemoSetup
-%>      * IMDD link with BER/SNR sweep
-%> and no physical channel model.
-%> 5. run_16QAM/setup_16QAM
-%>      * Module with 16QAM generation and detection at 1 sample per symbol
-%> and no physical channel model.
-%> 6. run_16QAM_LinChannel/setup_16QAM_LinChannel
-%>      * Full coherent optical system with linear channel
-%> 7. run_16QAM_NonlinChannel/setup_16QAM_NonlinChannel
-%>      * Full coherent optical system with nonlinear channel
+%> There are a number of examples in the \setups\Demo folder.  These are
+%> organized in order of increasing complexity in numbered sub-folders.
 %> 
 %> \section Refs Useful references
 %> 
