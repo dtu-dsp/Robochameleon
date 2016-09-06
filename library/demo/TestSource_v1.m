@@ -1,3 +1,16 @@
+%> @file  TestSource_v1.m
+%> @brief Simple "transmitter" that generates a dummy output signal
+
+%> @class  TestSource_v1
+%> @brief Simple "transmitter" that generates a dummy output signal
+%>
+%> For use in examples and function testing
+%>
+%> Signal is populated with random numbers
+%> 
+%> @see Demo setup supermimo
+%>
+%> @version 1
 classdef TestSource_v1 < unit
 
     properties (Hidden=true)

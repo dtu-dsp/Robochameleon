@@ -1,4 +1,4 @@
-%> @file OrthogonalCodeGenerator_v1
+%> @file OrthogonalCodeGenerator_v1.m
 %> @brief Contains the implementation of a binary/n-ary orthogonal code
 %> generator
 %>

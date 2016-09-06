@@ -1,4 +1,4 @@
-%> @filt OpticalHybrid_v1.m
+%> @file OpticalHybrid_v1.m
 %> @brief Passive part of an optical hybrid
 %>
 %> @class OpticalHybrid_v1

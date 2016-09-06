@@ -1,8 +1,8 @@
 %>@file ElectricalFilter_v1.m
-%>@brief ElectricalFilter_v1 Electrical filtering of a driver device.
+%>@brief Electrical filtering of a driver device.
 %>
 %>@class ElectricalFilter_v1
-%>@brief ElectricalFilter_v1 Electrical filtering of a driver device.
+%>@brief Electrical filtering of a driver device.
 %>
 %> This function simulates a driver device. It performs electrical filtering
 %> of the signal and simulates group delay, amplitude imbalance and DC level
@@ -13,7 +13,6 @@
 %>
 %> __Example__
 %> @code
-%>   % Here we put a FULLY WORKING example using the MINIMUM set of required parameters
 %>    param.sig.Fs = 64e9;
 %>    param.sig.Fc = 0;
 %>    param.sig.Rs = 32e9;
@@ -29,7 +28,6 @@
 %>
 %> __Advanced Example__
 %> @code
-%>   % Here we put a FULLY WORKING example using the MAXIMUM set of required parameters
 %>    param.sig.Fs = 64e9;
 %>    param.sig.Fc = 0;
 %>    param.sig.Rs = 32e9;

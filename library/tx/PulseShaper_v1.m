@@ -1,8 +1,8 @@
 %>@file PulseShaper_v1.m
-%>@brief PulseShaper_v1 Pulse shaper.
+%>@brief Pulse shaper.
 %>
 %>@class PulseShaper_v1
-%>@brief PulseShaper_v1 Pulse shaper.
+%>@brief Pulse shaper.
 %>
 %> This function converts the input signal in an upsampled pulse shaped signal.
 %>
@@ -19,7 +19,6 @@
 %>
 %> __Example__
 %> @code
-%>   % Here we put a FULLY WORKING example using the MINIMUM set of required parameters
 %>   param.ps.samplesPerSymbol = 8;
 %>   param.ps.pulseShape = 'rz33';
 %>   pulseshaper = PulseShaper_v1(param.quantizer);
@@ -36,7 +35,6 @@
 %>
 %> __Advanced Example__
 %> @code
-%>   % Here we put a FULLY WORKING example using the MINIMUM set of required parameters
 %>   param.ps.samplesPerSymbol = 8;
 %>   param.ps.pulseShape = 'rc';
 %>   param.ps.rollOff = 0.1;

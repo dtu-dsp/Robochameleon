@@ -1,4 +1,4 @@
-%> @file DDPLL_v1
+%> @file DDPLL_v1.m
 %> @brief contains implementation of decision-directed PLL
 %>
 %> @class DDPLL_v1
