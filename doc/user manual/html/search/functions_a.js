@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['n',['N',['../classsignal__interface.html#a6d391ff47bfa74afe313254dfcf78e42',1,'signal_interface']]],
-  ['nonlinearchannel_5fv1',['NonlinearChannel_v1',['../class_nonlinear_channel__v1.html#ab7c8186b014bb9fa1c17716b9d0aa943',1,'NonlinearChannel_v1']]],
-  ['normalize',['normalize',['../classsignal__interface.html#aa474bae95df69b4fb344a1d082ef8948',1,'signal_interface']]],
-  ['normpwr',['normpwr',['../classpwr.html#a657a41063d24944d8c5bc227f09043ef',1,'pwr']]],
-  ['nss',['Nss',['../classsignal__interface.html#acdd10883e279b98617edf118d7ccf159',1,'signal_interface']]]
+  ['l',['L',['../classsignal__interface.html#afca8fb621c0479eefe279a2242cf0e2c',1,'signal_interface']]],
+  ['laser_5fv1',['Laser_v1',['../class_laser__v1.html#ab029719fd05e83df73d6e808529b8dfe',1,'Laser_v1']]],
+  ['lin2db',['lin2dB',['../lin2d_b_8m.html#aa6f889caf847898e908c59032c80bba2',1,'lin2dB.m']]],
+  ['linchbulk_5fv1',['LinChBulk_v1',['../class_lin_ch_bulk__v1.html#a9357177187e219cb1ef0b43480ad21eb',1,'LinChBulk_v1']]]
 ];

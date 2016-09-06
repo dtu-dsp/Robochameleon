@@ -1,14 +1,25 @@
 var searchData=
 [
   ['f3db',['f3dB',['../class_balanced_pair__v1.html#ace6db87d191f37170716d76d3e2badc5',1,'BalancedPair_v1']]],
+  ['f_5fcutoff',['f_cutoff',['../class_phase_noise_model__v1.html#a25f6ec2188d10a24902ed8610f222c7f',1,'PhaseNoiseModel_v1']]],
   ['fastmode',['FastMode',['../class_b_e_r_t__v1.html#ad1750610a16536012c69a0a850b575da',1,'BERT_v1']]],
   ['fc',['Fc',['../classsignal__interface.html#a3b50ebf3f3f454e30ea9f75473852e35',1,'signal_interface::Fc()'],['../class_laser__v1.html#aee9cab8edb7584d205a46098f07b6ac8',1,'Laser_v1::Fc()']]],
+  ['filterbyfft',['filterByFFT',['../class_digital_pre_filter__v1.html#a02003905b3d71716180874f964265cae',1,'DigitalPreFilter_v1']]],
+  ['filtercoeffs',['filterCoeffs',['../class_pulse_shaper__v1.html#a38bfcafb552585efb9d053db82ba72cf',1,'PulseShaper_v1']]],
+  ['filterspanlength',['filterSpanLength',['../class_pulse_train_generator__v1.html#a8e1c2fe15b63cd9e8723c87bbe576cf1',1,'PulseTrainGenerator_v1']]],
+  ['filtersymbollength',['filterSymbolLength',['../class_pulse_shaper__v1.html#a9b0d33feb1bf4bfa3736aa2f615b2d82',1,'PulseShaper_v1']]],
+  ['findrange',['findrange',['../findrange_8m.html#a2443bf27119a141cf7a277f080fde940',1,'findrange.m']]],
+  ['findrange_2em',['findrange.m',['../findrange_8m.html',1,'']]],
   ['findres',['FindRes',['../class_resample__v1.html#acf2e9d0539bf88d22e8d078b74ace8c7',1,'Resample_v1']]],
+  ['findunit',['findUnit',['../find_unit_8m.html#a8fd79af14534d721cd18fe04f892cee3',1,'findUnit.m']]],
   ['findunit_2em',['findUnit.m',['../find_unit_8m.html',1,'']]],
   ['fmnoisecal',['FMnoiseCal',['../class_laser__v1.html#a546d3bf36bb1931cf31e56857ccfd960',1,'Laser_v1']]],
   ['fn',['fn',['../class_laser__v1.html#a96ef6d41d9443ed47c4ac415b91a0bc6',1,'Laser_v1']]],
-  ['fr',['fr',['../class_phase_noise_model__v1.html#ade9b6c22c72dedfc474f87c8aac49cb0',1,'PhaseNoiseModel_v1']]],
-  ['freqshift',['freqShift',['../class_pulse_shaper__v1.html#a77501e6f7ee625c0ad9ca374aafea2df',1,'PulseShaper_v1']]],
-  ['fs',['Fs',['../classsignal__interface.html#ac08b3bf95e00d58049564af80f397e3b',1,'signal_interface::Fs()'],['../class_laser__v1.html#acab07ed4812150bbe9ccc047d2c379f1',1,'Laser_v1::Fs()']]],
-  ['fun1',['fun1',['../classsignal__interface.html#a1274030cc9d0735c1f8bfb5bd4f5b7a8',1,'signal_interface']]]
+  ['formatprefixsi',['formatPrefixSI',['../format_prefix_s_i_8m.html#a70c61a15ef2225c021d05c2959a5cb54',1,'formatPrefixSI.m']]],
+  ['formatprefixsi_2em',['formatPrefixSI.m',['../format_prefix_s_i_8m.html',1,'']]],
+  ['fr',['fr',['../class_laser__v1.html#a43054bfa0459d0fbaeda82b52c337500',1,'Laser_v1::fr()'],['../class_phase_noise_model__v1.html#ade9b6c22c72dedfc474f87c8aac49cb0',1,'PhaseNoiseModel_v1::fr()']]],
+  ['fs',['Fs',['../classsignal__interface.html#ac08b3bf95e00d58049564af80f397e3b',1,'signal_interface::Fs()'],['../class_laser__v1.html#acab07ed4812150bbe9ccc047d2c379f1',1,'Laser_v1::Fs()'],['../class_pulse_train_generator__v1.html#abd7424998b4f994f09fddf6feedc4597',1,'PulseTrainGenerator_v1::Fs()']]],
+  ['fun1',['fun1',['../classsignal__interface.html#a1274030cc9d0735c1f8bfb5bd4f5b7a8',1,'signal_interface']]],
+  ['functiontemplate_5fv1',['functionTemplate_v1',['../function_template__v1_8m.html#a36e5f5be0536f5849f6ff576f0f0321f',1,'functionTemplate_v1.m']]],
+  ['functiontemplate_5fv1_2em',['functionTemplate_v1.m',['../function_template__v1_8m.html',1,'']]]
 ];

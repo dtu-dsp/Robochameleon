@@ -1,7 +1,19 @@
 var searchData=
 [
-  ['resample_5fv1_2em',['Resample_v1.m',['../_resample__v1_8m.html',1,'']]],
-  ['robochameleon_2em',['robochameleon.m',['../robochameleon_8m.html',1,'']]],
-  ['robohelp_2em',['robohelp.m',['../robohelp_8m.html',1,'']]],
-  ['robolog_2em',['robolog.m',['../robolog_8m.html',1,'']]]
+  ['paramdeepcopy_2em',['paramDeepCopy.m',['../param_deep_copy_8m.html',1,'']]],
+  ['paramdefault_2em',['paramdefault.m',['../paramdefault_8m.html',1,'']]],
+  ['paramparser_2em',['paramParser.m',['../param_parser_8m.html',1,'']]],
+  ['patterngenerator_5fv1_2em',['PatternGenerator_v1.m',['../_pattern_generator__v1_8m.html',1,'']]],
+  ['pbc_5fnx1_5fv1_2em',['PBC_Nx1_v1.m',['../_p_b_c___nx1__v1_8m.html',1,'']]],
+  ['pbs_5f1xn_5fv1_2em',['PBS_1xN_v1.m',['../_p_b_s__1x_n__v1_8m.html',1,'']]],
+  ['pd_5fv1_2em',['PD_v1.m',['../_p_d__v1_8m.html',1,'']]],
+  ['phasenoisemodel_5fv1_2em',['PhaseNoiseModel_v1.m',['../_phase_noise_model__v1_8m.html',1,'']]],
+  ['plotsignal_2em',['plotSignal.m',['../plot_signal_8m.html',1,'']]],
+  ['polarizer_5fv1_2em',['Polarizer_v1.m',['../_polarizer__v1_8m.html',1,'']]],
+  ['polmux_5fv1_2em',['PolMux_v1.m',['../_pol_mux__v1_8m.html',1,'']]],
+  ['ppg_5fv1_2em',['PPG_v1.m',['../_p_p_g__v1_8m.html',1,'']]],
+  ['progress_2em',['progress.m',['../progress_8m.html',1,'']]],
+  ['pulseshaper_5fv1_2em',['PulseShaper_v1.m',['../_pulse_shaper__v1_8m.html',1,'']]],
+  ['pulsetraingenerator_5fv1_2em',['PulseTrainGenerator_v1.m',['../_pulse_train_generator__v1_8m.html',1,'']]],
+  ['pwr_2em',['pwr.m',['../pwr_8m.html',1,'']]]
 ];

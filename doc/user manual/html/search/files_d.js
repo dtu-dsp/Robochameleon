@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['qam16tx_5fv1_2em',['QAM16Tx_v1.m',['../_q_a_m16_tx__v1_8m.html',1,'']]],
-  ['quadratureimbalancecompensation_5fv1_2em',['QuadratureImbalanceCompensation_v1.m',['../_quadrature_imbalance_compensation__v1_8m.html',1,'']]],
-  ['quickstart_2em',['QuickStart.m',['../_quick_start_8m.html',1,'']]]
+  ['opticalhybrid_5fv1_2em',['OpticalHybrid_v1.m',['../_optical_hybrid__v1_8m.html',1,'']]],
+  ['orthogonalcodegenerator_5fv1_2em',['OrthogonalCodeGenerator_v1.m',['../_orthogonal_code_generator__v1_8m.html',1,'']]],
+  ['osnr_5fv1_2em',['OSNR_v1.m',['../_o_s_n_r__v1_8m.html',1,'']]]
 ];

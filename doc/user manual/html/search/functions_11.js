@@ -1,4 +1,25 @@
 var searchData=
 [
-  ['validpwr',['validpwr',['../classpwr.html#a6b009fa18dffc981f92c2380b89ffb5a',1,'pwr']]]
+  ['select',['select',['../classunit__view.html#a2a486596f7efa180c27a30420596b721',1,'unit_view']]],
+  ['set',['set',['../classsignal__interface.html#a01dd982844994a7abd6a42700ef83a6e',1,'signal_interface']]],
+  ['setkeep',['setKeep',['../classsink.html#a2173f6108d469d8939078ddc6a51d432',1,'sink']]],
+  ['setlevels',['setLevels',['../class_p_p_g__v1.html#af9363c55a7315eecf94e134018f97e0e',1,'PPG_v1']]],
+  ['setparams',['setparams',['../classunit.html#a9bd6f4ded320f5d5dc49ff9e6a0d1c69',1,'unit']]],
+  ['setparamt0dutycycle',['setParamT0DutyCycle',['../class_pulse_train_generator__v1.html#a9d53a4b71b10f6e66017ccdc7c12efc3',1,'PulseTrainGenerator_v1']]],
+  ['setptot',['setPtot',['../classsignal__interface.html#ad56c07f5b46c0319f6f3324c79469e62',1,'signal_interface']]],
+  ['signal_5finterface',['signal_interface',['../classsignal__interface.html#abe4e0a166611551cdb52896d90e5e898',1,'signal_interface']]],
+  ['simpleawg_5fv1',['SimpleAWG_v1',['../class_simple_a_w_g__v1.html#a1213cde25a64e8bb08ba115b9714d6cb',1,'SimpleAWG_v1']]],
+  ['simplecoherenttransmitter_5fv1',['SimpleCoherentTransmitter_v1',['../class_simple_coherent_transmitter__v1.html#acc072f0218d5406eb6cfda8d5540db21',1,'SimpleCoherentTransmitter_v1']]],
+  ['simplewdmtransmitter_5fv1',['SimpleWDMTransmitter_v1',['../class_simple_w_d_m_transmitter__v1.html#a8672b208b6af69c3d8d0d3c4af619e4f',1,'SimpleWDMTransmitter_v1']]],
+  ['sink',['sink',['../classsink.html#a72be703c93cd48680ed9e5a719a982ff',1,'sink']]],
+  ['skipmargin',['skipMargin',['../class_crop__v1.html#a63be3171b6ffc0e9bfd354fb0fbd8db5',1,'Crop_v1::skipMargin()'],['../class_b_e_r_t__v1.html#adbbc7133e8e1242fd00df2f923123f04',1,'BERT_v1::skipMargin()']]],
+  ['slndecimate',['SLNDecimate',['../class_decimate__v1.html#a31fc70c4461fb5d1157e8957050b6b3b',1,'Decimate_v1']]],
+  ['snr',['SNR',['../classpwr.html#a9d0e1ce69348fc8853c97e9f6cfa7e8b',1,'pwr']]],
+  ['snr_5fv1',['SNR_v1',['../class_s_n_r__v1.html#a495dcb2ad23a16c249ef388dfc67a142',1,'SNR_v1']]],
+  ['spectra',['spectra',['../spectra_8m.html#a25bb6ded0b10539281f97ee9b97397c6',1,'spectra.m']]],
+  ['splitter_5fv1',['Splitter_v1',['../class_splitter__v1.html#a42115ef9bd1da50117782a9d8ca7ecfb',1,'Splitter_v1']]],
+  ['stokes2jones',['stokes2jones',['../class_polarizer__v1.html#a46f4bf54ef063109c3ea808fc1ba8c20',1,'Polarizer_v1']]],
+  ['stokes_5ffrom_5fu',['stokes_from_U',['../class_lin_ch_bulk__v1.html#ac1008fd4595a200bcb843cb1e935a3a2',1,'LinChBulk_v1']]],
+  ['subsref',['subsref',['../classsignal__interface.html#a6b307b6331aaed4b0ebfeba52d6c9652',1,'signal_interface']]],
+  ['symbolgenerator_5fv1',['SymbolGenerator_v1',['../class_symbol_generator__v1.html#aae55c483243edce5b411f4f71ea40ce5',1,'SymbolGenerator_v1']]]
 ];

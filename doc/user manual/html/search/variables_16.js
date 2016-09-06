@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zoom',['zoom',['../class_phase_noise_model__v1.html#a460155d73c3cafafa11cd44eb6c63871',1,'PhaseNoiseModel_v1']]]
+  ['wavelength',['wavelength',['../class_pulse_train_generator__v1.html#a3ae66a2c6e07ddf95e1a43d4d012e6f0',1,'PulseTrainGenerator_v1']]]
 ];

@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['obtainprbs',['obtainPRBS',['../class_b_e_r_t__v1.html#a05662693c7d9ad284b42de8bda4ae1bb',1,'BERT_v1']]],
-  ['opticalhybrid_5fv1',['OpticalHybrid_v1',['../class_optical_hybrid__v1.html#a9490de04d1fe50890adb22cf630d16ba',1,'OpticalHybrid_v1']]],
-  ['orient_5fsig',['orient_sig',['../class_p_b_c___nx1__v1.html#a4e01dc9c28b0e9ac2b0c97cda3ec2802',1,'PBC_Nx1_v1::orient_sig()'],['../class_p_b_s__1x_n__v1.html#a2287cf82c37e299ca29447d87bba2d20',1,'PBS_1xN_v1::orient_sig()']]],
-  ['osnr_5fv1',['OSNR_v1',['../class_o_s_n_r__v1.html#ac5bf27a22d4478fd3c0b1bc45a5195df',1,'OSNR_v1']]],
-  ['outputp',['outputP',['../classpwr.html#a4c716d929cc601f254f3dc4029b5a569',1,'pwr']]],
-  ['outputsnr',['outputSNR',['../classpwr.html#abd633c52f038dfb773bcbb71503cdaf5',1,'pwr']]]
+  ['mapper_5fv1',['Mapper_v1',['../class_mapper__v1.html#a31fdd8899dda69a3db131532fe27dce7',1,'Mapper_v1']]],
+  ['maxfreq',['MaxFreq',['../class_laser__v1.html#abbda7c7a2765ae2150ff4e7bb3660544',1,'Laser_v1']]],
+  ['meanpwr',['meanpwr',['../classpwr.html#ac1508d74b572ff193e3992c51fc7e08e',1,'pwr']]],
+  ['minus',['minus',['../classpwr.html#a9e3c975a28c5ed9924f3655eb20b4d18',1,'pwr']]],
+  ['module',['module',['../classmodule.html#adf3fafa3d413f33816bed29cb8711563',1,'module']]],
+  ['mrdivide',['mrdivide',['../classpwr.html#a8a7aa341cf945b235a590e36e2e1aae1',1,'pwr']]],
+  ['mtimes',['mtimes',['../classsignal__interface.html#a99cc7698ebf1402074f81c56885ea39c',1,'signal_interface::mtimes()'],['../classpwr.html#a9cfb7d666bdca20eaa52bff9eaf0b0fa',1,'pwr::mtimes()']]]
 ];

@@ -1,9 +1,5 @@
 var searchData=
 [
-  ['maxfreq',['MaxFreq',['../class_laser__v1.html#abbda7c7a2765ae2150ff4e7bb3660544',1,'Laser_v1']]],
-  ['meanpwr',['meanpwr',['../classpwr.html#ac1508d74b572ff193e3992c51fc7e08e',1,'pwr']]],
-  ['minus',['minus',['../classpwr.html#a9e3c975a28c5ed9924f3655eb20b4d18',1,'pwr']]],
-  ['module',['module',['../classmodule.html#adf3fafa3d413f33816bed29cb8711563',1,'module']]],
-  ['mrdivide',['mrdivide',['../classpwr.html#a8a7aa341cf945b235a590e36e2e1aae1',1,'pwr']]],
-  ['mtimes',['mtimes',['../classsignal__interface.html#a99cc7698ebf1402074f81c56885ea39c',1,'signal_interface::mtimes()'],['../classpwr.html#a9cfb7d666bdca20eaa52bff9eaf0b0fa',1,'pwr::mtimes()']]]
+  ['keepoutput',['keepOutput',['../classmodule.html#a12ecca0ec932d0e08ec1ffe38e7ae6f4',1,'module']]],
+  ['kmeans_5fv1',['kmeans_v1',['../kmeans__v1_8m.html#a5f039e067aaa30eed6479397fa60aad3',1,'kmeans_v1.m']]]
 ];
