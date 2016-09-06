@@ -77,23 +77,27 @@ This is a brief description of the most important functions in Robochameleon, gr
   </tr>
 <tr>
     <td>Symbol sequence generation</td>
-    <td>TxSymbolsGen_v1, PPG_v1, OrthogonalCodeGenerator_v1, SHF_DAC_v1</td> 
+    <td>PatternGenerator_v1, Mapper_v1, SymbolGenerator_v1</td> 
 </tr>
 <tr>
-    <td>Pulse shaping</td>
-    <td>TxPulseShaping_v1, PulseShaper_v1</td> 
+    <td>Pulse shaping and digital-analog conversion</td>
+    <td>PulseShaper_v1, Quantizer_v1, DAC_v1</td> 
 </tr>
 <tr>
     <td>Transmitter models (coherent and intensity)</td>
-    <td>IQ_v1, IQideal_v1, IntensityModulator_v1</td> 
+    <td>IQModulator_v1, IntensityModulator_v1</td> 
 </tr>
 <tr>
     <td>Receiver models (photodiodes, balanced pairs, analog-digital conversion)</td>
-    <td>PD_v1, BalancedPair_v1, ADC_v1</td> 
+    <td>PD_v1, BalancedPair_v1, ADC_v1, CoherentFrontend_v2</td> 
 </tr>
 <tr>
     <td>Other optical components (laser, optical hybrid, polarization beam splitter, ...)</td>
     <td>Laser_v1, OpticalHybrid_v1, PBS_1xN_v1, PBC_Nx1_v1, Polarizer_v1</td> 
+</tr>
+<tr>
+    <td>Other impairments</td>
+    <td>ResampleSkewJitter_v1, ElectricalFilter_v1</td> 
 </tr>
 </table>
 
