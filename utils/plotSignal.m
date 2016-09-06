@@ -1,5 +1,31 @@
+%> @file plotSignal.m
+%> @brief Plot signal using options based on signal properties
+%>
+%> Depending on what is possible, this function will plot any of the
+%> following quantities:
+%>
+%> 1. Time-domain trace
+%>
+%> 2. Constellation
+%>
+%> 3. Power spectrum
+%>
+%> 4. Eye diagrams
+%> 
+%> @author Miguel Iglesias Olmedo
+%>
+%> @see pabs.m, pabsang.m, pabsh.m, pconst.m, preim.m
+%>
+%> @version 1
+
+%> @brief Plot signal_interface using options based on signal properties
+%>
+%> @param y          Waveform
+%> @param Nss        Number of samples per symbol
+%> @param Fs         Sampling frequency [Hz]
 function plotSignal(y,Nss,Fs)
 colors
+
 if (Nss>1)
     %% Processing
     % Obtain data and plot limits
