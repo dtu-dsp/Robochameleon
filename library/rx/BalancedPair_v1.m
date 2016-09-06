@@ -148,7 +148,7 @@ classdef BalancedPair_v1 < unit
                 PCol_out(jj) = pwr(10*log10(Ps_out(jj)/Pn_out(jj)), {Ps_out(jj),'W'});
             end
             
-            out = in1.set('E', outn, 'PCol', PCol_out);
+            out = in1.set('E', outn, 'PCol', PCol_out, 'Fc', 0);
             %out = signal_interface(outn, struct('Fs',in1.Fs,'Rs',in1.Rs, 'P', ...
             %    pwr(10*log10(Ps_out./Pn_out),{Ps_out,'W'}), 'Fc', in1.Fc-in2.Fc ));
             
