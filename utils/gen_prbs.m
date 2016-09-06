@@ -1,9 +1,23 @@
+%> @file gen_prbs.m
+%> @brief Generate PRBS sequence
+%>
+%> DEPRECATED.  Use PatternGenerator_v1::gen_prbs instead
+%>
+%> 2^n-1-bit PRBS sequence based on the polynomial with minimum # XORs.
+%> Example:
+%> @code
+%> x=gen_prbs(n)
+%> @endcode
+%>
+%> Primitive polynomials are the ones employed by SHF.
+ 
+%> @brief Generate PRBS sequence
+%> 
+%> @param n         PRBS order
+%>
+%> @retval x        PRBS sequence
 function x=gen_prbs(n)
-% x=gen_prbs(n)
-% 2^n-1-bit PRBS sequence based on the polynomial with minimum # XORs.
-% n: PRBS length
 
-% Primitive polynomial employed by SHF
 switch n
     case 7
         g = [7 6];

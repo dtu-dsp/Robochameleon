@@ -1,3 +1,32 @@
+%> @file formatPrefixSI.m
+%> @brief Formats a number for printing using SI prefixes
+%>
+%> Finds the most appropriate SI prefix to use given an arbitrary input
+%> number.
+%>
+%> @author Robert Borkowski
+%>
+%> @see robolog.m
+%>
+%> @version 1
+
+%> @brief Formats a number for printing using SI prefixes
+%>
+%> Finds the most appropriate SI prefix to use given an arbitrary input
+%> number.
+%>
+%> @param x             Input number to be formatted
+%> @param numspec       Number format specification [string] [Default: '%1.2f']
+%> @param unitspec      String representing physical quantity. [e.g. 'W'] [Default: empty]
+%> @param base          Base for numbering system [Default: 10]
+%> @param nonSI         Flag to enable non-traditional unit.  Bypasses rounding to nearest power of 3.  [optional][Default:false]
+%>
+%> @retval s            Output string
+%> @retval mantissa     Mantissa
+%> @retval factor       Power of 10 to multiply output by to get original value
+%> @retval unit         String with SI unit
+%> @retval exponent     Power of base corresponding to SI unit
+%> @retval prefix       String with SI prefix but not unit
 function [s,mantissa,factor,unit,exponent,prefix] = formatPrefixSI(x,numspec,unitspec,base,nonSI)
 
 if nargin<5 % Use traditional units: c, d, da, h.

@@ -1,3 +1,18 @@
+%> @file dB2lin.m
+%> @brief Convert dB to linear units
+%>
+%> @author Robert Borkowski
+%>
+%> @see pwr, defaultargs
+%>
+%> @version 1
+
+%> @brief Convert dB to linear units
+%>
+%> @param dB          Input power in dB 
+%> @param type        What dB is relative to [Watts:'db', mW:'dbm', uW:'dbu']; [default: dBW]
+%>
+%> @retval lin        Input in linear units
 function lin = dB2lin(dB,varargin)
 
 [type] = defaultargs({'db'},varargin);

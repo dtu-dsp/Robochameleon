@@ -1,47 +1,65 @@
+%> @file intersections.m
+%> @brief Intersections of curves.
+%>   Computes the (x,y) locations where two curves intersect.  The curves
+%>   can be broken with NaNs or have vertical segments.
+%>
+%> Example:
+%>   @code
+%>   [X0,Y0] = intersections(X1,Y1,X2,Y2,ROBUST);
+%>   @endcode
+%>
+%> where X1 and Y1 are equal-length vectors of at least two points and
+%> represent curve 1.  Similarly, X2 and Y2 represent curve 2.
+%> X0 and Y0 are column vectors containing the points at which the two
+%> curves intersect.
+%>
+%> ROBUST (optional) set to 1 or true means to use a slight variation of the
+%> algorithm that might return duplicates of some intersection points, and
+%> then remove those duplicates.  The default is true, but since the
+%> algorithm is slightly slower you can set it to false if you know that
+%> your curves don't intersect at any segment boundaries.  Also, the robust
+%> version properly handles parallel and overlapping segments.
+%>
+%> The algorithm can return two additional vectors that indicate which
+%> segment pairs contain intersections and where they are:
+%>
+%>   @code
+%>   [X0,Y0,I,J] = intersections(X1,Y1,X2,Y2,ROBUST);
+%>   @endcode
+%>
+%> For each element of the vector I, I(k) = (segment number of (X1,Y1)) +
+%> (how far along this segment the intersection is).  For example, if I(k) =
+%> 45.25 then the intersection lies a quarter of the way between the line
+%> segment connecting (X1(45),Y1(45)) and (X1(46),Y1(46)).  Similarly for
+%> the vector J and the segments in (X2,Y2).
+%>
+%> You can also get intersections of a curve with itself.  Simply pass in
+%> only one curve, i.e.,
+%>
+%>   @code
+%>   [X0,Y0] = intersections(X1,Y1,ROBUST);
+%>   @endcode
+%>
+%> where, as before, ROBUST is optional.
+%>
+%> @version: 1.12, 27 January 2010
+%> @author:  Douglas M. Schwarz
+%> @email:   dmschwarz=ieee*org, dmschwarz=urgrad*rochester*edu
+%> Real_email = regexprep(Email,{'=','*'},{'@','.'})
+
+%> @brief Intersections of curves.
+%>
+%> @param x1        X coordinates for curve 1
+%> @param y1        Y coordinates for curve 1
+%> @param x2        X coordinates for curve 2
+%> @param y2        Y coordinates for curve 2
+%> @param robust    Flag to enable robust mode [Default: true]
+%>
+%> @retval x0       X coordinates of intersections
+%> @retval y0       Y coordinates of intersections
+%> @retval iout     Indices of intersections for curve 1
+%> @retval jout     Indices of intersections for curve 2
 function [x0,y0,iout,jout] = intersections(x1,y1,x2,y2,robust)
-%INTERSECTIONS Intersections of curves.
-%   Computes the (x,y) locations where two curves intersect.  The curves
-%   can be broken with NaNs or have vertical segments.
-%
-% Example:
-%   [X0,Y0] = intersections(X1,Y1,X2,Y2,ROBUST);
-%
-% where X1 and Y1 are equal-length vectors of at least two points and
-% represent curve 1.  Similarly, X2 and Y2 represent curve 2.
-% X0 and Y0 are column vectors containing the points at which the two
-% curves intersect.
-%
-% ROBUST (optional) set to 1 or true means to use a slight variation of the
-% algorithm that might return duplicates of some intersection points, and
-% then remove those duplicates.  The default is true, but since the
-% algorithm is slightly slower you can set it to false if you know that
-% your curves don't intersect at any segment boundaries.  Also, the robust
-% version properly handles parallel and overlapping segments.
-%
-% The algorithm can return two additional vectors that indicate which
-% segment pairs contain intersections and where they are:
-%
-%   [X0,Y0,I,J] = intersections(X1,Y1,X2,Y2,ROBUST);
-%
-% For each element of the vector I, I(k) = (segment number of (X1,Y1)) +
-% (how far along this segment the intersection is).  For example, if I(k) =
-% 45.25 then the intersection lies a quarter of the way between the line
-% segment connecting (X1(45),Y1(45)) and (X1(46),Y1(46)).  Similarly for
-% the vector J and the segments in (X2,Y2).
-%
-% You can also get intersections of a curve with itself.  Simply pass in
-% only one curve, i.e.,
-%
-%   [X0,Y0] = intersections(X1,Y1,ROBUST);
-%
-% where, as before, ROBUST is optional.
-
-% Version: 1.12, 27 January 2010
-% Author:  Douglas M. Schwarz
-% Email:   dmschwarz=ieee*org, dmschwarz=urgrad*rochester*edu
-% Real_email = regexprep(Email,{'=','*'},{'@','.'})
-
-
 % Theory of operation:
 %
 % Given two line segments, L1 and L2,
@@ -85,7 +103,6 @@ function [x0,y0,iout,jout] = intersections(x1,y1,x2,y2,robust)
 % cross, but if they don't then the line segments cannot cross.  In a
 % typical application, this technique will eliminate most of the potential
 % line segment pairs.
-
 
 % Input checks.
 narginchk(2,5)
@@ -237,12 +254,12 @@ if robust
 		selected = in_range;
 	end
 	xy0 = T(3:4,selected).';
-	
+
 	% Remove duplicate intersection points.
 	[xy0,index] = unique(xy0,'rows');
 	x0 = xy0(:,1);
 	y0 = xy0(:,2);
-	
+
 	% Compute how far along each line segment the intersections are.
 	if nargout > 2
 		sel_index = find(selected);
@@ -255,13 +272,13 @@ else % non-robust option
 		[L,U] = lu(AA(:,:,k));
 		T(:,k) = U\(L\B(:,k));
 	end
-	
+
 	% Find where t1 and t2 are between 0 and 1 and return the corresponding
 	% x0 and y0 values.
 	in_range = (T(1,:) >= 0 & T(2,:) >= 0 & T(1,:) < 1 & T(2,:) < 1).';
 	x0 = T(3,in_range).';
 	y0 = T(4,in_range).';
-	
+
 	% Compute how far along each line segment the intersections are.
 	if nargout > 2
 		iout = i(in_range) + T(1,in_range).';

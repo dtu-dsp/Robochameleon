@@ -1,55 +1,71 @@
-function A = catstruct(varargin)
-% CATSTRUCT   Concatenate or merge structures with different fieldnames
-%   X = CATSTRUCT(S1,S2,S3,...) merges the structures S1, S2, S3 ...
-%   into one new structure X. X contains all fields present in the various
-%   structures. An example:
-%
-%     A.name = 'Me' ;
-%     B.income = 99999 ;
-%     X = catstruct(A,B) 
-%     % -> X.name = 'Me' ;
-%     %    X.income = 99999 ;
-%
-%   If a fieldname is not unique among structures (i.e., a fieldname is
-%   present in more than one structure), only the value from the last
-%   structure with this field is used. In this case, the fields are 
-%   alphabetically sorted. A warning is issued as well. An axample:
-%
-%     S1.name = 'Me' ;
-%     S2.age  = 20 ; S3.age  = 30 ; S4.age  = 40 ;
-%     S5.honest = false ;
-%     Y = catstruct(S1,S2,S3,S4,S5) % use value from S4
-%
-%   The inputs can be array of structures. All structures should have the
-%   same size. An example:
-%
-%     C(1).bb = 1 ; C(2).bb = 2 ;
-%     D(1).aa = 3 ; D(2).aa = 4 ;
-%     CD = catstruct(C,D) % CD is a 1x2 structure array with fields bb and aa
-%
-%   The last input can be the string 'sorted'. In this case,
-%   CATSTRUCT(S1,S2, ..., 'sorted') will sort the fieldnames alphabetically. 
-%   To sort the fieldnames of a structure A, you could use
-%   CATSTRUCT(A,'sorted') but I recommend ORDERFIELDS for doing that.
-%
-%   When there is nothing to concatenate, the result will be an empty
-%   struct (0x0 struct array with no fields).
-%
-%   NOTE: To concatenate similar arrays of structs, you can use simple
-%   concatenation: 
-%     A = dir('*.mat') ; B = dir('*.m') ; C = [A ; B] ;
+%> @file catstruct.m
+%> @brief Concatenate or merge structures with different fieldnames
+%>
+%>   X = CATSTRUCT(S1,S2,S3,...) merges the structures S1, S2, S3 ...
+%>   into one new structure X. X contains all fields present in the various
+%>   structures. An example:
+%>
+%>     @code
+%>     A.name = 'Me' ;
+%>     B.income = 99999 ;
+%>     X = catstruct(A,B) 
+%>     % -> X.name = 'Me' ;
+%>     %    X.income = 99999 ;
+%>     @endcode
+%>
+%>   If a fieldname is not unique among structures (i.e., a fieldname is
+%>   present in more than one structure), only the value from the last
+%>   structure with this field is used. In this case, the fields are 
+%>   alphabetically sorted. A warning is issued as well. An axample:
+%>
+%>     @code
+%>     S1.name = 'Me' ;
+%>     S2.age  = 20 ; S3.age  = 30 ; S4.age  = 40 ;
+%>     S5.honest = false ;
+%>     Y = catstruct(S1,S2,S3,S4,S5) % use value from S4
+%>     @endcode
+%>
+%>   The inputs can be array of structures. All structures should have the
+%>   same size. An example:
+%>
+%>     @code
+%>     C(1).bb = 1 ; C(2).bb = 2 ;
+%>     D(1).aa = 3 ; D(2).aa = 4 ;
+%>     CD = catstruct(C,D) % CD is a 1x2 structure array with fields bb and aa
+%>     @endcode
+%>
+%>   The last input can be the string 'sorted'. In this case,
+%>   CATSTRUCT(S1,S2, ..., 'sorted') will sort the fieldnames alphabetically. 
+%>   To sort the fieldnames of a structure A, you could use
+%>   CATSTRUCT(A,'sorted') but I recommend ORDERFIELDS for doing that.
+%>
+%>   When there is nothing to concatenate, the result will be an empty
+%>   struct (0x0 struct array with no fields).
+%>
+%> __Notes__
+%>   1. To concatenate similar arrays of structs, you can use simple
+%>   concatenation: 
+%>     @code
+%>     A = dir('*.mat') ; B = dir('*.m') ; C = [A ; B] ;
+%>     @endcode
+%>
+%>   2. This function relies on unique. Matlab changed the behavior of
+%>   its set functions since 2013a, so this might cause some backward
+%>   compatibility issues when dulpicated fieldnames are found.
+%>
+%>   @see CAT, STRUCT, FIELDNAMES, STRUCT2CELL, ORDERFIELDS
+%>
+%> for Matlab R13 and up, tested in R2011a and up
+%> @version 4.0 (dec 2013)
+%> @author Jos van der Geest
+%> @email: jos@jasen.nl
 
-%   NOTE: This function relies on unique. Matlab changed the behavior of
-%   its set functions since 2013a, so this might cause some backward
-%   compatibility issues when dulpicated fieldnames are found.
+%> @brief Concatenate or merge structures with different fieldnames
+%>
+%> @param S1, S2, etc Structures to be concatenated
+%>
+%> @retval A          Combined structure
 %
-%   See also CAT, STRUCT, FIELDNAMES, STRUCT2CELL, ORDERFIELDS
-
-% for Matlab R13 and up, tested in R2011a and up
-% version 4.0 (dec 2013)
-% (c) Jos van der Geest
-% email: jos@jasen.nl
-
 % History
 % Created in 2005
 % Revisions
@@ -64,6 +80,8 @@ function A = catstruct(varargin)
 %   4.0 (dec 2013) fixed problem with unique due to version differences in
 %                  ML. Unique(...,'last') is no longer the deafult.
 %                  (thanks to Isabel P)
+function A = catstruct(varargin)
+
 
 error(nargchk(1,Inf,nargin)) ;
 N = nargin ;
