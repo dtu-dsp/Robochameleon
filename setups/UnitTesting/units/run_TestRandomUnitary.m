@@ -1,5 +1,6 @@
 %linear channel matrix generation test
 %Calculate eigenvalue distribution for a set of matrices
+clearvars -except testFiles nn
 
 N = 2;  %number of modes
 Niter = 5e4;    %number of matrices to generate

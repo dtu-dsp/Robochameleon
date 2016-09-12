@@ -5,6 +5,8 @@ mfullpath = mfilename('fullpath');
 mfilename = mfilename();
 mpath = strrep(mfullpath, mfilename, '');
 
+addpath(genpath('modules'))
+
 testFiles = dir([mpath 'modules']);
 testFiles={testFiles.name};
 

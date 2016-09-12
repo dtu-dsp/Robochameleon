@@ -1,4 +1,4 @@
-clearall;
+clearvars -except testFiles nn
 close all
 
 %plot PSD of phase noise for Lorentzian lineshape laser
