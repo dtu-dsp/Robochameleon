@@ -40,7 +40,7 @@
 %>  param.laser.Fc = const.c/1550e-9;
 %>  param.laser.Lnoise = drive.L;
 %>
-%>  laser = Laser_v3(param.laser);
+%>  laser = Laser_v1(param.laser);
 %>  laserSig = laser.traverse();
 %>
 %>   IQ = IQModulator_v1();
@@ -69,7 +69,7 @@
 %>                                          %degrees of quadrature error; the second is OK
 %>  IQGainImbalance = 0;                 %there is no gain imbalance anywhere
 %>
-%>  laser = Laser_v3(param.laser);
+%>  laser = Laser_v1(param.laser);
 %>  laserSig = laser.traverse();
 %>
 %>  IQ = IQModulator_v1(param.IQ);

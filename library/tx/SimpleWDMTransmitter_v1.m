@@ -130,19 +130,19 @@ classdef SimpleWDMTransmitter_v1 < module
         %> @param param.IQgain_imbalance_y            ??? [see IQ_v1]
         %> @param param.f_off                         ??? [see IQ_v1]
         %>
-        %> Laser_v3
-        %> @param param.Fs                            Sampling frequency [Hz] [see Laser_v3]
-        %> @param param.Rs                            Symbol rate [Hz] [see Laser_v3]
-        %> @param param.Lnoise                        Signal length [Samples] [see Laser_v3]
-        %> @param param.Fc                            Carrier frequency [Hz] [see Laser_v3]
-        %> @param param.Power                         Output power [see Laser_v3]
-        %> @param param.Laser_L                       FM noise PSD length [see Laser_v3 as L]
-        %> @param param.Lir                           FM noise PSD length [see Laser_v3]
-        %> @param param.linewidth                     Lorentzian linewidth [see Laser_v3]
-        %> @param param.LFLW1GHZ                      Linewidth at 1GHz [see Laser_v3]
-        %> @param param.HFLW                          High-frequency linewidth [see Laser_v3]
-        %> @param param.fr                            Relaxation resonance frequency [see Laser_v3]
-        %> @param param.K                             Damping factor [see Laser_v3]
+        %> Laser_v1
+        %> @param param.Fs                            Sampling frequency [Hz] [see Laser_v1]
+        %> @param param.Rs                            Symbol rate [Hz] [see Laser_v1]
+        %> @param param.Lnoise                        Signal length [Samples] [see Laser_v1]
+        %> @param param.Fc                            Carrier frequency [Hz] [see Laser_v1]
+        %> @param param.Power                         Output power [see Laser_v1]
+        %> @param param.Laser_L                       FM noise PSD length [see Laser_v1 as L]
+        %> @param param.Lir                           FM noise PSD length [see Laser_v1]
+        %> @param param.linewidth                     Lorentzian linewidth [see Laser_v1]
+        %> @param param.LFLW1GHZ                      Linewidth at 1GHz [see Laser_v1]
+        %> @param param.HFLW                          High-frequency linewidth [see Laser_v1]
+        %> @param param.fr                            Relaxation resonance frequency [see Laser_v1]
+        %> @param param.K                             Damping factor [see Laser_v1]
         %>
         %> @retval obj      An instance of the class SimpleWDMTransmitter_v1
         function obj = SimpleWDMTransmitter_v1(varargin)
@@ -194,7 +194,7 @@ classdef SimpleWDMTransmitter_v1 < module
             end
         end
         function param_cell=init(obj,param)
-            if ~isfield(param,'Laser_L') % Due to double naming of L in Laser_v3 and L in PatternGenerator_v1
+            if ~isfield(param,'Laser_L') % Due to double naming of L in Laser_v1 and L in PatternGenerator_v1
                param.Laser_L=1; 
             end
             if isfield(param,'output')
