@@ -53,7 +53,7 @@ noiseloader = SNR_v1(param.SNR);
 noisyData = noiseloader.traverse(dataSequence);
 
 %count errors
-BERT = BERT_v4(param.bert);
+BERT = BERT_v1(param.bert);
 BERT.traverse(noisyData);
 
 
