@@ -16,9 +16,10 @@
 %>
 %>
 %> @author Molly Piels
+%> @author Simone Gaiarin
 %>
 %> @version 1
-classdef biograph
+classdef biograph < matlab.mixin.SetGet
     %biograph replacement class
     
     properties
@@ -40,12 +41,17 @@ classdef biograph
         ShowArrows = 'on';
         ShowTextInNodes = 'label';
         ShowWeights = 'off';
+        dg;
     end
     
     methods
         
-        %constructor
+        %> @brief Construct a biograph object
+        %>
+        %> @param dg Sparse matrix representing the graph
         function obj = biograph(dg)
+            obj.dg = dg;
+            
             [i,j,s] = find(dg);
             nodes = unique([i; j]);
             for jj=1:length(nodes)
@@ -76,123 +82,72 @@ classdef biograph
                         'Weight', 1.0)];
                 end
             end
-            
         end
         
-        %> @brief topological sort 1
-        %> 
-        %> Starts from head (do not use)
-        function Layers = sort(obj)
-            %count
-            Nnodes = numel(obj.Nodes);
-            strikeout = [];
-            
-            %find initial vertices
-            Layer0 = [];
-            for jj=1:Nnodes
-                if isempty(strfind([obj.Edges.ID], sprintf('-> %s', obj.Nodes(jj).ID)))
-                    Layer0 = [Layer0, jj];
-                    strikeout = [strikeout, jj];
-                end
+        %> @brief Search all the ancestors of the node
+        %>
+        %> @param dg Sparse matrix representing the graph 
+        %> @param node Current node processed (column number)
+        %>
+        %> @retval ancestors Row vector whose elements equal to one are the parents of node
+        function ancestors = findAncestors(obj, dg, node)
+            n = size(dg, 1);
+            ancestors = zeros(1,n);
+            for i=find(dg(:, node).')
+                % Update ancestors with the parents of the current node
+                % and proceed to the recursive step. Leaf nodes returns 
+                % an all zero vecotr
+                ancestors = ancestors | dg(:,node).' | obj.findAncestors(dg, i);
             end
-            
-            %find subsequent layers
-            Layers = {Layer0};
-            Layer_counter = 1;
-            while numel(strikeout)<Nnodes
-                Layer_curr = [];
-                strike_curr = [];
-                Layer_last = cell2mat(Layers(Layer_counter));
-                %sweep over all nodes in last layer
-                for kk=1:numel(Layer_last)
-                    %sweep over remaining nodes
-                    for jj=1:Nnodes
-                        if ~any(jj==strikeout)
-                            %see if node in previous layer points to this node
-                            if ~isempty(strfind([obj.Edges.ID 'N'], sprintf('%s -> %sN', obj.Nodes(Layer_last(kk)).ID, obj.Nodes(jj).ID)))
-                                Layer_curr = [Layer_curr, jj];
-                                strike_curr = [strike_curr, jj];
-                            end
-                        end
-                    end
-                end
-                %consolidate vectors, update
-                strikeout = [strikeout, unique(strike_curr)];
-                Layer_curr = unique(Layer_curr);
-                Layer_counter = Layer_counter+1;
-                Layers{Layer_counter} = Layer_curr;
-            end
-            
         end
         
-        %> @brief topological sort 2
+        %> @brief Set node callback function
+        %>
+        %> Syntax: 
+        %> @code 
+        %> obj.set('NodeCallbacks', @(x)do_something(x));
+        %> @endcode
+        function obj = set.NodeCallbacks(obj, value)
+            obj.NodeCallbacks = value;
+        end
+        
+        %> @brief Topological sort 3
         %> 
-        %> Starts from tail, splits top layer in case module has an input.
-        function Layers = sort2(obj)
-            %count
-            Nnodes = numel(obj.Nodes);
-            strikeout = [];
-            
-            %find initial vertices
-            LayerEnd = [];
-            for jj=1:Nnodes
-                if isempty(strfind([obj.Edges.ID], sprintf('%s ->', obj.Nodes(jj).ID)))
-                    LayerEnd = [LayerEnd, jj];
-                    strikeout = [strikeout, jj];
-                end
+        %> Use recursive approach using the sparse matrix representation of the graph
+        function Layers = sort3(obj)
+            n = size(obj.dg, 1);
+            % If (i,j) is 1 i is an ancestor of j
+            ancestorsMat = zeros(n);
+            for i=1:n
+                ancestorsMat(:,i) = obj.findAncestors(obj.dg, i);
             end
             
-            %find subsequent layers
-            Layers = {LayerEnd};
-            Layer_counter = 1;
-            while numel(strikeout)<Nnodes
-                Layer_curr = [];
-                strike_curr = [];
-                Layer_last = cell2mat(Layers(Layer_counter));
-                %sweep over all nodes in last layer
-                for kk=1:numel(Layer_last)
-                    %sweep over remaining nodes
-                    for jj=1:Nnodes
-                        if ~any(jj==strikeout)
-                            %see if node in previous layer points to this node
-                            if ~isempty(strfind([obj.Edges.ID 'N'], sprintf('%s -> %sN', obj.Nodes(jj).ID, obj.Nodes(Layer_last(kk)).ID)))
-                                Layer_curr = [Layer_curr, jj];
-                                strike_curr = [strike_curr, jj];
-                            end
-                        end
+            % Sort node indices (first column) based on how many ancestors they have (second column)
+            % The first column contains the sorted node indices
+            nodesOrdering = sortrows([1:n; sum(ancestorsMat)].', 2).';
+
+            % This ugly code just builds the output cell
+            i = 1;
+            x = 1;
+            while i<=n
+                j = i + 1;
+                if i ~= n
+                    % Put nodes with the same number of parents in the same row
+                    while j<=n && (nodesOrdering(2,j) == nodesOrdering(2,i))
+                        j = j+1;
                     end
                 end
-                %consolidate vectors, update
-                strikeout = [strikeout, unique(strike_curr)];
-                Layer_curr = unique(Layer_curr);
-                Layer_counter = Layer_counter+1;
-                Layers{Layer_counter} = Layer_curr;
-            end
-            
-            %re-order top->bottom
-            Layers = fliplr(Layers);
-            
-            %Split first layer if necessary
-            Layer_check = cell2mat(Layers(1));
-            if numel(Layer_check)>1
-                Layer0 = [];
-                Layer1 = [];
-                for jj=1:numel(Layer_check)
-                    if isempty(strfind([obj.Edges.ID], sprintf('-> %s', obj.Nodes(Layer_check(jj)).ID)))
-                        Layer0 = [Layer0, Layer_check(jj)];
-                    else
-                        Layer1 = [Layer1, Layer_check(jj)];
-                    end
-                end
-                Layers = {Layer0 Layer1 Layers{2:end}};
+                Layers{x} = nodesOrdering(1,i:(j-1));
+                i = j;
+                x = x + 1;
             end
         end
         
         %> @brief Display biograph
         %> 
-        %> Calls biograph::sort2
+        %> Calls biograph::sort3
         function view(obj)
-            order = sort2(obj);
+            order = sort3(obj);
             nLayers = numel(order);
             dy = 0.8/(nLayers-1);
             figure('Color', 'w', 'Tag', 'BioGraphTool');
@@ -214,12 +169,15 @@ classdef biograph
                             str2print = obj.Nodes(LayerVec(kk)).ID;
                     end
                     obj.Nodes(LayerVec(kk)).Position = [0.05+(kk-0.5)*dx, 0.9-(jj-1)*dy];
-                    text(0.05+(kk-0.5)*dx, 0.9-(jj-1)*dy, str2print, ...
+                    t=text(0.05+(kk-0.5)*dx, 0.9-(jj-1)*dy, str2print, ...
                         'FontSize', obj.Nodes(LayerVec(kk)).FontSize, ...
                         'HorizontalAlignment', 'center', ...
                         'BackgroundColor', obj.Nodes(LayerVec(kk)).Color, ...
                         'EdgeColor', obj.Nodes(LayerVec(kk)).LineColor, ...
+                        'UserData', obj.Nodes(LayerVec(kk)).UserData, ...
                         'Interpreter', 'none');
+                    callbacktmp = @(x, y)obj.NodeCallbacks(x);      %callback functions must accept two arguments
+                    set(t, 'ButtonDownFcn', callbacktmp);
                 end
             end
             
