@@ -5,13 +5,20 @@
 %>@brief Electrical filtering of a driver device.
 %>
 %> This function simulates a driver device. It performs electrical filtering
-%> of the signal and simulates group delay, amplitude imbalance and DC level
-%> insertion.
+%> on the signal and simulates group delay, amplitude imbalance, DC level
+%> insertion, and peak voltage reshaping.
+%>
 %>
 %> __Observations__
 %> The input signal shall be a complex signal_interface signal.
 %>
-%> __Example__
+%>
+%> __Bypass Example__
+%> If one does not define Rectangular, Gaussian and Bessel filters, the
+%> unit will bypass the filtering.
+%> If one does not define output voltage, DC level and amplitude imbalance,
+%> the output will bypass these functions.
+%> If no parameters are passed, the function will not do anything.
 %> @code
 %>    param.sig.Fs = 64e9;
 %>    param.sig.Fc = 0;
@@ -19,14 +26,34 @@
 %>    Ein = upsample((randi(2,10000,1)-1.5)*2 + 1j*(randi(2,10000,1)-1.5)*2,2);
 %>    signal_in = signal_interface(Ein, param.sig);
 %>
-%>    param.drivers.rectangularFilter = false;
-%>    param.drivers.gaussianOrder = false;
-%>    param.drivers.besselOrder = false;
+%>    drivers = ElectricalFilter_v1([]);
+%>    signal_out = drivers.traverse(signal_in);
+%> @endcode
+%>
+%> __Typical Example__
+%>
+%> This example constructs a rectangular filter
+%>
+%> @code
+%>    param.sig.Fs = 64e9;
+%>    param.sig.Fc = 0;
+%>    param.sig.Rs = 32e9;
+%>    Ein = upsample((randi(2,10000,1)-1.5)*2 + 1j*(randi(2,10000,1)-1.5)*2,2);
+%>    signal_in = signal_interface(Ein, param.sig);
+%>
+%>    param.drivers.rectangularFilter = true;
+%>    param.drivers.rectangularBandwidth = 40e9;
 %>    drivers = ElectricalFilter_v1(param.drivers);
 %>    signal_out = drivers.traverse(signal_in);
 %> @endcode
 %>
 %> __Advanced Example__
+%>
+%> This example has all parameters defined, all of them are optional.
+%> The expeptions are "rectangularBandwidth", "gaussianBandwidth", and
+%> "besselBandwidth" that are, respectively, conditionally mandatory if
+%> "rectangularFilter", "gaussianOrder", and "besselOrder" are defined.
+%>
 %> @code
 %>    param.sig.Fs = 64e9;
 %>    param.sig.Fc = 0;
@@ -47,7 +74,8 @@
 %>    signal_out = drivers.traverse(signal_in);
 %> @endcode
 %>
-%> @author Júlio Diniz
+%>
+%> @author Julio Diniz
 %> @version 1
 classdef ElectricalFilter_v1 < unit
     
@@ -68,9 +96,9 @@ classdef ElectricalFilter_v1 < unit
         besselOrder = 0;
         %> Bandwidth of Bessel Filter
         besselBandwidth;
-        %> Output Voltage
-        outputVoltage = 1;
-        %> AmplitudeImbalance
+        %> Output PEAK Voltage before DC level insertion
+        outputVoltage;
+        %> Amplitude Imbalance
         amplitudeImbalance = 1;
         %> DC level
         levelDC = 0;
@@ -79,16 +107,36 @@ classdef ElectricalFilter_v1 < unit
     
     methods
         %>@brief Class constructor
-        %> @param param.rectangularFilter       Turn ON or OFF the rectangular time-domain filtering. True = ON / False = OFF.
-        %>                                                        
-        %> @param param.rectangularBandwidth    Baseband bandwidth of rectangular filter.
-        %> @param param.gaussianOrder           The order of frequency-domain gaussian filter. Turn OFF = 0 (zero) / Turn ON = any other positive number.
-        %> @param param.gaussianBandwidth       Baseband bandwidth of gaussian filter.
-        %> @param param.besselOrder             The order of frequency-domain bessel filter for group delay simulation. Turn OFF = 0 (zero) / Turn ON = any other positive integer.
-        %> @param param.besselBandwidth         Baseband bandwidth of bessel filter.
-        %> @param param.outputVoltage           Output peak voltage before DC level insertion.
-        %> @param param.amplitudeImbalance      A vector containing amplitude imbalance for each output. E.g. if outputVoltage = 2, and amplitude imbalance equals to [1 0.9 1.1 0.8], so, the output peak voltage will be 2, 1.8, 2.2, and 1.6 for I1, Q1, I2, and Q2, respectively.                                               
-        %> @param param.levelDC                 A vector containing DC levels to be added to each of in-phase and quadrature signals.
+        %> @param param.rectangularFilter       Turn ON or OFF the rectangular time-domain filtering. true = ON /
+        %>                                      false = OFF. [Default: false]
+        %>
+        %> @param param.rectangularBandwidth    Baseband bandwidth of rectangular filter. It needs to be defined
+        %>                                      if param.rectangularFilter == true.
+        %>
+        %> @param param.gaussianOrder           The order of frequency-domain gaussian low-pass filter. 
+        %>                                      Turn OFF = 0 (zero) / Turn ON = any other positive number.
+        %>                                      [Default: 0].
+        %>
+        %> @param param.gaussianBandwidth       Baseband bandwidth of a gaussian filter. It needs to be defined
+        %>                                      if param.gaussianOrder ~= 0; 
+        %>
+        %> @param param.besselOrder             The order of frequency-domain bessel filter for group delay
+        %>                                      insertion. Turn OFF = 0 (zero) / Turn ON = any other positive
+        %>                                      integer.  [Default: 0].
+        %>
+        %> @param param.besselBandwidth         Baseband bandwidth of bessel filter. It needs to be defined
+        %>                                      if param.besselOrder ~= 0; 
+        %>
+        %> @param param.outputVoltage           Output peak voltage before DC level insertion. If it's not
+        %>                                      defined, it will not reformat the output voltage.
+        %>
+        %> @param param.amplitudeImbalance      A vector containing amplitude imbalance for each output. E.g. if
+        %>                                      outputVoltage = 2, and amplitude imbalance equals to
+        %>                                      [1 0.9 1.1 0.8], so, the output peak voltage will be 2, 1.8, 2.2,
+        %>                                      and 1.6 for I1, Q1, I2, and Q2, respectively.  [Default: 1]
+        %>
+        %> @param param.levelDC                 A vector containing DC levels to be ADDED to each of in-phase and
+        %>                                      quadrature signals. [Default: 0].
         %>
         function obj = ElectricalFilter_v1(param)
             
@@ -110,28 +158,36 @@ classdef ElectricalFilter_v1 < unit
         
         function out = traverse(obj, in)
             
-            %% Driver Filtering
-            % Rectangular Filter
-            if obj.rectangularFilter
-                rectCoeffs = (2*obj.rectangularBandwidth/(in.Fs))*sinc(2*in.Nss*(obj.rectangularBandwidth/(in.Fs))*linspace(-101, 101, (in.Nss)*202+1)).';
-                in = in.fun1(@(x) obj.filterByConv(x, rectCoeffs));
-            end
+            %% First part: Driver Filtering
             
             filterFreqDomain = 1;
-            % Gaussian Filter
+            
+            % Defining Rectangular Filter
+            if obj.rectangularFilter
+                rectCoeffs = (2*obj.rectangularBandwidth/(in.Fs))*sinc(2*in.Nss*(obj.rectangularBandwidth/(in.Fs))*linspace(-floor(in.L/2-1)/(in.Nss), floor(in.L/2-1)/(in.Nss), floor(in.L/2-1)*2+1)).';
+                shiftLength = floor(length(rectCoeffs)/2);
+                rectCoeffs(in.L) = 0;
+                filterFreqDomain = filterFreqDomain.*fftshift(fft(circshift(rectCoeffs(:), [-shiftLength 0])));
+                clear rectCoeffs
+            end
+            
+            % Defining Gaussian Filter
             if obj.gaussianOrder
                 filterFreqDomain = filterFreqDomain.*exp(-log(sqrt(2))*((linspace(-0.5,0.5,in.L)/(obj.gaussianBandwidth/(in.Fs))).').^(2*obj.gaussianOrder));
             end
-            % Bessel Filter
+            
+            % Defining Bessel Filter
             if obj.besselOrder
                 [B,A] = besself(obj.besselOrder, obj.besselBandwidth);
                 besselFilter = polyval(B, in.Fs*2j*pi*linspace(-0.5,0.5,in.L))./polyval(A, in.Fs*2j*pi*linspace(-0.5,0.5,in.L));
                 filterFreqDomain = filterFreqDomain.*exp(1j*angle(besselFilter(:)));
             end
+            
+            % Filtering the input data
             in = in.fun1(@(x) obj.filterByFFT(x, filterFreqDomain));
             
             %% Driver Amplitude
-            outputSignal = in.getRaw; 
+            outputSignal = in.getRaw;
             % Test of parameters lengths match
             if length(obj.amplitudeImbalance) == 1
                 obj.amplitudeImbalance(2) = obj.amplitudeImbalance(1);
@@ -154,13 +210,19 @@ classdef ElectricalFilter_v1 < unit
             
             
             % Output Voltage Driver
-            maxVoltage = max(max(abs([real(outputSignal) imag(outputSignal)])));
             for ii = 1:size(outputSignal,2)
-                outputSignal(:,ii) = (obj.amplitudeImbalance(2*ii-1)*real(outputSignal(:,ii)) + 1j*obj.amplitudeImbalance(2*ii)*imag(outputSignal(:,ii)))*obj.outputVoltage/maxVoltage;
+                if obj.outputVoltage
+                    maxVoltage = max(max(abs([real(outputSignal) imag(outputSignal)])));
+                    outputSignal(:,ii) = (obj.amplitudeImbalance(2*ii-1)*real(outputSignal(:,ii)) + 1j*obj.amplitudeImbalance(2*ii)*imag(outputSignal(:,ii)))*obj.outputVoltage/maxVoltage;
+                else
+                    outputSignal(:,ii) = (obj.amplitudeImbalance(2*ii-1)*real(outputSignal(:,ii)) + 1j*obj.amplitudeImbalance(2*ii)*imag(outputSignal(:,ii)));
+                end
                 outputSignal(:,ii) = outputSignal(:,ii) + obj.levelDC(2*ii-1) + 1j*obj.levelDC(2*ii);
             end
             
-            % Power Computer
+            
+            
+            % Power Computing
             P = pwr.meanpwr(outputSignal);
             for ii = length(P):-1:1
                 Power{ii} = pwr(in.PCol(ii).SNR, {P(ii), 'w'});
@@ -175,9 +237,6 @@ classdef ElectricalFilter_v1 < unit
         function io = filterByFFT(io, filter)
             io = fftshift(fft(io(:)));
             io = ifft(ifftshift(io.*filter(:)));
-        end
-        function io = filterByConv(io,filterCoeffs)
-            io = conv(io, filterCoeffs, 'same');
         end
         
     end
