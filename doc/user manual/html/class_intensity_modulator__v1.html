@@ -39,8 +39,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="pages.html"><span>User&#160;Guides</span></a></li>
+      <li><a href="modules.html"><span>Code&#160;groups</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -206,7 +206,7 @@ Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Linear or Mach-Zehnder intensity modulator. </p>
 <p>Takes 2 signal_interfaces, applies modulation from signal interface 1 (drive) to signal interface 2 (laser). Runs in linear (ideal, non-physical) or mach-zehnder mode. Extinction ratio and insertion loss can be specified. Insertion loss is excess insertion loss from fiber coupling, splitters, etc. (i.e. the loss we'd see biasing at a maximum and with no drive signal). Drive-signal related loss is calculated by the object and stored in the results structure as inherentLoss.</p>
-<p><b>Example:</b> </p><div class="fragment"><div class="line">param.laser.Power = <a class="code" href="classpwr.html">pwr</a>(150, {14, <span class="stringliteral">&#39;dBm&#39;</span>});</div><div class="line">param.laser.linewidth = 100;</div><div class="line">param.laser.Fs = 160e9;</div><div class="line">param.laser.Rs = 1e9;</div><div class="line">param.laser.Fc = <span class="keyword">const</span>.c/1550*1e-9;</div><div class="line">param.laser.Lnoise = 2^8;</div><div class="line">param.im.Vpi = 6;</div><div class="line">param.im.loss = 1;</div><div class="line">param.drive.Fs = 160e9;</div><div class="line">param.drive.Rs = 1e9;</div><div class="line">param.drive.Fc = 0;</div><div class="line"></div><div class="line">%% Linear region MZM</div><div class="line">param.im.mode = <span class="stringliteral">&#39;MZM&#39;</span>;</div><div class="line">param.im.Vbias = -3;</div><div class="line">driveAmp = 0.5/2*param.im.Vpi;</div><div class="line"></div><div class="line">laser = <a class="code" href="class_laser__v1.html">Laser_v1</a>(param.laser);</div><div class="line">laserSig = laser.traverse();</div><div class="line"></div><div class="line">t = genTimeAxisSig(laserSig);</div><div class="line">driveField = driveAmp*sin(2*pi*param.drive.Rs*t);</div><div class="line">driveSig = <a class="code" href="classsignal__interface.html">signal_interface</a>(driveField, param.drive);</div><div class="line">driveSig = driveSig.set(<span class="charliteral">&#39;P&#39;</span>, <a class="code" href="classpwr.html">pwr</a>(30, driveSig.P.Ptot));</div><div class="line">im = <a class="code" href="class_intensity_modulator__v1.html#ae61ef11b3b611c5e8c426ad7de6d7700">IntensityModulator_v1</a>(param.im);</div><div class="line"></div><div class="line">laserModulated = im.traverse(driveSig, laserSig);</div></div><!-- fragment --><p><b>References:</b></p>
+<p><b>Example:</b> </p><div class="fragment"><div class="line">param.laser.Power = <a class="code" href="classpwr.html">pwr</a>(150, {14, <span class="stringliteral">&#39;dBm&#39;</span>});</div><div class="line">param.laser.linewidth = 100;</div><div class="line">param.laser.Fs = 160e9;</div><div class="line">param.laser.Rs = 1e9;</div><div class="line">param.laser.Fc = <span class="keyword">const</span>.c/1550*1e-9;</div><div class="line">param.laser.Lnoise = 2^8;</div><div class="line">param.im.Vpi = 6;</div><div class="line">param.im.loss = 1;</div><div class="line">param.drive.Fs = 160e9;</div><div class="line">param.drive.Rs = 1e9;</div><div class="line">param.drive.Fc = 0;</div><div class="line"></div><div class="line">%% Linear region MZM</div><div class="line">param.im.mode = <span class="stringliteral">&#39;MZM&#39;</span>;</div><div class="line">param.im.Vbias = -3;</div><div class="line">driveAmp = 0.5/2*param.im.Vpi;</div><div class="line"></div><div class="line">laser = <a class="code" href="class_laser__v1.html">Laser_v1</a>(param.laser);</div><div class="line">laserSig = laser.traverse();</div><div class="line"></div><div class="line">t = <a class="code" href="gen_time_axis_sig_8m.html#a15cb2c57f25bbb9c72d303cc384d4436">genTimeAxisSig</a>(laserSig);</div><div class="line">driveField = driveAmp*sin(2*pi*param.drive.Rs*t);</div><div class="line">driveSig = <a class="code" href="classsignal__interface.html">signal_interface</a>(driveField, param.drive);</div><div class="line">driveSig = driveSig.set(<span class="charliteral">&#39;P&#39;</span>, <a class="code" href="classpwr.html">pwr</a>(30, driveSig.P.Ptot));</div><div class="line">im = <a class="code" href="class_intensity_modulator__v1.html#ae61ef11b3b611c5e8c426ad7de6d7700">IntensityModulator_v1</a>(param.im);</div><div class="line"></div><div class="line">laserModulated = im.traverse(driveSig, laserSig);</div></div><!-- fragment --><p><b>References:</b></p>
 <ul>
 <li>[1] Seimetz, High-order modulation for optical fiber transmission</li>
 </ul>
@@ -295,7 +295,7 @@ Simone Gaiarin</dd></dl>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 6 2016 13:01:46 for Robochameleon by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Dec 9 2016 18:23:40 for Robochameleon by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

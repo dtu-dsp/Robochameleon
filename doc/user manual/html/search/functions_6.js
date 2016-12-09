@@ -5,6 +5,7 @@ var searchData=
   ['gen_5fprbs',['gen_prbs',['../gen__prbs_8m.html#aeb843c6afa061fd0f8efc185f8fa97c8',1,'gen_prbs.m']]],
   ['gennoise',['genNoise',['../class_laser__v1.html#a18603b833911631ee50207c2c96c98a5',1,'Laser_v1']]],
   ['genpulseshape',['genPulseShape',['../class_pulse_train_generator__v1.html#a1ab01af1b81d76177fbca470a6cbdfe4',1,'PulseTrainGenerator_v1']]],
+  ['gentimeaxissig',['genTimeAxisSig',['../gen_time_axis_sig_8m.html#a15cb2c57f25bbb9c72d303cc384d4436',1,'genTimeAxisSig.m']]],
   ['get',['get',['../classsignal__interface.html#aaa877c69bdb401396116770e9bdbb92d',1,'signal_interface']]],
   ['getevm',['getEVM',['../class_b_e_r_t__v1.html#a31d09cf728272313513c83fa4ba41b93',1,'BERT_v1']]],
   ['getinternalunits',['getInternalUnits',['../param_deep_copy_8m.html#a7a80b6addbbbc3d1a51dc6c34a93e91f',1,'paramDeepCopy.m']]],

@@ -39,8 +39,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="pages.html"><span>User&#160;Guides</span></a></li>
+      <li><a href="modules.html"><span>Code&#160;groups</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -181,7 +181,7 @@ Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Non-polarizing beam splitter. </p>
 <p>This block takes a single input and splits it into an arbitrary number of outputs (N). Multimode is supported. Power will be equally split among the outputs.</p>
-<p><b>Example:</b> </p><div class="fragment"><div class="line">param.bs.nOutputs = 3;</div><div class="line">bs = <a class="code" href="class_b_s__1x_n__v1.html#aad765f2a5105555b3974a79b029db013">BS_1xN_v1</a>(param.bs);</div><div class="line"></div><div class="line">sigIn = createDummySignal();</div><div class="line">[sig1, sig2, sig3] = bs.traverse(sigIn);</div><div class="line">pabs(sigIn, sig1, sig2, sig3);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_polarizer__v1.html" title="Polarizer model. ">Polarizer_v1</a> </dd>
+<p><b>Example:</b> </p><div class="fragment"><div class="line">param.bs.nOutputs = 3;</div><div class="line">bs = <a class="code" href="class_b_s__1x_n__v1.html#aad765f2a5105555b3974a79b029db013">BS_1xN_v1</a>(param.bs);</div><div class="line"></div><div class="line">sigIn = createDummySignal();</div><div class="line">[sig1, sig2, sig3] = bs.traverse(sigIn);</div><div class="line"><a class="code" href="pabs_8m.html#ac5c69f942dbffb4c5396830a615c52f9">pabs</a>(sigIn, sig1, sig2, sig3);</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a class="el" href="class_polarizer__v1.html" title="Polarizer model. ">Polarizer_v1</a> </dd>
 <dd>
 <a class="el" href="class_p_b_c___nx1__v1.html" title="Polarizing beam combiner. ">PBC_Nx1_v1</a> </dd>
 <dd>
@@ -269,7 +269,7 @@ Simone Gaiarin </dd></dl>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 6 2016 13:01:46 for Robochameleon by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Dec 9 2016 18:23:39 for Robochameleon by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

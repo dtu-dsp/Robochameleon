@@ -20,14 +20,15 @@ var searchData=
   ['risetime',['riseTime',['../class_pulse_train_generator__v1.html#a6066762e663e0d90b5460481dd574270',1,'PulseTrainGenerator_v1']]],
   ['robochameleon',['robochameleon',['../robochameleon_8m.html#a81e6f19074a9e161f55cda4de57b9001',1,'robochameleon.m']]],
   ['robochameleon_2em',['robochameleon.m',['../robochameleon_8m.html',1,'']]],
+  ['robohelp',['robohelp',['../robohelp_8m.html#a2e46315292a0685d32b5856fc2a30749',1,'robohelp.m']]],
   ['robohelp_2em',['robohelp.m',['../robohelp_8m.html',1,'']]],
   ['robolog',['robolog',['../robolog_8m.html#a62eec7fba560e67acf76f205648e70bc',1,'robolog.m']]],
   ['robolog_2em',['robolog.m',['../robolog_8m.html',1,'']]],
   ['robopath',['robopath',['../robopath_8m.html#a7a43a16684cf25d518ec9001ceb46d33',1,'robopath.m']]],
   ['robopath_2em',['robopath.m',['../robopath_8m.html',1,'']]],
   ['robochameleon_20utilities',['Robochameleon utilities',['../group__robo_utils.html',1,'']]],
-  ['rolloff',['rolloff',['../class_pulse_train_generator__v1.html#a06357080f9fcb2d1b1d234444062f246',1,'PulseTrainGenerator_v1::rolloff()'],['../class_pulse_shaper__v1.html#a239634d329de1eddd186dc07f4f5a996',1,'PulseShaper_v1::rollOff()'],['../class_simple_w_d_m_transmitter__v1.html#a7d048964efea6b2af5cf0f154554d49b',1,'SimpleWDMTransmitter_v1::rollOff()']]],
+  ['rolloff',['rollOff',['../class_pulse_shaper__v1.html#a239634d329de1eddd186dc07f4f5a996',1,'PulseShaper_v1::rollOff()'],['../class_simple_w_d_m_transmitter__v1.html#a7d048964efea6b2af5cf0f154554d49b',1,'SimpleWDMTransmitter_v1::rollOff()'],['../class_pulse_train_generator__v1.html#a06357080f9fcb2d1b1d234444062f246',1,'PulseTrainGenerator_v1::rolloff()']]],
   ['rs',['Rs',['../classsignal__interface.html#a28cfcb35373161b1d2c0bb0642913716',1,'signal_interface::Rs()'],['../class_laser__v1.html#ace5962502460b598faf6e6b6d62c7104',1,'Laser_v1::Rs()'],['../class_orthogonal_code_generator__v1.html#a6e5f8114c9d0537defe6e7b2387823f5',1,'OrthogonalCodeGenerator_v1::Rs()'],['../class_p_p_g__v1.html#aaac0ec37613cb881f1737de62fe41d70',1,'PPG_v1::Rs()'],['../class_pulse_train_generator__v1.html#af1d00db1c8695554a37706923cb6b5de',1,'PulseTrainGenerator_v1::Rs()']]],
-  ['rtherm',['Rtherm',['../class_balanced_pair__v1.html#ad1155daa0e38c68d4823d7ba95d1e9d4',1,'BalancedPair_v1::Rtherm()'],['../class_p_d__v1.html#afdcf1da2b3a740efca7aaa793733c002',1,'PD_v1::rTherm()']]],
+  ['rtherm',['rTherm',['../class_p_d__v1.html#afdcf1da2b3a740efca7aaa793733c002',1,'PD_v1::rTherm()'],['../class_balanced_pair__v1.html#ad1155daa0e38c68d4823d7ba95d1e9d4',1,'BalancedPair_v1::Rtherm()']]],
   ['rx',['rx',['../class_b_e_r_t__v1.html#af09405feb33e64c76bfc35f097875e49',1,'BERT_v1']]]
 ];

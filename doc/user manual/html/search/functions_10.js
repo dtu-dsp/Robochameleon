@@ -7,6 +7,7 @@ var searchData=
   ['resampler',['resampler',['../class_resample__v1.html#a3b5eb076c52a2f015aebf9352fd44cea',1,'Resample_v1']]],
   ['resampleskewjitter_5fv1',['ResampleSkewJitter_v1',['../class_resample_skew_jitter__v1.html#a13bccf226d1408e3fae23c6833855648',1,'ResampleSkewJitter_v1']]],
   ['robochameleon',['robochameleon',['../robochameleon_8m.html#a81e6f19074a9e161f55cda4de57b9001',1,'robochameleon.m']]],
+  ['robohelp',['robohelp',['../robohelp_8m.html#a2e46315292a0685d32b5856fc2a30749',1,'robohelp.m']]],
   ['robolog',['robolog',['../robolog_8m.html#a62eec7fba560e67acf76f205648e70bc',1,'robolog.m']]],
   ['robopath',['robopath',['../robopath_8m.html#a7a43a16684cf25d518ec9001ceb46d33',1,'robopath.m']]],
   ['rx',['rx',['../class_b_e_r_t__v1.html#af09405feb33e64c76bfc35f097875e49',1,'BERT_v1']]]

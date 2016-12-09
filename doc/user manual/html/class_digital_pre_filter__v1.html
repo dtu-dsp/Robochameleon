@@ -39,8 +39,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="pages.html"><span>User&#160;Guides</span></a></li>
+      <li><a href="modules.html"><span>Code&#160;groups</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -91,7 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="class_digital_pre_filter__v1-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">DigitalPreFilter_v1 Class Reference</div>  </div>
+<div class="title">DigitalPreFilter_v1 Class Reference<div class="ingroups"><a class="el" href="group__stable_d_s_p.html">Stable DSP</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -164,6 +164,8 @@ Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_digital_pre_filter__v1.html#a318d36d53e8addfbfc6a664e7ec24e2f">gaussianBandwidth</a></td></tr>
 <tr class="memdesc:a318d36d53e8addfbfc6a664e7ec24e2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bandwidth of Gaussian Pre-Filter. <br /></td></tr>
 <tr class="separator:a318d36d53e8addfbfc6a664e7ec24e2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7c42ce2f2c6d75a887da7005e81f113"><td class="memItemLeft" align="right" valign="top">Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_digital_pre_filter__v1.html#ad7c42ce2f2c6d75a887da7005e81f113">gaussianMaxFrequency</a></td></tr>
+<tr class="separator:ad7c42ce2f2c6d75a887da7005e81f113"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a864d4d8d28ca2642e36682b4a29f7dc3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a864d4d8d28ca2642e36682b4a29f7dc3"></a>
 Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_digital_pre_filter__v1.html#a864d4d8d28ca2642e36682b4a29f7dc3">besselOrder</a></td></tr>
 <tr class="memdesc:a864d4d8d28ca2642e36682b4a29f7dc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Order of Bessel Pre-Filter. <br /></td></tr>
@@ -218,7 +220,7 @@ Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <li>This unit implements group delay mitigation by inverse phase response of Bessel filters.</li>
 <li>This unit alse receives user defined filters in time domain.</li>
 </ol>
-<p><b>Example</b> </p><div class="fragment"><div class="line">param.prefilter.gaussianOrder = 1;</div><div class="line">param.prefilter.gaussianBandwidth = 16e9;</div><div class="line">prefilt = <a class="code" href="class_digital_pre_filter__v1.html#aa86ed84e9acafceafd2f8507ea34af1a">DigitalPreFilter_v1</a>(param.prefilter);</div><div class="line"></div><div class="line">param.sig.Fs = 64e9;</div><div class="line">param.sig.Fc = 0;</div><div class="line">param.sig.Rs = 32e9;</div><div class="line">param.sig.PCol = [<a class="code" href="classpwr.html">pwr</a>(20,{-2,<span class="stringliteral">&#39;dBm&#39;</span>}), <a class="code" href="classpwr.html">pwr</a>(-inf,{-inf,<span class="stringliteral">&#39;dBm&#39;</span>})];</div><div class="line">Ein = upsample((randi(2,1000,1)-1.5)*2 + 1j*(randi(2,1000,1)-1.5)*2,2);</div><div class="line">sigIn = <a class="code" href="classsignal__interface.html">signal_interface</a>(Ein, param.sig);</div><div class="line"></div><div class="line">sigOut = prefilt.traverse(sigIn);</div></div><!-- fragment --><p><b>Advanced Example</b> </p><div class="fragment"><div class="line">param.prefilter.gaussianOrder = 1;</div><div class="line">param.prefilter.gaussianBandwidth = 16e9;</div><div class="line">param.prefilter.besselOrder = 2;</div><div class="line">param.prefilter.besselBandwidth = 84e9;</div><div class="line">param.prefilter.userDefinedFilter = [1 0 1 ; 1 0 0]<span class="stringliteral">&#39;;</span></div><div class="line"><span class="stringliteral">prefilt = DigitalPreFilter_v1(param.prefilter);</span></div><div class="line"><span class="stringliteral"></span></div><div class="line"><span class="stringliteral">param.sig.Fs = 64e9;</span></div><div class="line"><span class="stringliteral">param.sig.Fc = 0;</span></div><div class="line"><span class="stringliteral">param.sig.Rs = 32e9;</span></div><div class="line"><span class="stringliteral">param.sig.PCol = [pwr(20,{-2,&#39;</span>dBm<span class="stringliteral">&#39;}), pwr(-inf,{-inf,&#39;</span>dBm<span class="stringliteral">&#39;})];</span></div><div class="line"><span class="stringliteral">Ein = upsample((randi(2,1000,1)-1.5)*2 + 1j*(randi(2,1000,1)-1.5)*2,2);</span></div><div class="line"><span class="stringliteral">sigIn = signal_interface(Ein, param.sig);</span></div><div class="line"><span class="stringliteral"></span></div><div class="line"><span class="stringliteral">sigOut = prefilt.traverse(sigIn);</span></div></div><!-- fragment --><dl class="section author"><dt>Author</dt><dd>jcesardiniz</dd></dl>
+<p><b>Example</b> </p><div class="fragment"><div class="line">param.prefilter.gaussianOrder = 1;</div><div class="line">param.prefilter.gaussianBandwidth = 16e9;</div><div class="line">prefilt = <a class="code" href="class_digital_pre_filter__v1.html#aa86ed84e9acafceafd2f8507ea34af1a">DigitalPreFilter_v1</a>(param.prefilter);</div><div class="line"></div><div class="line">param.sig.Fs = 64e9;</div><div class="line">param.sig.Fc = 0;</div><div class="line">param.sig.Rs = 32e9;</div><div class="line">Ein = upsample((randi(2,1000,1)-1.5)*2 + 1j*(randi(2,1000,1)-1.5)*2,2);</div><div class="line">sigIn = <a class="code" href="classsignal__interface.html">signal_interface</a>(Ein, param.sig);</div><div class="line"></div><div class="line">sigOut = prefilt.traverse(sigIn);</div></div><!-- fragment --><p><b>Advanced Example</b> </p><div class="fragment"><div class="line">param.prefilter.gaussianOrder = 1;</div><div class="line">param.prefilter.gaussianBandwidth = 16e9;</div><div class="line">param.prefilter.besselOrder = 2;</div><div class="line">param.prefilter.besselBandwidth = 84e9;</div><div class="line">param.prefilter.userDefinedFilter = [1 0 1 ; 1 0 0]<span class="stringliteral">&#39;;</span></div><div class="line"><span class="stringliteral">prefilt = DigitalPreFilter_v1(param.prefilter);</span></div><div class="line"><span class="stringliteral"></span></div><div class="line"><span class="stringliteral">param.sig.Fs = 64e9;</span></div><div class="line"><span class="stringliteral">param.sig.Fc = 0;</span></div><div class="line"><span class="stringliteral">param.sig.Rs = 32e9;</span></div><div class="line"><span class="stringliteral">Ein = upsample((randi(2,1000,1)-1.5)*2 + 1j*(randi(2,1000,1)-1.5)*2,2);</span></div><div class="line"><span class="stringliteral">sigIn = signal_interface(Ein, param.sig);</span></div><div class="line"><span class="stringliteral"></span></div><div class="line"><span class="stringliteral">sigOut = prefilt.traverse(sigIn);</span></div></div><!-- fragment --><dl class="section author"><dt>Author</dt><dd>jcesardiniz</dd></dl>
 <dl class="section version"><dt>Version</dt><dd>1 </dd></dl>
 
 <p>Definition at line <a class="el" href="_digital_pre_filter__v1_8m_source.html#l00058">58</a> of file <a class="el" href="_digital_pre_filter__v1_8m_source.html">DigitalPreFilter_v1.m</a>.</p>
@@ -260,13 +262,29 @@ Property&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 
 </div>
 </div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ad7c42ce2f2c6d75a887da7005e81f113"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Property DigitalPreFilter_v1::gaussianMaxFrequency</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Maximum bandwidth of Gaussian Pre-Filter (to prevent ultra-high gains and noise increasing); </p>
+
+<p>Definition at line <a class="el" href="_digital_pre_filter__v1_8m_source.html#l00078">78</a> of file <a class="el" href="_digital_pre_filter__v1_8m_source.html">DigitalPreFilter_v1.m</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/tx/<a class="el" href="_digital_pre_filter__v1_8m_source.html">DigitalPreFilter_v1.m</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Sep 6 2016 13:01:46 for Robochameleon by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Dec 9 2016 18:23:40 for Robochameleon by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

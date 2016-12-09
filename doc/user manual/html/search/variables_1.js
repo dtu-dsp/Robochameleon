@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['bandwidth',['bandwidth',['../class_p_d__v1.html#ab48d8c9d876acbcb681722d7453b980b',1,'PD_v1']]],
+  ['bandwidth',['bandwidth',['../class_base_band_filter__v1.html#aa0a7fbb3b7f2ba9142ee6c792219802f',1,'BaseBandFilter_v1::bandwidth()'],['../class_p_d__v1.html#ab48d8c9d876acbcb681722d7453b980b',1,'PD_v1::bandwidth()']]],
   ['bases',['bases',['../class_p_b_c___nx1__v1.html#a96ea51d5932c07df98f517a935997df3',1,'PBC_Nx1_v1::bases()'],['../class_p_b_s__1x_n__v1.html#ada804fa8a9851f43da1691e4351c4580',1,'PBS_1xN_v1::bases()']]],
   ['basis',['basis',['../class_polarizer__v1.html#aabfabd44562fdd0b89a6869e0163d561',1,'Polarizer_v1']]],
   ['besselbandwidth',['besselBandwidth',['../class_electrical_filter__v1.html#a20f7e65596cbcdfac23c33a3d0f8b270',1,'ElectricalFilter_v1::besselBandwidth()'],['../class_digital_pre_filter__v1.html#a65e9391c98dde5edba54ca743c5cdf12',1,'DigitalPreFilter_v1::besselBandwidth()']]],
