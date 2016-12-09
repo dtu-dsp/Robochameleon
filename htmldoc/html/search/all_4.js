@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['e',['E',['../classsignal__interface.html#a6a513c589314f0508d9264b8830b477a',1,'signal_interface']]],
+  ['edfa_5fv1',['EDFA_v1',['../class_e_d_f_a__v1.html',1,'EDFA_v1'],['../class_e_d_f_a__v1.html#acc1e9d77c90516f31cd936c9e02c2a78',1,'EDFA_v1::EDFA_v1()']]],
+  ['edfa_5fv1_2em',['EDFA_v1.m',['../_e_d_f_a__v1_8m.html',1,'']]],
+  ['edfagain',['EDFAGain',['../class_nonlinear_channel__v1.html#a7eb0c971c743a0546551abef0b20d007',1,'NonlinearChannel_v1']]],
+  ['edfanf',['EDFANF',['../class_nonlinear_channel__v1.html#a9f4114dabab04b38b7b5a40876df4651',1,'NonlinearChannel_v1']]],
+  ['electricalfilter_5fv1',['ElectricalFilter_v1',['../class_electrical_filter__v1.html',1,'ElectricalFilter_v1'],['../class_electrical_filter__v1.html#aadb4e5065b84855893376c49c862b19f',1,'ElectricalFilter_v1::ElectricalFilter_v1()']]],
+  ['electricalfilter_5fv1_2em',['ElectricalFilter_v1.m',['../_electrical_filter__v1_8m.html',1,'']]],
+  ['enable',['enable',['../class_d_s_o__v1.html#a6688f56cb12cb1312ecc1ecd8249dabc',1,'DSO_v1']]],
+  ['enablecounter',['EnableCounter',['../class_b_e_r_t__v1.html#ac2023443312134dbd068badef7a52329',1,'BERT_v1']]],
+  ['enablemetrics',['EnableMetrics',['../class_b_e_r_t__v1.html#a1972a2dc4ef79fcf780fa6ce610f514a',1,'BERT_v1']]],
+  ['end',['end',['../classsignal__interface.html#a5a353e33b100d218cc7017766d8a8418',1,'signal_interface']]],
+  ['equalizer_5fconv',['equalizer_conv',['../class_adaptive_equalizer___m_m_a___r_d_e__v1.html#a121dcc9801474a6e6c373c1516a7e4d7',1,'AdaptiveEqualizer_MMA_RDE_v1']]],
+  ['er',['ER',['../class_p_b_c___nx1__v1.html#afe98796521092aa2b77bc64172211971',1,'PBC_Nx1_v1::ER()'],['../class_p_b_s__1x_n__v1.html#a4555ad09d1a7ffbc45d274b908774765',1,'PBS_1xN_v1::ER()'],['../class_polarizer__v1.html#a87f500343f6e50fb7b8b7ac3c639082b',1,'Polarizer_v1::ER()']]],
+  ['error_5fcounter_5fv7c_2em',['error_counter_v7c.m',['../error__counter__v7c_8m.html',1,'']]],
+  ['evm_5fanalysis',['EVM_Analysis',['../_e_v_m___analysis_8m.html#acf25e4dfd3bc8a9594dc9e5d66fa903d',1,'EVM_Analysis.m']]],
+  ['evm_5fanalysis_2em',['EVM_Analysis.m',['../_e_v_m___analysis_8m.html',1,'']]],
+  ['exportmodule',['exportModule',['../classmodule.html#a0a9f2d24e43c28db25125ba412b11008',1,'module']]],
+  ['extendedawg_5fv1',['ExtendedAWG_v1',['../class_extended_a_w_g__v1.html',1,'ExtendedAWG_v1'],['../class_extended_a_w_g__v1.html#aa030a23c8461131dfb7604f62338a491',1,'ExtendedAWG_v1::ExtendedAWG_v1()']]],
+  ['extendedawg_5fv1_2em',['ExtendedAWG_v1.m',['../_extended_a_w_g__v1_8m.html',1,'']]],
+  ['extendedcoherenttransmitter_5fv1',['ExtendedCoherentTransmitter_v1',['../class_extended_coherent_transmitter__v1.html',1,'ExtendedCoherentTransmitter_v1'],['../class_extended_coherent_transmitter__v1.html#ac4d2872e421fcd1d6dc5a95493e3721c',1,'ExtendedCoherentTransmitter_v1::ExtendedCoherentTransmitter_v1()']]],
+  ['extendedcoherenttransmitter_5fv1_2em',['ExtendedCoherentTransmitter_v1.m',['../_extended_coherent_transmitter__v1_8m.html',1,'']]],
+  ['extendedwdmtransmitter_5fv1',['ExtendedWDMTransmitter_v1',['../class_extended_w_d_m_transmitter__v1.html',1,'ExtendedWDMTransmitter_v1'],['../class_extended_w_d_m_transmitter__v1.html#a7858ed21d7bafe4e2f5759436cdf282f',1,'ExtendedWDMTransmitter_v1::ExtendedWDMTransmitter_v1()']]],
+  ['extendedwdmtransmitter_5fv1_2em',['ExtendedWDMTransmitter_v1.m',['../_extended_w_d_m_transmitter__v1_8m.html',1,'']]],
+  ['extinctionratio',['extinctionRatio',['../class_intensity_modulator__v1.html#af4fa2b07f6d3ee86b789a1e2c48376d4',1,'IntensityModulator_v1']]]
+];

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['p',['P',['../classsignal__interface.html#a56e6a87b0f6ad1283d797837c7e05adb',1,'signal_interface::P()'],['../class_lin_ch_bulk__v1.html#accdcd481e82ba1965ace58aa9f86846e',1,'LinChBulk_v1::P()']]],
+  ['p_5fdbw',['P_dBW',['../classpwr.html#a186a6cfb2cdb8ee432fe03e5504ff9ce',1,'pwr']]],
+  ['param1',['param1',['../class_class_template__v1.html#acade31079de378990b28ea0336e17dd2',1,'ClassTemplate_v1']]],
+  ['param2',['param2',['../class_class_template__v1.html#a4c4f5e3b501b33c7f35a1c00fc16a8b0',1,'ClassTemplate_v1']]],
+  ['param3enabled',['param3Enabled',['../class_class_template__v1.html#aedae5c8c4dd6d78bb77e27faa1f093db',1,'ClassTemplate_v1']]],
+  ['pcol',['PCol',['../classsignal__interface.html#a1605219d4e397e37635125de663b0615',1,'signal_interface']]],
+  ['peakpower',['peakPower',['../class_pulse_train_generator__v1.html#a374fce376bdc50c4bd5490f115c701dc',1,'PulseTrainGenerator_v1']]],
+  ['phase_5fangle',['phase_angle',['../class_optical_hybrid__v1.html#aeddbdb9d68b8c4e3f8f0b7fad1640493',1,'OpticalHybrid_v1']]],
+  ['pmax',['Pmax',['../class_balanced_pair__v1.html#a1f9540589c2640d6176eb4b770e0b17a',1,'BalancedPair_v1']]],
+  ['pmnoisecal',['PMnoiseCal',['../class_laser__v1.html#aafd75401c42537f0c8cfcda1b6ec16c9',1,'Laser_v1']]],
+  ['pn',['pn',['../class_laser__v1.html#a325c5a2885392ab474f2e06186a64186',1,'Laser_v1']]],
+  ['polarizationmixingenabled',['polarizationMixingEnabled',['../class_nonlinear_channel__v1.html#a3471b85996ba280a0545c65767266bdf',1,'NonlinearChannel_v1']]],
+  ['postprocessmethod',['PostProcessMethod',['../class_b_e_r_t__v1.html#ad81350d82f0685181fc635218a62c703',1,'BERT_v1']]],
+  ['power',['Power',['../class_laser__v1.html#a1db33858e132e77832ef1fec18bb3c84',1,'Laser_v1::Power()'],['../class_simple_w_d_m_transmitter__v1.html#aff8039bf516f8a2984e6658a65179aa9',1,'SimpleWDMTransmitter_v1::Power()']]],
+  ['prbsorder',['PRBSOrder',['../class_pattern_generator__v1.html#ae0e5b069c4c05b1c41bbe7493e8acfa3',1,'PatternGenerator_v1']]],
+  ['probzero',['probZero',['../class_pattern_generator__v1.html#ac8194a2150290cedb8701b607a4b3bca',1,'PatternGenerator_v1']]],
+  ['pulseshape',['pulseShape',['../class_pulse_shaper__v1.html#a86e546394453bfca53811a7db9fd3148',1,'PulseShaper_v1::pulseShape()'],['../class_simple_w_d_m_transmitter__v1.html#a31856d3dfdd7c984a23808f74fb6bff1',1,'SimpleWDMTransmitter_v1::pulseShape()']]]
+];
