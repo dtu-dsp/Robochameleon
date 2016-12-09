@@ -255,7 +255,6 @@ classdef BERT_v1 < unit
             end
             % Count errors
             data = sig.getNormalized();
-            ErrorMap = false(sig.L, sig.N);
             obj.Cols = intersect(1:sig.N, obj.Only);
             for i=obj.Cols
                 [obj.results.(['Col' num2str(i)]), ErrorMap(:,i)] = obj.bert(data(:,i));
@@ -325,14 +324,13 @@ classdef BERT_v1 < unit
             %Shared counter parameters
             counterparams = struct('L', obj.BlockLength, 'M', obj.M, 'coding', obj.Coding, 'const_type', obj.ConstType, 'decision_type', obj.DecisionType);
             % Count errors
-            ErrorMap=zeros(size(srx));
             if obj.EnableCounter
                 switch obj.CounterMethod
                     case 'generic'
                         counterparams.ber_th = 0.45;        %set threshold high; we will deal with
                         [res.ber, res.ser,res.ber_block,res.ser_block,~,res.err_bits,res.totalbits,res.err_symb,res.totalsymb,ORIG_SYMBOLS, RX_SYMBOLS] =error_counter_v7c(srx,obj.TxData,counterparams);
                         ErrorMap = RX_SYMBOLS ~= ORIG_SYMBOLS;
-                        ErrorMap = ErrorMap(:);
+                        ErrorMap = ErrorMap(obj.BlockLength:end).';
                     case 'miguel'
                         counterparams.ber_th = 0.45;        %set threshold high; we will deal with
                         [res.ber, res.ser,res.ber_block,res.ser_block,~,res.err_bits,res.totalbits,res.err_symb,res.totalsymb,ORIG_SYMBOLS, RX_SYMBOLS] =error_counter_miguel(srx,obj.TxData,counterparams);
