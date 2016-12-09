@@ -4,6 +4,8 @@
 %> @class DigitalPreFilter_v1
 %> @brief A prefilter for digital signals.
 %>
+%> @ingroup stableDSP
+%>
 %> This function implements a prefilter in order to mitigate filtering and
 %> group delay impairments of the electrical front-end of DAC.
 %>
@@ -13,7 +15,7 @@
 %> response of Gaussian low-pass filters.
 %> 2. This unit implements group delay mitigation by inverse phase
 %> response of Bessel filters.
-%> 3. This unit alse receives user defined filters in time domain. 
+%> 3. This unit alse receives user defined filters in time domain.
 %>
 %>
 %> __Example__
@@ -25,7 +27,6 @@
 %>   param.sig.Fs = 64e9;
 %>   param.sig.Fc = 0;
 %>   param.sig.Rs = 32e9;
-%>   param.sig.PCol = [pwr(20,{-2,'dBm'}), pwr(-inf,{-inf,'dBm'})];
 %>   Ein = upsample((randi(2,1000,1)-1.5)*2 + 1j*(randi(2,1000,1)-1.5)*2,2);
 %>   sigIn = signal_interface(Ein, param.sig);
 %>
@@ -45,7 +46,6 @@
 %>   param.sig.Fs = 64e9;
 %>   param.sig.Fc = 0;
 %>   param.sig.Rs = 32e9;
-%>   param.sig.PCol = [pwr(20,{-2,'dBm'}), pwr(-inf,{-inf,'dBm'})];
 %>   Ein = upsample((randi(2,1000,1)-1.5)*2 + 1j*(randi(2,1000,1)-1.5)*2,2);
 %>   sigIn = signal_interface(Ein, param.sig);
 %>
@@ -66,6 +66,9 @@ classdef DigitalPreFilter_v1 < unit
         gaussianOrder = 0;
         %> Bandwidth of Gaussian Pre-Filter
         gaussianBandwidth;
+        %> Maximum bandwidth of Gaussian Pre-Filter (to prevent ultra-high
+        %> gains and noise increasing);
+        gaussianMaxFrequency = 0;
         %> Order of Bessel Pre-Filter
         besselOrder = 0;
         %> Bandwidth of Bessel Pre-Filter
@@ -77,25 +80,38 @@ classdef DigitalPreFilter_v1 < unit
     methods
         %>@brief Class constructor
         function obj = DigitalPreFilter_v1(param)
-            obj.setparams(param,{},{'bypass','gaussianOrder','gaussianBandwidth','besselOrder','besselBandwidth', 'userDefinedFilter'})
+            obj.setparams(param,{},{'bypass','gaussianOrder','gaussianBandwidth', 'gaussianMaxFrequency', 'besselOrder','besselBandwidth', 'userDefinedFilter'})
+            
+            if isempty(obj.gaussianBandwidth) && obj.gaussianOrder
+                robolog('As "param.gaussianOrder ~=0", so you should define "param.gaussianBandwidth" for DigitalPreFilter.', 'ERR');
+            end
+            
+            if isempty(obj.besselBandwidth) && obj.besselOrder
+                robolog('As "param.besselOrder ~=0", so you should define "param.besselBandwidth" for DigitalPreFilter.', 'ERR');
+            end
+            
         end
         
         function out = traverse(obj, in)
+            
+            if obj.gaussianOrder
+                while length(obj.gaussianBandwidth) < 2*in.N
+                    obj.gaussianBandwidth(end+1) = obj.gaussianBandwidth(end);
+                end
+            end
             
             while length(obj.gaussianOrder) < 2*in.N
                 obj.gaussianOrder(end+1) = obj.gaussianOrder(end);
             end
             
-            while length(obj.gaussianBandwidth) < 2*in.N
-                obj.gaussianBandwidth(end+1) = obj.gaussianBandwidth(end);
+            if obj.besselOrder
+                while length(obj.besselBandwidth) < 2*in.N
+                    obj.besselBandwidth(end+1) = obj.besselBandwidth(end);
+                end
             end
             
             while length(obj.besselOrder) < 2*in.N
                 obj.besselOrder(end+1) = obj.besselOrder(end);
-            end
-            
-            while length(obj.besselBandwidth) < 2*in.N
-                obj.besselBandwidth(end+1) = obj.besselBandwidth(end);
             end
             
             if ~isempty(obj.userDefinedFilter)
@@ -105,7 +121,11 @@ classdef DigitalPreFilter_v1 < unit
             end
             
             
-            
+            if ~obj.gaussianMaxFrequency
+                obj.gaussianMaxFrequency = in.Rs;
+            elseif obj.gaussianMaxFrequency > in.Fs/2
+                obj.gaussianMaxFrequency = in.Fs/2;
+            end
             
             auxiliarySignal = in.getRaw;
             
@@ -126,11 +146,12 @@ classdef DigitalPreFilter_v1 < unit
                 preFilter = ones(size(inputSignal));
             end
             
+            maxFreqRatio = in.Fs/obj.gaussianMaxFrequency;
             %> Gaussian pre-filtering
             for ii = 1:size(inputSignal,2)
                 if obj.gaussianOrder(ii)
                     preFilter(:,ii) = preFilter(:,ii).*exp(log(sqrt(2))*((linspace(-0.5,0.5,size(inputSignal,1))/(obj.gaussianBandwidth(ii)/(in.Fs))).').^(2*obj.gaussianOrder(ii)));
-                    preFilter([1:round(length(preFilter)*(0.5-1/in.Nss)) round(length(preFilter)*(0.5+1/in.Nss)):end], ii) = 1;
+                    preFilter([1:round(length(preFilter)*(0.5-1/(maxFreqRatio))) round(length(preFilter)*(0.5+1/(maxFreqRatio))):end], ii) = 1;
                 end
             end
             
@@ -143,8 +164,14 @@ classdef DigitalPreFilter_v1 < unit
                 end
             end
             
-            outputSignal = zeros(in.L,in.N);
+            if obj.draw
+                figure(236000), plot(linspace(-in.Fs/2, in.Fs/2, length(preFilter)), 10*log10(abs(preFilter).^2))
+                title('Pre-Filter characteristic')
+                xlabel('Frequency (Hz)')
+                ylabel('Gain (dB)')
+            end
             
+            outputSignal = zeros(in.L,in.N);
             for ii = 1:in.N
                 outputSignal(:,ii) = real(obj.filterByFFT(inputSignal(:,2*ii-1), preFilter(:,2*ii-1))) + 1j*real(obj.filterByFFT(inputSignal(:,2*ii), preFilter(:,2*ii)));
             end
