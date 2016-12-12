@@ -18,7 +18,7 @@
 %> __Logging preferences__
 %>
 %>   __WARNING__ Preferences are persistent. Reset them at the beginning of any script,
-%>   and set the relevant ones manually to avoid mistakes. After changing the preferences run clear all to
+%>   and set the relevant ones manually to avoid mistakes. After changing the preferences run `clear all` to
 %>   make them effective.
 %>
 %>   * setpref('roboLog', 'logToFile', VALUE) [Default: 0]
@@ -126,6 +126,10 @@ end
 % if caller is unit, rather use the actual unit
 if strcmpi(callerName,'unit')
    callerName = evalin('caller','class(obj)');
+end
+
+if strcmp(logType, 'ERR')
+    msg = [msg '\n\nTo get help run: robohelp ' callerName];
 end
 
 %Double escape % and \ because we call sprintf twice

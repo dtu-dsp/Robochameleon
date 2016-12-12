@@ -82,6 +82,8 @@ if ~ROBO || resetFlag % Check if previous initialization was successful
         addpath(genpath(fullfile(root, 'compatibility', 'stats_lite')));
     end
     
+    fprintf(1, '\nTo access the robochameleon documentation run: robohelp\n\n');
+    
     % Disable warnings
     warning('off','catstruct:DuplicatesFound');
     
