@@ -14,9 +14,11 @@ Documentation
 There is a quick start guide in powerpoint format in the _doc_ folder.  An HTML version of this file can be found [here](@ref quickstart) 
 (link only works from the html API documentation).
 
-To consult the API documentation open:
+To consult the documentation open:
 
-* **<a href="index.html">index.html</a>** located in the folder _doc/user manual/html/_ (Recommended)
+* **<a href="index.html">index.html</a>** located in the folder _doc/user manual/html/_ 
+
+or type `robohelp` in the MATLAB command line.
 
 
 Examples
