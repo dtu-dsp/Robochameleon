@@ -35,6 +35,13 @@ Authors
 - Rasmus Jones \<rajo@fotoni.dtu.dk\>
 - Julio Cesar Medeiros Diniz \<jcmdi@fotonik.dtu.dk\>
 
+External collaborators
+======================
+
+- Xiaodan Pang \<xiaodan.pang@acreo.se\>
+- Oskars Ozolins \<oskars.ozolins@acreo.se\>
+- Leonardo Marcon \<leonardo.marcon.1@phd.unipd.it\>
+
 License
 =======
 Gnu public license version 3
