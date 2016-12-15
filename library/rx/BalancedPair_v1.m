@@ -153,9 +153,13 @@ classdef BalancedPair_v1 < unit
             %    pwr(10*log10(Ps_out./Pn_out),{Ps_out,'W'}), 'Fc', in1.Fc-in2.Fc ));
             
             % low-pass filtering
-            [b_lp,a_lp] = butter(2, 2*obj.f3dB/(in1.Fs));
-            out = fun1(out, @(x)filter(b_lp,a_lp,x));
-            out = out.fun1(@(x)x(min([16, out.L]):end));       %filter messes up first few samples
+            if 2*obj.f3dB/(in1.Fs)<1
+                [b_lp,a_lp] = butter(2, 2*obj.f3dB/(in1.Fs));
+                out = fun1(out, @(x)filter(b_lp,a_lp,x));
+                out = out.fun1(@(x)x(min([16, out.L]):end));       %filter messes up first few samples
+            else
+                robolog('Sample rate too low to apply low-pass filter', 'WRN');
+            end
             
             % save mixing ratio
             obj.results = struct('Rmix', R_mix);
