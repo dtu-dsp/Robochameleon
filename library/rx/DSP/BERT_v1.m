@@ -234,8 +234,12 @@ classdef BERT_v1 < unit
         %> @param refSig reference PRBS
         function traverse(obj, sig, refSig)
             % Obtain prbs
-            if obj.nInputs==2
+           if obj.EnableCounter && obj.nInputs==2
+                if any(refSig>1) % The reference signal has a symbol with value 2
+                    obj.TxData = refSig;
+                else % The reference signal is a prbs signal.
                 obj.TxData = obj.obtainPRBS(refSig);
+                end
             end
             % Obtain input data
             if sig.Nss > 1
