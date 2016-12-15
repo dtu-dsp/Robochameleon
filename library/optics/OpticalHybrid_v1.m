@@ -71,8 +71,8 @@ classdef OpticalHybrid_v1 < unit
                         
             out1 = (sig + lo)*(1/4);
             out2 = (sig + lo*-1)*(1/4);
-            out3 = (sig + lo*phase*-1)*(1/4);
-            out4 = (sig + lo*phase)*(1/4);
+            out3 = (sig + lo*phase)*(1/4);
+            out4 = (sig + lo*phase*-1)*(1/4);
   
         end
         
