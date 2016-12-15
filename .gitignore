@@ -1,0 +1,14 @@
+# Suppress Windows and Mac thumbnail files
+Thumbs.db
+.DS_Store
+
+# Suppress Matlab autosave files
+*.asv
+
+# Suppress various configuration files
+.kateproject
+.kateproject.d/
+.lnk
+MATLAB.lnk
+lab/traces/
+tmp/*
