@@ -37,24 +37,34 @@
 %>
 %> __Example:__
 %> @code
-%>   param.nlinch.nSpans      = 2;
-%>   param.nlinch.dispersionCompensationEnabled  = 1;
+%>   % Build a channel with default parameters
+%>   fiberChannel = NonlinearChannel_v3();
+%>
+%>   sigIn = createDummySignal_v1()
+%>
+%>   sigOut = fiberChannel.traverse(sigIn);
+%> @endcode
+%>
+%> __Advanced Example:__
+%> @code
+%>   param.nlinch.nSpans = 2;
+%>   param.nlinch.dispersionCompensationEnabled = 1;
 %>   param.nlinch.polarizationMixingEnabled = 0;
-%>   param.nlinch.L          = [50 80];
-%>   param.nlinch.stepSize   = 5;
-%>   param.nlinch.iterMax    = 15;
-%>   param.nlinch.alpha      = 0.2;
-%>   param.nlinch.D          = 17;
-%>   param.nlinch.S          = [0.1 0.2];
-%>   param.nlinch.gamma      = 1.7;
-%>   param.nlinch.EDFANF    = [3 5];
-%>   param.nlinch.EDFAGain  = [10 16];
+%>   param.nlinch.L = [50 80];
+%>   param.nlinch.stepSize = 5;
+%>   param.nlinch.iterMax = 15;
+%>   param.nlinch.alpha = 0.2;
+%>   param.nlinch.D = 17;
+%>   param.nlinch.S = [0.1 0.2];
+%>   param.nlinch.gamma = 1.7;
+%>   param.nlinch.EDFANF = [3 5];
+%>   param.nlinch.EDFAGain = [10 16];
 %>
-%>   fiberChannel = NonlinearChannel_v1(param.nlinch);
+%>   fiberChannel = NonlinearChannel_v3(param.nlinch);
 %>
-%>   Ein = signal_interface(param.sig);
+%>   sigIn = createDummySignal_v1()
 %>
-%>   traverse(obj, Ein, InputPower, InputOSNR);
+%>   sigOut = fiberChannel.traverse(sigIn);
 %> @endcode
 %>
 %> __References:__
@@ -159,6 +169,9 @@ classdef NonlinearChannel_v1 < unit
     %> @param param.polarizationMixingEnabled          Polarization mixing flag. [Default: 0]
     %> @param param.doublePrecisionEnabled             Precision flag. Set to 0 for speed. [Default: 1]
     function obj = NonlinearChannel_v1(param)
+        if ~exist('param', 'var')
+            param = struct();
+        end
         if ~(isfield(param, 'alphaa') && isfield(param, 'alphaa')) && isfield(param, 'alpha')
             param.alphaa = param.alpha;
             param.alphab = param.alpha;
@@ -173,7 +186,7 @@ classdef NonlinearChannel_v1 < unit
         % Input:  param.nSpans = 2
         %         param.L = 80;
         % Result: param.L = [80 80];
-        if param.nSpans > 1
+        if obj.nSpans > 1
             propNames = {'L', 'alphaa', 'alphab', 'D', 'S', 'gamma', 'EDFAGain', 'EDFANF'};
             for prop=propNames
                 prop=prop{:};
