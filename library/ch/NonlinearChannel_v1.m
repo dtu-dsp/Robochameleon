@@ -38,9 +38,9 @@
 %> __Example:__
 %> @code
 %>   % Build a channel with default parameters
-%>   fiberChannel = NonlinearChannel_v3();
+%>   fiberChannel = NonlinearChannel_v1();
 %>
-%>   sigIn = createDummySignal_v1()
+%>   sigIn = createDummySignal_v1();
 %>
 %>   sigOut = fiberChannel.traverse(sigIn);
 %> @endcode
@@ -60,7 +60,7 @@
 %>   param.nlinch.EDFANF = [3 5];
 %>   param.nlinch.EDFAGain = [10 16];
 %>
-%>   fiberChannel = NonlinearChannel_v3(param.nlinch);
+%>   fiberChannel = NonlinearChannel_v1(param.nlinch);
 %>
 %>   sigIn = createDummySignal_v1()
 %>
