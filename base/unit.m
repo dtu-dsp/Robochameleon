@@ -331,7 +331,7 @@ classdef unit < handle
             % Remove protected properties
             [protected,protected_idx] = intersect(f,PROTECTED_NAMES);
             if ~isempty(protected)
-                robolog('Protected class properties %s were removed from being assigned.', 'WRN', strjoin(strcat('''',protected,''''),', '), 'WRN');
+                robolog('Protected class properties %s were removed from being assigned.', 'WRN', strjoin(strcat('''',protected',''''),', '), 'WRN');
             end
             xi2 = false(size(f)); xi2(protected_idx)=true;
             f = f(~xi2);
@@ -342,7 +342,7 @@ classdef unit < handle
             [~,~,ci] = intersect(QUIET_PARAMS,props);
             ai2 = false(size(f)); ai2(ai)=true; ai2=~ai2;
             bi2 = false(size(props)); bi2(bi)=true; bi2(ci)=true; bi2=~bi2;
-            if any(ai2), robolog('Following properties: %s are not used by the class.', 'NFO0', strjoin(strcat('''',f(ai2),''''),', ')); end
+            if any(ai2), robolog('Following properties: %s are not used by the class.', 'NFO0', strjoin(strcat('''',f(ai2)',''''),', ')); end
             if any(bi2)
                 robolog('The following properties use default value from %s (%s):', 'NFO0', obj.label, class(obj));
                 defProp = props(bi2);
