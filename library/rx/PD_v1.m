@@ -14,7 +14,7 @@
 %> __Example__
 %> @code
 %> % Detect a garbage signal
-%> param=struct('Responsivity', 1, 'Bandwidth', 20e9, 'Idark', 1e-9);
+%> param=struct('responsivity', 1, 'bandwidth', 20e9, 'iDark', 1e-9);
 %> detector = PD_v1(param);
 %>
 %> sigIn = createDummySignal(); 
@@ -33,16 +33,16 @@ classdef PD_v1 < unit
         %> Number of outputs
         nOutputs=1;
         
-        %>Responsivity in A/W
+        %> Responsivity in A/W
         responsivity = 1;      
-        %>Bandwidth in Hz
+        %> Bandwidth in Hz
         bandwidth = 50e9;         
         
-        %>Noise equiv. thermal resistance (ohms)
+        %> Noise equiv. thermal resistance (ohms)
         rTherm = 50;     
-        %>Noise equiv. temperature (K)
+        %> Noise equiv. temperature (K)
         T = 290;
-        %>Dark current (A)
+        %> Dark current (A)
         iDark = 0;
         
         
@@ -75,13 +75,13 @@ classdef PD_v1 < unit
         %>@retval results no results
         function out = traverse(obj, in)
             % Modify the power according to responsivity parameter
-            P = 10*log10(in.P.Ps('W')*obj.Responsivity);       %in dBW
+            P = 10*log10(in.P.Ps('W')*obj.responsivity);       %in dBW
             
             %noise
             Pnum=sum(pwr.meanpwr(get(in)));               %numerically calculated power
             CF=Pnum/(10^(P/10));                      %correction factor
-            Pnshot = 2*const.q*(obj.Responsivity*(10^(P/10))+obj.Idark)*in.Fs;
-            Pntherm = 4*const.kB*obj.T/obj.Rtherm*in.Fs;
+            Pnshot = 2*const.q*(obj.responsivity*(10^(P/10))+obj.iDark)*in.Fs;
+            Pntherm = 4*const.kB*obj.T/obj.rTherm*in.Fs;
             noise=wgn(in.L, 1, Pnshot*CF, 'linear', 'real')+wgn(in.L, 1, Pntherm*CF, 'linear', 'real');
             
             SNR = 10*log10(in.P.Ps('W')/(in.P.Pn('W')+Pnshot+Pntherm));
@@ -90,7 +90,7 @@ classdef PD_v1 < unit
             Fnew=sum(get(in).*conj(get(in)), 2)+noise;      %photocurrents from each polarization add incoherently
             out=signal_interface(Fnew, struct('Fs',in.Fs,'Rs',in.Rs, 'P', newPower, 'Fc', 0));
             %low-pass filter
-            [b,a] = butter(2,2*obj.Bandwidth/in.Fs, 'low');
+            [b,a] = butter(2,2*obj.bandwidth/in.Fs, 'low');
             out=fun1(out, @(x)filter(b,a,x));
         end
         
