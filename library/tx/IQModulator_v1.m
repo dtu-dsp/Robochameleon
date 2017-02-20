@@ -31,21 +31,21 @@
 %>   % The IQ modulator with no input parameters should behave like an
 %>   % ideal IQ modulator
 %>
-%>  drive = createDummySignal();        %2-pol complex drive input
+%>  driveSig = createDummySignal_v1();        %2-pol complex drive input
 %>
 %>  param.laser.Power = pwr(150, {14, 'dBm'});
 %>  param.laser.linewidth = 100;
 %>  param.laser.Fs = 160e9;
 %>  param.laser.Rs = 1e9;
 %>  param.laser.Fc = const.c/1550e-9;
-%>  param.laser.Lnoise = drive.L;
+%>  param.laser.Lnoise = driveSig.L;
 %>
-%>  laser = Laser_v1(param.laser);
+%>  laser = Laser_v3(param.laser);
 %>  laserSig = laser.traverse();
 %>
 %>   IQ = IQModulator_v1();
 %>
-%>   sigOut = IQ.traverse(drive, laser);
+%>   sigOut = IQ.traverse(driveSig, laserSig);
 %> @endcode
 %>
 %>
@@ -53,28 +53,28 @@
 %> @code
 %>   % One can also set any parameters
 %>
-%>  drive = createDummySignal();        %2-pol complex drive input
+%>  driveSig = createDummySignal_v1();        %2-pol complex drive input
 %>
 %>  param.laser.Power = pwr(150, {14, 'dBm'});
 %>  param.laser.linewidth = 100;
 %>  param.laser.Fs = 160e9;
 %>  param.laser.Rs = 1e9;
 %>  param.laser.Fc = const.c/1550e-9;
-%>  param.laser.Lnoise = drive.L;
+%>  param.laser.Lnoise = driveSig.L;
 %>
-%>  param.IQ.Vpi = 4;                 %all child MZMs have a Vpi of 4 V
-%>  param.IQ.Vb = [3.5, 4, 4, 4];     %the first child MZM is biased
-%>                                      %incorrecty
-%>  IQphase = [deg2rad(80), deg2rad(90)];    %the first polarization has 10
-%>                                          %degrees of quadrature error; the second is OK
-%>  IQGainImbalance = 0;                 %there is no gain imbalance anywhere
+%>  param.IQ.Vpi = 4;                     % All child MZMs have a Vpi of 4 V
+%>  param.IQ.Vb = [-3.5, -4, -4, -4];     % The first child MZM is biased incorrecty
 %>
-%>  laser = Laser_v1(param.laser);
+%>  IQphase = [deg2rad(80), deg2rad(90)]; % The first polarization has 10
+%>                                        % degrees of quadrature error; the second is OK
+%>  IQGainImbalance = 0;                  % there is no gain imbalance anywhere
+%>
+%>  laser = Laser_v3(param.laser);
 %>  laserSig = laser.traverse();
 %>
 %>  IQ = IQModulator_v1(param.IQ);
 %>
-%>  sigOut = IQ.traverse(drive, laser);
+%>  sigOut = IQ.traverse(driveSig, laserSig);
 %> @endcode
 %>
 %>
@@ -90,7 +90,7 @@ classdef IQModulator_v1 < unit
         %> Number of outputs
         nOutputs = 1;
         %> Bias voltage [V]
-        Vb = 4;
+        Vb = -4;
         %> Vpi [V]
         Vpi = 4;
         %> I-Q phase angle [rad]
@@ -107,6 +107,11 @@ classdef IQModulator_v1 < unit
     properties (Access = private)
         %> Number of output modes
         nModes;
+    end
+    
+    properties (Constant)
+        QUIET_PARAMS = {'Vamp'};
+        REQUIRED_PARAMS = {};
     end
     
     methods (Static)
@@ -131,15 +136,15 @@ classdef IQModulator_v1 < unit
         %> @param param.Vpi         V pi for child modulators [V] [Default: 4].
         %> @param param.IQphase     IQ phase angle [rad] [Default: pi/2].
         %> @param param.IQGainImbalance     Gain imbalance in I and Q [dB] [ Default: 0].
-        %> @param param.rescaleVdrive   Force drive signal to a certain value [boolean] [Default: on]
+        %> @param param.rescaleVdrive   Force drive signal amplitude range to be 2*Vamp [boolean] [Default: on]
         %> @param param.Vamp            What drive voltage should be forced to, if rescaling is enabled [V] [Default: 1];
         %>
         %> @retval obj      An instance of the class IQModulator_v1
         function obj = IQModulator_v1(varargin)
             if nargin==1
-                obj.setparams(varargin{1});
+                obj.setparams(varargin{1}, obj.REQUIRED_PARAMS, obj.QUIET_PARAMS);
             elseif nargin ==0
-                obj.setparams(1);    %tell user about defaults if enabled
+                obj.setparams(1, obj.REQUIRED_PARAMS, obj.QUIET_PARAMS);    %tell user about defaults if enabled
             else
                 robolog('Too many input arguments', 'ERR');
             end
@@ -170,11 +175,12 @@ classdef IQModulator_v1 < unit
             
             
             % Handling Inputs 
-            
+            % The output of this part of code is a signal_interface object
+            % with each column containing a real signal that corresponds to
+            % either the I or Q part of the output
             nDriveSignals = nargin-2;       %number of signal_interface objects corresponding to drive signals (!= driveSignal.N)
             laser = varargin{nDriveSignals + 1};
-            
-            
+      
             if isreal(getRaw(varargin{1}))
                 %mode = 'real';
                 driveSignal = varargin{1};
@@ -183,13 +189,18 @@ classdef IQModulator_v1 < unit
                 end
             else
                 %mode = 'complex';
-                if varargin{1}.N ~= 1
+                if nDriveSignals == 1
+                    Ein = get(varargin{1});     %correctly scaled waveform
+                    Eout = nan(varargin{1}.L, 2*varargin{1}.N);
+                    Eout(:, 1:2:end) = real(Ein);
+                    Eout(:, 2:2:end) = imag(Ein);
+                    avpower = pwr.meanpwr(Eout);
                     p = params(varargin{1});
-                    p = rmfield(p, 'P');
-                    p = rmfield(p, 'PCol');
-                    auxiliary = fun1(varargin{1}, @(x)[real(x) imag(x)]); % This is a problematic signal_interface
-                    driveSignal = signal_interface(auxiliary.E, p);
-                    clear auxiliary p
+                    for jj = 1:2*varargin{1}.N
+                        p.PCol(jj) = pwr(varargin{1}.PCol(round(jj/2)).SNR, {avpower(jj), 'w'});
+                    end
+                    driveSignal = signal_interface(Eout, p);
+                    clear Ein Eout p
                 else
                     driveSignal = combine(fun1(varargin{1}, @(x)real(x)), fun1(varargin{1}, @(x)imag(x)));
                     for jj = 2:nDriveSignals
@@ -208,11 +219,19 @@ classdef IQModulator_v1 < unit
             end
             obj.checkParamSizes();
             
-            % TODO fix this part of algorithm
             % Rescale driving signal
             if obj.rescaleVdrive
-                Pdrive = 2*(obj.Vamp)^2;
-                driveSignal = set(driveSignal, 'P', pwr(driveSignal.P.SNR, {Pdrive, 'W'}));
+                PCurrent = driveSignal.PCol;
+                for jj = 1:2*obj.nModes
+                    VppNumeric = max(driveSignal(:,jj))-min(driveSignal(:,jj)); %this should use current power scaling
+                    PCol(jj) = pwr(driveSignal.P.SNR, {PCurrent(jj).Ptot('W')*(2*obj.Vamp(jj)/VppNumeric)^2, 'W'});
+                end
+                driveSignal = set(driveSignal, 'PCol', PCol);
+                highDCflag = abs(mean(driveSignal.get))>0.05*obj.Vamp.';
+                if any(highDCflag)
+                    robolog('Large DC offset detected.  This will cause unexpected behavior with automatic power rescaling', 'WRN')
+                    robolog('Set rescaleVdrive to 0 to avoid this issue', 'WRN')
+                end
             end
             
             p = params(driveSignal);
@@ -229,14 +248,12 @@ classdef IQModulator_v1 < unit
             pBias = rmfield(p, 'PCol');
             pBias.P = pwr(inf, {2*obj.nModes*pwr.meanpwr(obj.Vb), 'W'});
             biasSignal = signal_interface(repmat(obj.Vb, driveSignal.L, 1), pBias);
-            driveSignal = driveSignal*diag(1./obj.Vpi);
-            biasSignal = biasSignal.getRaw*diag(1./obj.Vpi);
-            driveSignal = driveSignal.getRaw+biasSignal;
+            driveSignal= (driveSignal + biasSignal)*diag(1./obj.Vpi);
             clear biasSignal
-            driveSignal = cos(pi*driveSignal/2);
+            driveSignal = fun1(driveSignal, @(x) cos(pi*x/2));
             
             % Figure out output signal length
-            [lengthOut, idx] = min([laser.L, size(driveSignal,1)]);
+            [lengthOut, idx] = min([laser.L, driveSignal.L]);
             if laser.L ~= size(driveSignal,1)
                 if idx == 1
                     robolog('Taking output length from laser', 'NFO')
@@ -279,6 +296,11 @@ classdef IQModulator_v1 < unit
                 obj.Vpi = repmat(obj.Vpi, 2*obj.nModes, 1);
             elseif length(obj.Vpi) ~= 2*obj.nModes
                 robolog('Number of specified pi voltages (Vpi) must be 1 or match number of child MZMs', 'ERR');
+            end
+            if length(obj.Vamp) == 1
+                obj.Vamp = repmat(obj.Vamp, 2*obj.nModes, 1);
+            elseif length(obj.Vamp) ~= 2*obj.nModes
+                robolog('Number of specified amplitude voltages (Vamp) must be 1 or match number of child MZMs', 'ERR');
             end
             if length(obj.IQphase) == 1
                 obj.IQphase = repmat(obj.IQphase, obj.nModes, 1);
